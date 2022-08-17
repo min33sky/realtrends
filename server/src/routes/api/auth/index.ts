@@ -18,10 +18,8 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
     '/register',
     { schema: registerSchema },
     async (fastify) => {
-      const user = await userService.register(fastify.body);
-      return {
-        user,
-      };
+      const authResult = await userService.register(fastify.body);
+      return authResult;
     }
   );
 };

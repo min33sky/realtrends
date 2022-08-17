@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import AppError from '../lib/AppError.js';
 import db from '../lib/db.js';
+import { generateToken } from '../lib/tokens.js';
 
 const SALT_ROUNDS = 10;
 interface IAuthParams {
@@ -15,6 +16,27 @@ class UserService {
       UserService.instance = new UserService();
     }
     return UserService.instance;
+  }
+
+  async generateToken(userId: number, username: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      generateToken({
+        type: 'access_token',
+        tokenId: 1,
+        userId,
+        username,
+      }),
+      generateToken({
+        type: 'refresh_token',
+        tokenId: 1,
+        rotationCounter: 1,
+      }),
+    ]);
+
+    return {
+      refreshToken,
+      accessToken,
+    };
   }
 
   login({ username, password }: IAuthParams) {
@@ -39,7 +61,13 @@ class UserService {
         passwordHash: hash,
       },
     });
-    return user;
+
+    const tokens = await this.generateToken(user.id, username);
+
+    return {
+      tokens,
+      user,
+    };
   }
 }
 
