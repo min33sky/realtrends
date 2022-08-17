@@ -5,8 +5,6 @@ import AppError from './lib/AppError.js';
 import routes from './routes/index.js';
 import 'dotenv/config';
 
-console.log(process.env.JWT_SECRET);
-
 const server = Fastify({ logger: true });
 
 await server.register(fastifySwagger, swaggerConfig);
