@@ -9,8 +9,21 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post<{ Body: AuthBody }>(
     '/login',
     { schema: loginSchema },
-    async (fastify) => {
-      return await userService.login(fastify.body);
+    async (request, reply) => {
+      const authResult = await userService.login(request.body);
+
+      reply.setCookie('access_token', authResult.tokens.accessToken, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000 * 60 * 60),
+        path: '/', //? 전역에서 쿠키를 사용
+      });
+      reply.setCookie('refresh_token', authResult.tokens.refreshToken, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        path: '/',
+      });
+
+      return authResult;
     }
   );
 

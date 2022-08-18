@@ -10,9 +10,13 @@ const authPluginAsync: FastifyPluginAsync = async (fastify) => {
   fastify.decorateRequest('isExpiredToken', false);
 
   fastify.addHook('preHandler', async (request, reply) => {
-    const { authorization } = request.headers;
-    if (!authorization || !authorization.includes('Bearer')) return;
-    const token = authorization.split('Bearer ')[1];
+    //? header 혹은 cookie에서 access_token을 가져온다.
+    const token =
+      request.headers.authorization?.split('Bearer ')[1] ??
+      request.cookies.access_token;
+
+    if (!token) return;
+
     console.log('Token:', token);
 
     //? 토큰 검증

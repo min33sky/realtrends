@@ -5,10 +5,13 @@ import AppError from './lib/AppError';
 import routes from './routes';
 import 'dotenv/config';
 import { authPlugin } from './plugins/authPlugin';
+import fastifyCookie from '@fastify/cookie';
 
 const server = Fastify({ logger: true });
 
 await server.register(fastifySwagger, swaggerConfig);
+
+server.register(fastifyCookie);
 
 server.setErrorHandler(async (error, request, reply) => {
   reply.statusCode = error.statusCode ?? 500;
