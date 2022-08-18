@@ -23,7 +23,7 @@
     "prisma": "^4.2.1"
   },
   "scripts": {
-    "start": "ts-node-esm --transpileOnly ./src/main.ts | pino-pretty",
+    "start": "ts-node-esm --transpileOnly --experimental-specifier-resolution=node ./src/main.ts | pino-pretty",
     "start:dev": "nodemon --watch ./src --exec \"yarn start\" -e ts"
   }
 }
