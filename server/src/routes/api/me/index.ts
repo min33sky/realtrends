@@ -1,21 +1,12 @@
 import { FastifyPluginAsync } from 'fastify';
-import AppError from '../../../lib/AppError';
+import requireAuthPlugin from '../../../plugins/requireAuthPlugin';
 import { getMeSchema } from './schema';
 
 export const meRoute: FastifyPluginAsync = async (fastify) => {
+  //? meRoute에서만 적용할 인증 Route Plugin을 설정
+  fastify.register(requireAuthPlugin);
+
   fastify.get('/', { schema: getMeSchema }, async (request) => {
-    if (request.isExpiredToken) {
-      throw new AppError('UnauthorizedError', {
-        isExpiredToken: true,
-      });
-    }
-
-    if (!request.user) {
-      throw new AppError('UnauthorizedError', {
-        isExpiredToken: false,
-      });
-    }
-
     return request.user;
   });
 };

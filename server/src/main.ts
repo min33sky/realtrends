@@ -17,9 +17,9 @@ server.setErrorHandler(async (error, request, reply) => {
   reply.statusCode = error.statusCode ?? 500;
   if (error instanceof AppError) {
     return {
-      message: error.message,
-      name: error.name,
       statusCode: error.statusCode,
+      name: error.name,
+      message: error.message,
       payload: error.payload,
     };
   }

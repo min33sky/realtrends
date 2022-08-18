@@ -1,10 +1,21 @@
 import { FastifyPluginAsync } from 'fastify';
+import requireAuthPlugin from '../../../plugins/requireAuthPlugin';
 import UserService from '../../../services/UserService';
 import { AuthBody } from '../../../types';
 import { loginSchema, registerSchema } from './schema';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   const userService = UserService.getInstance();
+
+  //? 특정 Endpoint만 plugin 적용 테스트용
+  fastify.register(async (_fastify, opts) => {
+    _fastify.register(requireAuthPlugin);
+    _fastify.get('/test', async (request, reply) => {
+      return {
+        message: 'Hello World!',
+      };
+    });
+  });
 
   fastify.post<{ Body: AuthBody }>(
     '/login',

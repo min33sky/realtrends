@@ -53,7 +53,6 @@ export default class AppError extends Error {
 /**
  * AppError 인스턴스인지 확인
  * @param error
- * @returns
  */
 export function isAppError(error: unknown): error is AppError {
   return error instanceof AppError;
@@ -79,7 +78,7 @@ export function createAppErrorSchema<T, S>(example: T, payloadScehma?: S) {
     type: 'object',
     properties: {
       ...appErrorSchema.properties,
-      ...(payloadScehma ? { payload: payloadScehma } : {}), //? TIP: 값에 undefined도 있으면 안될 경우 꼼수
+      ...(payloadScehma ? { payload: payloadScehma } : {}), //? TIP: 값에 undefined도 있으면 안될 경우에 사용하는 꼼수
     },
     example,
   };
