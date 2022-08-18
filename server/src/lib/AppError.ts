@@ -1,9 +1,22 @@
-type ErrorName = 'UserExistsError' | 'AuthenticationError' | 'UnknownError';
+type ErrorName =
+  | 'UserExistsError'
+  | 'AuthenticationError'
+  | 'UnknownError'
+  | 'UnauthorizedError';
 
 type ErrorInfo = {
   statusCode: number;
   message: string;
 };
+
+interface ErrorPayloads {
+  UserExistsError: undefined;
+  AuthenticationError: undefined;
+  UnknownError: undefined;
+  UnauthorizedError: {
+    isExpiredToken: boolean;
+  };
+}
 
 const statusCodeMap: Record<ErrorName, ErrorInfo> = {
   UserExistsError: {
@@ -18,12 +31,19 @@ const statusCodeMap: Record<ErrorName, ErrorInfo> = {
     statusCode: 500,
     message: 'Unknown error',
   },
+  UnauthorizedError: {
+    statusCode: 401,
+    message: 'Unauthorized',
+  },
 };
 
 export default class AppError extends Error {
   public statusCode: number;
 
-  constructor(public name: ErrorName) {
+  constructor(
+    public name: ErrorName,
+    public payload?: ErrorPayloads[ErrorName]
+  ) {
     const info = statusCodeMap[name];
     super(info.message);
     this.statusCode = info.statusCode;
@@ -53,3 +73,14 @@ export const appErrorSchema = {
     },
   },
 };
+
+export function createAppErrorSchema<T, S>(example: T, payloadScehma?: S) {
+  return {
+    type: 'object',
+    properties: {
+      ...appErrorSchema.properties,
+      ...(payloadScehma ? { payload: payloadScehma } : {}), //? TIP: 값에 undefined도 있으면 안될 경우 꼼수
+    },
+    example,
+  };
+}
