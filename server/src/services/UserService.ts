@@ -1,5 +1,6 @@
+import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import AppError from '../lib/AppError.js';
+import AppError, { isAppError } from '../lib/AppError.js';
 import db from '../lib/db.js';
 import { generateToken } from '../lib/tokens.js';
 
@@ -11,6 +12,7 @@ interface IAuthParams {
 
 class UserService {
   private static instance: UserService;
+
   public static getInstance() {
     if (!UserService.instance) {
       UserService.instance = new UserService();
@@ -18,13 +20,17 @@ class UserService {
     return UserService.instance;
   }
 
-  async generateToken(userId: number, username: string) {
+  /**
+   * 인증 토큰 생성
+   * @param user
+   */
+  async generateToken(user: User) {
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
         tokenId: 1,
-        userId,
-        username,
+        userId: user.id,
+        username: user.username,
       }),
       generateToken({
         type: 'refresh_token',
@@ -39,10 +45,44 @@ class UserService {
     };
   }
 
-  login({ username, password }: IAuthParams) {
-    return 'Loged In!';
+  /**
+   * 로그인
+   * @param username
+   * @param password
+   */
+  async login({ username, password }: IAuthParams) {
+    const user = await db.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('AuthenticationError');
+    }
+
+    try {
+      const result = await bcrypt.compare(password, user.passwordHash);
+      if (!result) throw new AppError('AuthenticationError');
+    } catch (error) {
+      if (isAppError(error)) throw error;
+      throw new AppError('UnknownError');
+    }
+
+    //? 토큰 생성
+    const tokens = await this.generateToken(user);
+
+    return {
+      user,
+      tokens,
+    };
   }
 
+  /**
+   * 회원 가입
+   * @param username
+   * @param password
+   */
   async register({ username, password }: IAuthParams) {
     const exists = await db.user.findUnique({
       where: {
@@ -62,7 +102,7 @@ class UserService {
       },
     });
 
-    const tokens = await this.generateToken(user.id, username);
+    const tokens = await this.generateToken(user);
 
     return {
       tokens,

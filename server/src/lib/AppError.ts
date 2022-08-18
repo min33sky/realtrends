@@ -30,6 +30,15 @@ export default class AppError extends Error {
   }
 }
 
+/**
+ * AppError 인스턴스인지 확인
+ * @param error
+ * @returns
+ */
+export function isAppError(error: unknown): error is AppError {
+  return error instanceof AppError;
+}
+
 export const appErrorSchema = {
   type: 'object',
   properties: {

@@ -1,9 +1,9 @@
 import fastifySwagger from '@fastify/swagger';
 import Fastify from 'fastify';
+import { swaggerConfig } from './config/swagger';
+import AppError from './lib/AppError';
+import routes from './routes';
 import 'dotenv/config';
-import routes from './routes/index.js';
-import AppError from './lib/AppError.js';
-import { swaggerConfig } from './config/swagger.js';
 
 const server = Fastify({ logger: true });
 
