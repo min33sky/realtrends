@@ -29,7 +29,7 @@ export function generateToken(payload: TokenPayload) {
   });
 }
 
-export function validateToken<T>(token: string) {
+export function validateToken<T extends TokenPayload>(token: string) {
   return new Promise<DecodedToken<T>>((resolve, reject) => {
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
@@ -44,8 +44,8 @@ export function validateToken<T>(token: string) {
 
 export interface AccessTokenPayload {
   type: 'access_token';
-  userId: number;
   tokenId: number;
+  userId: number;
   username: string;
 }
 

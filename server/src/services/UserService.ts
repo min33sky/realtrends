@@ -2,9 +2,14 @@ import { User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import AppError, { isAppError } from '../lib/AppError.js';
 import db from '../lib/db.js';
-import { generateToken } from '../lib/tokens.js';
+import {
+  generateToken,
+  RefreshTokenPayload,
+  validateToken,
+} from '../lib/tokens.js';
 
 const SALT_ROUNDS = 10;
+
 interface IAuthParams {
   username: string;
   password: string;
@@ -20,22 +25,37 @@ class UserService {
     return UserService.instance;
   }
 
+  async createTokenId(userId: number) {
+    const token = await db.token.create({
+      data: {
+        userId,
+      },
+    });
+
+    return token.id;
+  }
+
   /**
-   * 인증 토큰 생성
+   * 토큰 생성
    * @param user
+   * @param existingTokenId 기존 토큰 아이디
    */
-  async generateToken(user: User) {
+  async generateToken(user: User, existingTokenId?: number) {
+    const { id: userId, username } = user;
+
+    const tokenId = existingTokenId ?? (await this.createTokenId(userId));
+
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
-        tokenId: 1,
-        userId: user.id,
-        username: user.username,
+        tokenId,
+        userId: userId,
+        username: username,
       }),
       generateToken({
         type: 'refresh_token',
-        tokenId: 1,
-        rotationCounter: 1,
+        tokenId,
+        rotationCounter: 1, // TODO: 나~~~~~~~~~~~~~~~~~~~~~~~~~~중에 구현
       }),
     ]);
 
@@ -57,9 +77,7 @@ class UserService {
       },
     });
 
-    if (!user) {
-      throw new AppError('AuthenticationError');
-    }
+    if (!user) throw new AppError('AuthenticationError');
 
     try {
       const result = await bcrypt.compare(password, user.passwordHash);
@@ -108,6 +126,34 @@ class UserService {
       tokens,
       user,
     };
+  }
+
+  /**
+   * 토큰 갱신
+   * @param token 토큰
+   */
+  async refreshToken(token: string) {
+    try {
+      //* 토큰 유효성 검사
+      const { tokenId } = await validateToken<RefreshTokenPayload>(token);
+
+      //* DB에서 토큰 조회
+      const tokenItem = await db.token.findUnique({
+        where: {
+          id: tokenId,
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      if (!tokenItem) throw new Error('Token not found');
+
+      //* 토큰 갱신
+      return this.generateToken(tokenItem.user, tokenId);
+    } catch (error) {
+      throw new AppError('RefreshTokenError');
+    }
   }
 }
 

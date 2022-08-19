@@ -15,7 +15,10 @@ const authPluginAsync: FastifyPluginAsync = async (fastify) => {
       request.headers.authorization?.split('Bearer ')[1] ??
       request.cookies.access_token;
 
-    if (!token) return;
+    if (!token) {
+      console.log('##### 토큰이 없어요~~~~~~~~~~~~~~~~~~~~~###');
+      return;
+    }
 
     console.log('Token:', token);
 
