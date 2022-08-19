@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { Token, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import AppError, { isAppError } from '../lib/AppError.js';
 import db from '../lib/db.js';
@@ -25,25 +25,26 @@ class UserService {
     return UserService.instance;
   }
 
-  async createTokenId(userId: number) {
+  async createToken(userId: number) {
     const token = await db.token.create({
       data: {
         userId,
       },
     });
 
-    return token.id;
+    return token;
   }
 
   /**
    * 토큰 생성
    * @param user
-   * @param existingTokenId 기존 토큰 아이디
+   * @param tokenItem 기존 토큰
    */
-  async generateToken(user: User, existingTokenId?: number) {
+  async generateToken(user: User, tokenItem?: Token) {
     const { id: userId, username } = user;
 
-    const tokenId = existingTokenId ?? (await this.createTokenId(userId));
+    const token = tokenItem ?? (await this.createToken(userId));
+    const tokenId = token.id;
 
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
@@ -55,7 +56,7 @@ class UserService {
       generateToken({
         type: 'refresh_token',
         tokenId,
-        rotationCounter: 1, // TODO: 나~~~~~~~~~~~~~~~~~~~~~~~~~~중에 구현
+        rotationCounter: token.rotationCounter,
       }),
     ]);
 
@@ -135,7 +136,8 @@ class UserService {
   async refreshToken(token: string) {
     try {
       //* 토큰 유효성 검사
-      const { tokenId } = await validateToken<RefreshTokenPayload>(token);
+      const { tokenId, rotationCounter } =
+        await validateToken<RefreshTokenPayload>(token);
 
       //* DB에서 토큰 조회
       const tokenItem = await db.token.findUnique({
@@ -149,8 +151,36 @@ class UserService {
 
       if (!tokenItem) throw new Error('Token not found');
 
+      if (tokenItem.blocked) {
+        throw new Error('Token is blocked');
+      }
+
+      //? 서버와 현재 토큰의 rotationCounter 값이 다를 경우 현재 토큰을 Block 처리 후 에러 발생
+      if (tokenItem.rotationCounter !== rotationCounter) {
+        await db.token.update({
+          where: {
+            id: tokenId,
+          },
+          data: {
+            blocked: true,
+          },
+        });
+        throw new Error('Rotation Counter is not matched');
+      }
+
+      tokenItem.rotationCounter += 1;
+
+      await db.token.update({
+        where: {
+          id: tokenItem.id,
+        },
+        data: {
+          rotationCounter: tokenItem.rotationCounter,
+        },
+      });
+
       //* 토큰 갱신
-      return this.generateToken(tokenItem.user, tokenId);
+      return this.generateToken(tokenItem.user, tokenItem);
     } catch (error) {
       throw new AppError('RefreshTokenError');
     }
