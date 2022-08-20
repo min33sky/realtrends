@@ -1,9 +1,15 @@
+import { Form, useActionData, useTransition } from '@remix-run/react';
+import { useFormLoading } from '~/hooks/useFormLoading';
 import Button from './Button';
 import LabelInput from './LabelInput';
 import QuestionLink from './QuestionLink';
 
 interface Props {
   mode: 'login' | 'register';
+}
+
+interface ActionData {
+  text: 'hello world';
 }
 
 const authDescription = {
@@ -26,6 +32,11 @@ const authDescription = {
 };
 
 function AuthForm({ mode }: Props) {
+  const action = useActionData<ActionData | undefined>();
+  const isLoading = useFormLoading();
+
+  console.log(isLoading);
+
   const {
     actionText,
     buttonText,
@@ -36,17 +47,29 @@ function AuthForm({ mode }: Props) {
   } = authDescription[mode];
 
   return (
-    <article className="flex flex-1 flex-col justify-between p-4">
+    <Form method="post" className="flex flex-1 flex-col justify-between p-4">
       <div className="flex flex-col space-y-4">
-        <LabelInput label="아이디" placeholder={usernamePlaceholder} />
-        <LabelInput label="비밀번호" placeholder={passwordPlaceholder} />
+        <LabelInput
+          label="아이디"
+          name="username"
+          placeholder={usernamePlaceholder}
+          disabled={isLoading}
+        />
+        <LabelInput
+          label="비밀번호"
+          name="password"
+          placeholder={passwordPlaceholder}
+          disabled={isLoading}
+        />
       </div>
 
       <footer className="flex flex-col items-center space-y-4">
-        <Button layoutMode="fullWidth">{buttonText}</Button>
+        <Button type="submit" layoutMode="fullWidth" disabled={isLoading}>
+          {buttonText}
+        </Button>
         <QuestionLink question={question} name={actionText} to={to} />
       </footer>
-    </article>
+    </Form>
   );
 }
 
