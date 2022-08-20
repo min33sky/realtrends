@@ -7,6 +7,8 @@
 ### Frontend
 
 - react
+- remix
+- tailwindcss
 
 ### Backend
 
