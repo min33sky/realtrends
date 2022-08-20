@@ -35,8 +35,6 @@ function AuthForm({ mode }: Props) {
   const action = useActionData<ActionData | undefined>();
   const isLoading = useFormLoading();
 
-  console.log(isLoading);
-
   const {
     actionText,
     buttonText,

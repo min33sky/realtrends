@@ -18,6 +18,9 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
     });
   });
 
+  /**
+   * 로그인
+   */
   fastify.post<{ Body: AuthBody }>(
     '/login',
     { schema: loginSchema },
@@ -27,7 +30,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
       setTokenCookie(reply, authResult.tokens);
 
       return authResult;
-    }
+    },
   );
 
   /**
@@ -36,9 +39,11 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   fastify.post<{ Body: AuthBody }>(
     '/register',
     { schema: registerSchema },
-    async (request) => {
-      return await userService.register(request.body);
-    }
+    async (request, reply) => {
+      const authResult = await userService.register(request.body);
+      setTokenCookie(reply, authResult.tokens);
+      return authResult;
+    },
   );
 
   /**
@@ -60,7 +65,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
       const tokens = await userService.refreshToken(refreshToken);
       setTokenCookie(reply, tokens);
       return tokens;
-    }
+    },
   );
 
   /**
@@ -70,7 +75,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
    */
   function setTokenCookie(
     reply: FastifyReply,
-    tokens: { accessToken: string; refreshToken: string }
+    tokens: { accessToken: string; refreshToken: string },
   ) {
     reply.setCookie('access_token', tokens.accessToken, {
       httpOnly: true,
