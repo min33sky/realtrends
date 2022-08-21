@@ -5,19 +5,17 @@ import Header from '~/components/Header';
 import HeaderBackButton from '~/components/HeaderBackButton';
 import Layout from '~/components/Layout';
 import useGoBack from '~/hooks/useGoBack';
+import { login } from '~/lib/api/auth';
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const username = form.get('username');
   const password = form.get('password');
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (typeof username !== 'string' || typeof password !== 'string') return;
+  const { result, headers } = await login({ username, password });
 
-  console.log({ username, password });
-
-  return json({
-    text: 'hello world',
-  });
+  return json(result, { headers });
 };
 
 function Login() {

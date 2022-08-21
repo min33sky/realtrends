@@ -1,10 +1,12 @@
 import type { ActionFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
+import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/AuthForm';
 import Header from '~/components/Header';
 import HeaderBackButton from '~/components/HeaderBackButton';
 import Layout from '~/components/Layout';
 import useGoBack from '~/hooks/useGoBack';
+import { extractError } from '~/lib/ error';
 import { register } from '~/lib/api/auth';
 
 export const action: ActionFunction = async ({ request }) => {
@@ -13,16 +15,17 @@ export const action: ActionFunction = async ({ request }) => {
   const password = form.get('password');
 
   if (typeof username !== 'string' || typeof password !== 'string') return;
-  const { result, cookieHeader } = await register({ username, password });
 
-  const headers = new Headers();
-  headers.append('Set-Cookie', cookieHeader[0]);
-  headers.append('Set-Cookie', cookieHeader[1]);
-
-  return json(result, { headers });
+  try {
+    const { result, headers } = await register({ username, password });
+    return json(result, { headers });
+  } catch (e) {
+    const error = extractError(e);
+    throw json(error, { status: error.statusCode });
+  }
 };
 
-function Register() {
+export default function Register() {
   const goBack = useGoBack();
 
   return (
@@ -36,4 +39,10 @@ function Register() {
   );
 }
 
-export default Register;
+export function CatchBoundary() {
+  const caught = useCatch();
+  console.table(caught);
+  return (
+    <div>Register Error~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</div>
+  );
+}
