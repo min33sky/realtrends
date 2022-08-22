@@ -1,5 +1,6 @@
-import { Form, useActionData, useTransition } from '@remix-run/react';
-import { useMemo, useState } from 'react';
+import { Form, useActionData } from '@remix-run/react';
+import { useEffect } from 'react';
+import { useForm } from '~/hooks/useForm';
 import { useSubmitLoading } from '~/hooks/useSubmitLoading';
 import type { AppError } from '~/lib/error';
 import { validate } from '~/lib/validate';
@@ -38,17 +39,22 @@ const authDescription = {
 function AuthForm({ mode, error }: Props) {
   const action = useActionData<ActionData | undefined>();
   const isLoading = useSubmitLoading();
-  const [isInvalidUsername, setIsInvalidUsername] = useState(false);
-  const [isInvalidPassword, setIsInvalidPassword] = useState(false);
 
-  const usernameErrorMessage = useMemo(() => {
-    if (isInvalidUsername) {
-      return '5~20자 사이의 영문 소문자, 숫자 입력해주세요';
-    }
-    if (error?.name === 'UserExistsError') {
-      return '이미 존재하는 계정입니다.';
-    }
-  }, [error, isInvalidUsername]);
+  const { inputProps, handleSubmit, errors, setError } = useForm({
+    form: {
+      username: {
+        validate: mode === 'register' ? validate.username : undefined,
+        errorMessage: '5~20자 사이의 영문 소문자 또는 숫자를 입력해주세요.',
+      },
+      password: {
+        validate: mode === 'register' ? validate.password : undefined,
+        errorMessage:
+          '8자 이상, 영문/숫자/특수문자 중 2가지 이상 입력해주세요.',
+      },
+    },
+    mode: 'all',
+    shouldPreventDefault: false,
+  });
 
   const {
     actionText,
@@ -59,25 +65,19 @@ function AuthForm({ mode, error }: Props) {
     usernamePlaceholder,
   } = authDescription[mode];
 
+  const onSubmit = handleSubmit(() => {});
+
+  useEffect(() => {
+    if (error?.name === 'UserExistsError') {
+      setError('username', '이미 존재하는 계정입니다.');
+    }
+  }, [error, setError]);
+
   return (
     <Form
       method="post"
       className="flex flex-1 flex-col justify-between p-4"
-      onSubmit={(e) => {
-        if (mode !== 'register') return;
-
-        const form = new FormData(e.currentTarget);
-        const username = form.get('username');
-        const password = form.get('password');
-        if (typeof username !== 'string' || typeof password !== 'string') {
-          e.preventDefault();
-          return;
-        }
-        if (!validate.username(username) || !validate.password(password)) {
-          e.preventDefault();
-          return;
-        }
-      }}
+      onSubmit={onSubmit}
     >
       <div className="flex flex-col space-y-4">
         <LabelInput
@@ -85,11 +85,8 @@ function AuthForm({ mode, error }: Props) {
           name="username"
           placeholder={usernamePlaceholder}
           disabled={isLoading}
-          onBlur={(e) => {
-            if (mode !== 'register') return;
-            setIsInvalidUsername(!validate.username(e.target.value));
-          }}
-          errorMessage={usernameErrorMessage}
+          errorMessage={errors.username || undefined}
+          {...inputProps.username}
         />
 
         <LabelInput
@@ -97,15 +94,8 @@ function AuthForm({ mode, error }: Props) {
           name="password"
           placeholder={passwordPlaceholder}
           disabled={isLoading}
-          onBlur={(e) => {
-            if (mode !== 'register') return;
-            setIsInvalidPassword(!validate.password(e.currentTarget.value));
-          }}
-          errorMessage={
-            isInvalidPassword
-              ? '8자 이상, 영문/숫자/특수문자 중 2가지 이상 입력해주세요.'
-              : undefined
-          }
+          errorMessage={errors.password || undefined}
+          {...inputProps.password}
         />
       </div>
 
