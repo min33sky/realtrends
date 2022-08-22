@@ -3,7 +3,7 @@ import { json } from '@remix-run/node';
 import type { ThrownResponse } from '@remix-run/react';
 import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/auth/AuthForm';
-import BasicLayout from '~/components/templates/BasicLayout';
+import BasicLayout from '~/components/layout/BasicLayout';
 import { login } from '~/lib/api/auth';
 import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
