@@ -3,10 +3,7 @@ import { json } from '@remix-run/node';
 import type { ThrownResponse } from '@remix-run/react';
 import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/auth/AuthForm';
-import Header from '~/components/base/Header';
-import HeaderBackButton from '~/components/base/HeaderBackButton';
-import FullHeightLayout from '~/components/system/FullHeightLayout';
-import useGoBack from '~/hooks/useGoBack';
+import BasicLayout from '~/components/templates/BasicLayout';
 import { login } from '~/lib/api/auth';
 import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
@@ -32,16 +29,10 @@ interface Props {
 }
 
 export default function Login({ error }: Props) {
-  const goBack = useGoBack();
-
   return (
-    <FullHeightLayout>
-      <Header
-        title="로그인"
-        headerLeft={<HeaderBackButton onClick={goBack} />}
-      />
+    <BasicLayout title="로그인" hasBackButton>
       <AuthForm mode="login" error={error} />
-    </FullHeightLayout>
+    </BasicLayout>
   );
 }
 

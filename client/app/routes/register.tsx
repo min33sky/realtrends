@@ -3,13 +3,10 @@ import { json } from '@remix-run/node';
 import type { ThrownResponse } from '@remix-run/react';
 import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/auth/AuthForm';
-import HeaderBackButton from '~/components/base/HeaderBackButton';
-import useGoBack from '~/hooks/useGoBack';
 import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
 import { register } from '~/lib/api/auth';
-import Header from '~/components/base/Header';
-import FullHeightLayout from '~/components/system/FullHeightLayout';
+import BasicLayout from '~/components/layout/BasicLayout';
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -32,16 +29,10 @@ interface Props {
 }
 
 export default function Register({ error }: Props) {
-  const goBack = useGoBack();
-
   return (
-    <FullHeightLayout>
-      <Header
-        title="회원가입"
-        headerLeft={<HeaderBackButton onClick={goBack} />}
-      />
+    <BasicLayout title="회원가입" hasBackButton>
       <AuthForm mode="register" error={error} />
-    </FullHeightLayout>
+    </BasicLayout>
   );
 }
 

@@ -2,7 +2,7 @@ import { useLocation } from '@remix-run/react';
 import { useMemo } from 'react';
 import FooterTapItem from './FooterTapItem';
 
-const paths = ['search', 'bookmark', 'setting'] as const;
+const paths = ['search', 'bookmarks', 'setting'] as const;
 
 function isValidPath(path: any): path is typeof paths[number] {
   return paths.includes(path);
@@ -30,8 +30,8 @@ export default function Footer() {
       <FooterTapItem icon="plus" />
       <FooterTapItem
         icon="bookmark"
-        isActive={currentPage === 'bookmark'}
-        to="/bookmark"
+        isActive={currentPage === 'bookmarks'}
+        to="/bookmarks"
       />
       <FooterTapItem
         icon="setting"
