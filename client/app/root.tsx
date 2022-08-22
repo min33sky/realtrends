@@ -11,6 +11,7 @@ import {
 import type { User } from './lib/api/auth';
 import { getMyAcoount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
+import { extractError } from './lib/error';
 import styles from './styles/app.css';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -18,8 +19,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   console.log('cookie: ', cookie);
   if (!cookie) return null;
   setClientCookie(cookie);
-  const me = await getMyAcoount();
-  return me;
+  try {
+    const me = await getMyAcoount();
+    return me;
+  } catch (e) {
+    const error = extractError(e);
+    if (error.name === 'UnauthorizedError') {
+      console.log(error.payload);
+    }
+    return null;
+  }
 };
 
 export function links() {
@@ -28,7 +37,7 @@ export function links() {
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'New Remix App',
+  title: 'Realtrends',
   viewport: 'width=device-width,initial-scale=1',
 });
 

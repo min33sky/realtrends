@@ -15,8 +15,14 @@ const authPluginAsync: FastifyPluginAsync = async (fastify) => {
       request.headers.authorization?.split('Bearer ')[1] ??
       request.cookies.access_token;
 
+    //? refresh_token은 존재하나 access_token이 존재하지 않을 땐 토큰이 만료된 것이다.
+    if (request.cookies.refresh_token && !token) {
+      request.isExpiredToken = true;
+      return;
+    }
+
     if (!token) {
-      console.log('##### 토큰이 없어요~~~~~~~~~~~~~~~~~~~~~###');
+      console.log('##### 인증 토큰이 존재하지 않습니다... #####');
       return;
     }
 

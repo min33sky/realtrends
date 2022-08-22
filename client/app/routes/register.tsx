@@ -1,11 +1,13 @@
 import type { ActionFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
+import type { ThrownResponse } from '@remix-run/react';
 import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/AuthForm';
 import Header from '~/components/Header';
 import HeaderBackButton from '~/components/HeaderBackButton';
 import Layout from '~/components/Layout';
 import useGoBack from '~/hooks/useGoBack';
+import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
 import { register } from '~/lib/api/auth';
 
@@ -25,7 +27,11 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function Register() {
+interface Props {
+  error?: AppError;
+}
+
+export default function Register({ error }: Props) {
   const goBack = useGoBack();
 
   return (
@@ -34,15 +40,13 @@ export default function Register() {
         title="회원가입"
         headerLeft={<HeaderBackButton onClick={goBack} />}
       />
-      <AuthForm mode="register" />
+      <AuthForm mode="register" error={error} />
     </Layout>
   );
 }
 
 export function CatchBoundary() {
-  const caught = useCatch();
-  console.table(caught);
-  return (
-    <div>Register Error~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</div>
-  );
+  const caught = useCatch<ThrownResponse<number, AppError>>();
+
+  return <Register error={caught.data} />;
 }
