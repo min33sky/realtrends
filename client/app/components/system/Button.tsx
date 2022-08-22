@@ -1,4 +1,4 @@
-import { ButtonLoader } from './vectors';
+import { ButtonLoader } from '../vectors';
 
 interface ButtonProps {
   layoutMode?: 'inline' | 'fullWidth';

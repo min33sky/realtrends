@@ -1,4 +1,4 @@
-import { Logo } from './vectors';
+import { Logo } from '../vectors';
 
 interface Props {
   title?: React.ReactNode;

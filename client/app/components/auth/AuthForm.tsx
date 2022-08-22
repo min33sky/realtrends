@@ -4,8 +4,8 @@ import { useForm } from '~/hooks/useForm';
 import { useSubmitLoading } from '~/hooks/useSubmitLoading';
 import type { AppError } from '~/lib/error';
 import { validate } from '~/lib/validate';
-import Button from './Button';
-import LabelInput from './LabelInput';
+import Button from '../system/Button';
+import LabelInput from '../system/LabelInput';
 import QuestionLink from './QuestionLink';
 
 interface Props {
