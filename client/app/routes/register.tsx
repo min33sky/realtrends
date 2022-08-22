@@ -6,7 +6,7 @@ import Header from '~/components/Header';
 import HeaderBackButton from '~/components/HeaderBackButton';
 import Layout from '~/components/Layout';
 import useGoBack from '~/hooks/useGoBack';
-import { extractError } from '~/lib/ error';
+import { extractError } from '~/lib/error';
 import { register } from '~/lib/api/auth';
 
 export const action: ActionFunction = async ({ request }) => {

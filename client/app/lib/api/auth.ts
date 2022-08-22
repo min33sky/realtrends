@@ -35,17 +35,26 @@ export async function login(params: AuthParams) {
   };
 }
 
+/**
+ * 내 정보 조회
+ */
 export async function getMyAcoount() {
   const response = await client.get<AuthResult>('http://localhost:4000/api/me');
   return response.data;
 }
 
+/**
+ * Response Header에 Set-Cookie를 설정하는 함수
+ * ? Backend에서 Set-Cookie로 전달한 Cookie를 Frontend로 그대로 전달하기 위해서 사용한다.
+ * @param setCookieHeader cookie array
+ */
 function createCookieHeader(setCookieHeader: string[] | undefined) {
   if (!setCookieHeader || setCookieHeader?.length === 0) {
     throw new Error('No cookie header');
   }
 
   const headers = new Headers();
+
   setCookieHeader.forEach((cookie) => {
     headers.append('Set-Cookie', cookie);
   });

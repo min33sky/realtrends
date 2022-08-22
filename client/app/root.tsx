@@ -15,6 +15,7 @@ import styles from './styles/app.css';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
+  console.log('cookie: ', cookie);
   if (!cookie) return null;
   setClientCookie(cookie);
   const me = await getMyAcoount();

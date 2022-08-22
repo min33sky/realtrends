@@ -35,7 +35,10 @@ export function isAppError(error: any): error is AppError {
 }
 
 export function extractError(error: any): AppError {
+  //? Fetch할 때 Axios를 사용하므로 Axios의 Error인지 체크한다.
   if (axios.isAxiosError(error)) {
+    //? Backend에서 보내 에러 객체와 타입이 일치하면 그대로 리턴한다.
+    //? Why? Backend에서 보낸 에러를 그대로 사용하기 위해서
     const data = error.response?.data;
     if (isAppError(data)) {
       return data;
