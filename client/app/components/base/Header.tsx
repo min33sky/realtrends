@@ -12,7 +12,7 @@ function Header({
   headerRight,
 }: Props) {
   return (
-    <header className="relative flex h-[56px]  items-center justify-center border-b-[1px] border-b-gray-400 px-4">
+    <header className="relative flex h-[56px] items-center justify-center border-b border-b-gray-400 px-4">
       {headerLeft && (
         <div className="absolute left-4 flex h-full items-center">
           {headerLeft}

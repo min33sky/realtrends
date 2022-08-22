@@ -1,12 +1,13 @@
 import Footer from '~/components/base/Footer';
 import Header from '~/components/base/Header';
-import Layout from '~/components/base/Layout';
+import FullHeightLayout from '~/components/system/FullHeightLayout';
 
 export default function Index() {
   return (
-    <Layout>
+    <FullHeightLayout>
       <Header />
+      <div className="flex-1">Content</div>
       <Footer />
-    </Layout>
+    </FullHeightLayout>
   );
 }

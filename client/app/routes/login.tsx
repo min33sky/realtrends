@@ -5,7 +5,7 @@ import { useCatch } from '@remix-run/react';
 import AuthForm from '~/components/auth/AuthForm';
 import Header from '~/components/base/Header';
 import HeaderBackButton from '~/components/base/HeaderBackButton';
-import Layout from '~/components/base/Layout';
+import FullHeightLayout from '~/components/system/FullHeightLayout';
 import useGoBack from '~/hooks/useGoBack';
 import { login } from '~/lib/api/auth';
 import type { AppError } from '~/lib/error';
@@ -35,13 +35,13 @@ export default function Login({ error }: Props) {
   const goBack = useGoBack();
 
   return (
-    <Layout>
+    <FullHeightLayout>
       <Header
         title="로그인"
         headerLeft={<HeaderBackButton onClick={goBack} />}
       />
       <AuthForm mode="login" error={error} />
-    </Layout>
+    </FullHeightLayout>
   );
 }
 
