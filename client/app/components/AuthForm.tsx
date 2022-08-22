@@ -2,7 +2,7 @@ import { Form, useActionData, useTransition } from '@remix-run/react';
 import { useMemo, useState } from 'react';
 import { useSubmitLoading } from '~/hooks/useSubmitLoading';
 import type { AppError } from '~/lib/error';
-import { isValidPassword, isValidUsername } from '~/lib/regex';
+import { validate } from '~/lib/validate';
 import Button from './Button';
 import LabelInput from './LabelInput';
 import QuestionLink from './QuestionLink';
@@ -73,7 +73,7 @@ function AuthForm({ mode, error }: Props) {
           e.preventDefault();
           return;
         }
-        if (!isValidUsername(username) || !isValidPassword(password)) {
+        if (!validate.username(username) || !validate.password(password)) {
           e.preventDefault();
           return;
         }
@@ -87,10 +87,11 @@ function AuthForm({ mode, error }: Props) {
           disabled={isLoading}
           onBlur={(e) => {
             if (mode !== 'register') return;
-            setIsInvalidUsername(!isValidUsername(e.target.value));
+            setIsInvalidUsername(!validate.username(e.target.value));
           }}
           errorMessage={usernameErrorMessage}
         />
+
         <LabelInput
           label="비밀번호"
           name="password"
@@ -98,7 +99,7 @@ function AuthForm({ mode, error }: Props) {
           disabled={isLoading}
           onBlur={(e) => {
             if (mode !== 'register') return;
-            setIsInvalidPassword(!isValidPassword(e.currentTarget.value));
+            setIsInvalidPassword(!validate.password(e.currentTarget.value));
           }}
           errorMessage={
             isInvalidPassword
