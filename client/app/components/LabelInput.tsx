@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { Props as InputProps } from './Input';
 import Input from './Input';
 
@@ -6,11 +6,23 @@ interface Props extends InputProps {
   label: string;
 }
 
-export default function LabelInput({ label, ...rest }: Props) {
+export default function LabelInput({ label, onFocus, onBlur, ...rest }: Props) {
   const [focused, setFocused] = useState(false);
 
-  const onFocus = useCallback(() => setFocused(true), []);
-  const onBlur = useCallback(() => setFocused(false), []);
+  const handleFocus = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      onFocus?.(e);
+      setFocused(true);
+    },
+    [onFocus],
+  );
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      onBlur?.(e);
+      setFocused(false);
+    },
+    [onBlur],
+  );
 
   return (
     <div className="group peer flex flex-col">
@@ -22,7 +34,7 @@ export default function LabelInput({ label, ...rest }: Props) {
       >
         {label}
       </label>
-      <Input onFocus={onFocus} onBlur={onBlur} {...rest} />
+      <Input onFocus={handleFocus} onBlur={handleBlur} {...rest} />
     </div>
   );
 }

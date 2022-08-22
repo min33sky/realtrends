@@ -11,7 +11,7 @@ export default function Input({ errorMessage, ...rest }: Props) {
         {...rest}
       />
       {errorMessage && (
-        <div className="mt-1 text-sm text-red-500">{errorMessage}</div>
+        <div className="mt-2 text-sm text-red-500">{errorMessage}</div>
       )}
     </>
   );
