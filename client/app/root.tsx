@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
+import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
 import { getMyAcoount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
@@ -17,8 +18,11 @@ import styles from './styles/app.css';
 export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
   console.log('cookie: ', cookie);
+
   if (!cookie) return null;
+
   setClientCookie(cookie);
+
   try {
     const me = await getMyAcoount();
     return me;
@@ -43,7 +47,7 @@ export const meta: MetaFunction = () => ({
 
 export default function App() {
   const data = useLoaderData<User | null>();
-  console.log('data', data);
+  console.log('User-Data: ', data);
 
   return (
     <html lang="en">
@@ -52,7 +56,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <UserContext.Provider value={data}>
+          <Outlet />
+        </UserContext.Provider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

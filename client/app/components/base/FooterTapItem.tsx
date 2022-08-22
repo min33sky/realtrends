@@ -6,7 +6,7 @@ import {
   SearchIcon,
 } from '@heroicons/react/outline';
 import { HomeIcon } from '@heroicons/react/solid';
-import { Link } from '@remix-run/react';
+import { Link, NavLink } from '@remix-run/react';
 
 const iconMap = {
   home: HomeIcon,
@@ -18,28 +18,20 @@ const iconMap = {
 
 interface Props {
   icon: keyof typeof iconMap;
-  isActive?: boolean;
-  to?: string;
+  to: string;
 }
 
-export default function FooterTapItem({ icon, isActive, to }: Props) {
+export default function FooterTapItem({ icon, to }: Props) {
   const iconEl = React.createElement(iconMap[icon]);
-
-  if (to) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <Link to={to}>
-          <div className={`h-6 w-6 ${isActive && 'text-violet-500'}`}>
-            {iconEl}
-          </div>
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-1 items-center justify-center">
-      <div className={`h-6 w-6 ${isActive && 'text-violet-500'}`}>{iconEl}</div>
+      <NavLink
+        to={to}
+        className={({ isActive }) => (isActive ? 'text-violet-500' : undefined)}
+      >
+        <div className={`h-6 w-6`}>{iconEl}</div>
+      </NavLink>
     </div>
   );
 }
