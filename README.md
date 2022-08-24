@@ -2,6 +2,16 @@
 
 ## Getting Started
 
+```bash
+// 1. install
+npm i
+// or
+yarn
+
+// 2. DB Migrate
+npx prisma migrate dev --name init
+```
+
 ## Stacks
 
 ### Frontend
