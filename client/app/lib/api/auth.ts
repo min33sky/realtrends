@@ -38,7 +38,7 @@ export async function login(params: AuthParams) {
 /**
  * 내 정보 조회
  */
-export async function getMyAcoount() {
+export async function getMyAccount() {
   const response = await client.get<AuthResult>('http://localhost:4000/api/me');
   return response.data;
 }

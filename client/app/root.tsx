@@ -1,5 +1,4 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/node';
-import { redirect } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -9,10 +8,9 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
-import { PROTECTED_ROUTES } from './constants';
 import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
-import { getMyAcoount } from './lib/api/auth';
+import { getMyAccount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
 import { extractError } from './lib/error';
 import styles from './styles/app.css';
@@ -21,26 +19,26 @@ export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
   console.log('cookie: ', cookie);
 
-  //? 인증이 필요한 페이지면 리다이렉트 시키는 함수
-  const redirectIfNeeded = () => {
-    const { pathname, search } = new URL(request.url);
-    console.log('pathname, search: ', pathname, search);
-    const isProtected = PROTECTED_ROUTES.some((route) =>
-      pathname.includes(route),
-    );
-    if (isProtected) {
-      return redirect('/login?next=' + encodeURIComponent(pathname + search));
-    }
-    return null;
-  };
+  //? 인증이 필요한 페이지면 리다이렉트 시키는 함수 (안씀)
+  // const redirectIfNeeded = () => {
+  //   const { pathname, search } = new URL(request.url);
+  //   console.log('pathname, search: ', pathname, search);
+  //   const isProtected = PROTECTED_ROUTES.some((route) =>
+  //     pathname.includes(route),
+  //   );
+  //   if (isProtected) {
+  //     return redirect('/login?next=' + encodeURIComponent(pathname + search));
+  //   }
+  //   return null;
+  // };
 
-  if (!cookie) return redirectIfNeeded();
+  if (!cookie) return null;
 
-  //? 사용자 정보 요청에 필요한 쿠키를 설정
+  //? 사용자 정보 요청에 필요한 쿠키를 헤더에 설정
   setClientCookie(cookie);
 
   try {
-    const me = await getMyAcoount();
+    const me = await getMyAccount();
     return me;
   } catch (e) {
     const error = extractError(e);
