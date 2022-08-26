@@ -25,4 +25,17 @@ const requireAuthPlugin = fp(requireAuthPluginAsync, {
   name: 'requireAuthPlugin',
 });
 
+/**
+ * ProtectedRoute를 위한 함수
+ * @param plugin fastify plugin
+ * @returns fastify plugin
+ */
+export function createAuthorizedRoute(plugin: FastifyPluginAsync) {
+  const wrappedPlugin: FastifyPluginAsync = async (fastify, opts) => {
+    fastify.register(requireAuthPlugin);
+    return plugin(fastify, opts);
+  };
+  return wrappedPlugin;
+}
+
 export default requireAuthPlugin;
