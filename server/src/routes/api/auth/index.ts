@@ -2,8 +2,12 @@ import { FastifyPluginAsync, FastifyReply } from 'fastify';
 import AppError from '../../../lib/AppError';
 import requireAuthPlugin from '../../../plugins/requireAuthPlugin';
 import UserService from '../../../services/UserService';
-import { AuthBody } from '../../../types';
-import { loginSchema, refreshTokenSchema, registerSchema } from './schema';
+import {
+  AuthBodyType,
+  loginSchema,
+  refreshTokenSchema,
+  registerSchema,
+} from './schema';
 
 const authRoute: FastifyPluginAsync = async (fastify) => {
   const userService = UserService.getInstance();
@@ -21,7 +25,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   /**
    * 로그인
    */
-  fastify.post<{ Body: AuthBody }>(
+  fastify.post<{ Body: AuthBodyType }>(
     '/login',
     { schema: loginSchema },
     async (request, reply) => {
@@ -36,7 +40,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   /**
    * 회원가입
    */
-  fastify.post<{ Body: AuthBody }>(
+  fastify.post<{ Body: AuthBodyType }>(
     '/register',
     { schema: registerSchema },
     async (request, reply) => {

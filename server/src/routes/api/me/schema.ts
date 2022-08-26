@@ -1,10 +1,10 @@
 import { FastifySchema } from 'fastify';
 import { createAppErrorSchema } from '../../../lib/AppError';
-import { userSchema } from '../../../schema/userSchema';
+import { UserSchema } from '../../../schema/userSchema';
 
 export const getMeSchema: FastifySchema = {
   response: {
-    200: userSchema,
+    200: UserSchema,
     401: createAppErrorSchema(
       {
         statusCode: 401,
@@ -21,7 +21,7 @@ export const getMeSchema: FastifySchema = {
             type: 'boolean',
           },
         },
-      }
+      },
     ),
   },
 };

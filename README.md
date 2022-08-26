@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-```bash
+```sh
 // 1. install
 npm i
 // or
