@@ -10,38 +10,24 @@ export const AuthBody = Type.Object({
 
 export type AuthBodyType = Static<typeof AuthBody>;
 
-const authResultSchema = {
+const TokensSchema = Type.Object({
+  accessToken: Type.String(),
+  refreshToken: Type.String(),
+});
+
+const AuthResult = {
   type: 'object',
   properties: {
-    tokens: {
-      type: 'object',
-      properties: {
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' },
-      },
-    },
+    tokens: TokensSchema,
     user: UserSchema,
   },
 };
-
-// const authBodySchema = {
-//   type: 'object',
-//   properties: {
-//     username: {
-//       type: 'string',
-//     },
-//     password: {
-//       type: 'string',
-//     },
-//   },
-//   required: ['username', 'password'],
-// };
 
 export const registerSchema: FastifySchema = {
   tags: ['auth'],
   body: AuthBody,
   response: {
-    200: authResultSchema,
+    200: AuthResult,
     409: createAppErrorSchema({
       statusCode: 409,
       name: 'UserExistsError',
@@ -54,7 +40,7 @@ export const loginSchema: FastifySchema = {
   tags: ['auth'],
   body: AuthBody,
   response: {
-    200: authResultSchema,
+    200: AuthResult,
     401: createAppErrorSchema({
       statusCode: 401,
       name: 'AuthenticationError',
@@ -63,12 +49,19 @@ export const loginSchema: FastifySchema = {
   },
 };
 
+const RefreshTokenBody = Type.Object({
+  refreshToken: Type.String(),
+});
+
 export const refreshTokenSchema: FastifySchema = {
   tags: ['auth'],
-  body: {
-    type: 'object',
-    properties: {
-      refreshToken: { type: 'string' },
-    },
+  body: RefreshTokenBody,
+  response: {
+    200: TokensSchema,
+    401: createAppErrorSchema({
+      name: 'RefreshTokenError',
+      message: 'Failed to refresh token',
+      statusCode: 401,
+    }),
   },
 };

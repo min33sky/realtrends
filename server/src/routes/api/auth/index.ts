@@ -13,14 +13,14 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   const userService = UserService.getInstance();
 
   //????????????????????????? 특정 Endpoint만 plugin 적용 테스트용
-  fastify.register(async (_fastify, opts) => {
-    _fastify.register(requireAuthPlugin);
-    _fastify.get('/test', async (request, reply) => {
-      return {
-        message: 'Hello World!',
-      };
-    });
-  });
+  // fastify.register(async (_fastify, opts) => {
+  //   _fastify.register(requireAuthPlugin);
+  //   _fastify.get('/test', async (request, reply) => {
+  //     return {
+  //       message: 'Hello World!',
+  //     };
+  //   });
+  // });
 
   /**
    * 로그인
@@ -73,7 +73,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   );
 
   /**
-   * 쿠키 설정
+   * 쿠키에 인증 토큰을 설정하는 함수
    * @param reply
    * @param tokens
    */
@@ -86,6 +86,7 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
       expires: new Date(Date.now() + 1000 * 60 * 60), // 1시간
       path: '/', //? 쿠키 사용범위를 앱 전역으로 설정
     });
+
     reply.setCookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 1주일
