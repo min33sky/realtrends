@@ -50,15 +50,23 @@ export interface WriteItemRoute {
   Body: CreateItemBodyType;
 }
 
-const ReadItemParams = Type.Object({
+const ItemParamsSchema = Type.Object({
   id: Type.Integer(),
 });
 
-type ReadItemParamsType = Static<typeof ReadItemParams>;
+type ItemParamsType = Static<typeof ItemParamsSchema>;
+
+const UpdateItemBodySchema = Type.Object({
+  title: Type.String(),
+  body: Type.String(),
+  tags: Type.Array(Type.String()),
+});
+
+type UpdateItemBodyType = Static<typeof UpdateItemBodySchema>;
 
 export const GetItemSchema: FastifySchema = {
   tags: ['items'],
-  params: ReadItemParams,
+  params: ItemParamsSchema,
   response: {
     200: ItemSchema,
   },
@@ -71,12 +79,38 @@ export const GetItemsSchema: FastifySchema = {
   },
 };
 
+export const UpdateItemSchema: FastifySchema = {
+  tags: ['items'],
+  params: ItemParamsSchema,
+  body: UpdateItemBodySchema,
+  response: {
+    200: ItemSchema,
+  },
+};
+
+export const DeleteItemSchema: FastifySchema = {
+  tags: ['items'],
+  params: ItemParamsSchema,
+  response: {
+    204: Type.Null(),
+  },
+};
+
 export interface GetItemRoute {
-  Params: ReadItemParamsType;
+  Params: ItemParamsType;
 }
 
 export interface GetItemsRoute {
   Querystring: {
     cursor?: string;
   };
+}
+
+export interface UpdateItemRoute {
+  Params: ItemParamsType;
+  Body: UpdateItemBodyType;
+}
+
+export interface DeleteItemRoute {
+  Params: ItemParamsType;
 }

@@ -101,6 +101,49 @@ class ItemService {
       });
     }
   }
+
+  async updateItem({ itemId, userId, title, body }: UpdateItemParams) {
+    //? 수정할 글을 가져와서 작성자가 작성한 글인지 확인한다. 다르면 에러발생
+    const item = await this.getItem(itemId);
+
+    if (item.userId !== userId) {
+      throw new AppError('ForbiddenError');
+    }
+
+    const updatedItem = await db.item.update({
+      where: {
+        id: itemId,
+      },
+      data: {
+        title,
+        body,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    return updatedItem;
+  }
+
+  async deleteItem(itemId: number, userId: number) {
+    const item = await this.getItem(itemId);
+
+    if (item.userId !== userId) {
+      throw new AppError('ForbiddenError');
+    }
+
+    await db.item.delete({
+      where: {
+        id: itemId,
+      },
+    });
+  }
 }
 
 type GetPublicItemsParams =
@@ -111,5 +154,12 @@ type GetPublicItemsParams =
       mode: 'past';
       date: string;
     };
+
+interface UpdateItemParams {
+  itemId: number;
+  userId: number;
+  title: string;
+  body: string;
+}
 
 export default ItemService;
