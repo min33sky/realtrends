@@ -1,3 +1,4 @@
+import AppError from '../lib/AppError';
 import db from '../lib/db';
 import { createPagination, PaginationOptionType } from '../lib/pagination';
 import { CreateItemBodyType } from '../routes/api/items/schema';
@@ -40,6 +41,12 @@ class ItemService {
         user: true,
       },
     });
+
+    console.log('## item: ', item);
+
+    if (!item) {
+      throw new AppError('NotFoundError');
+    }
 
     return item;
   }

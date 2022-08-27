@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import { FastifySchema } from 'fastify';
+import { PaginationSchema } from '../../../lib/pagination';
 import { Nullable } from '../../../lib/typebox';
 import { UserSchema } from '../../../schema/userSchema';
 
@@ -63,12 +64,19 @@ export const GetItemSchema: FastifySchema = {
   },
 };
 
+export const GetItemsSchema: FastifySchema = {
+  tags: ['items'],
+  response: {
+    200: PaginationSchema(ItemSchema),
+  },
+};
+
 export interface GetItemRoute {
   Params: ReadItemParamsType;
 }
 
 export interface GetItemsRoute {
   Querystring: {
-    cursor?: string; //! number로 바꿔저야함 (Schema 생성 필요)
+    cursor?: string;
   };
 }

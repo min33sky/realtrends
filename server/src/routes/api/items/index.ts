@@ -5,6 +5,7 @@ import {
   GetItemRoute,
   GetItemSchema,
   GetItemsRoute,
+  GetItemsSchema,
   WriteItemRoute,
   WriteItemSchema,
 } from './schema';
@@ -24,14 +25,18 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
-  // TODO: 스키마 추가해서 타입을 string -> number로 바꿔줘야함
-  fastify.get<GetItemsRoute>('/', async (request) => {
-    const { cursor } = request.query;
-    return itemService.getPublicItems({
-      mode: 'recent',
-      cursor: cursor ? parseInt(cursor, 10) : undefined,
-    });
-  });
+  fastify.get<GetItemsRoute>(
+    '/',
+    { schema: GetItemsSchema },
+    async (request) => {
+      const { cursor } = request.query;
+      console.log('##### typeof cursor: ', typeof cursor);
+      return itemService.getPublicItems({
+        mode: 'recent',
+        cursor: cursor ? parseInt(cursor, 10) : undefined,
+      });
+    },
+  );
 };
 
 /**

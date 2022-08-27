@@ -1,6 +1,11 @@
 import { Static, TSchema, Type } from '@sinclair/typebox';
 import { Nullable } from './typebox';
 
+/**
+ * 페이지네이션 스키마를 생성하는 함수
+ * @param type list 타입에 대한 스키마
+ * @returns list 타입이 지정된 스키마
+ */
 export const PaginationSchema = <T extends TSchema>(type: T) =>
   Type.Object({
     list: Type.Array(type),
