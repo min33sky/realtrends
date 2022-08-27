@@ -94,7 +94,7 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
 
-      await itemService.deleteItem(itemId, userId);
+      await itemService.deleteItem({ itemId, userId });
       return reply.status(204).send();
     },
   );

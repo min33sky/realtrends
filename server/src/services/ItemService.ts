@@ -42,8 +42,6 @@ class ItemService {
       },
     });
 
-    console.log('## item: ', item);
-
     if (!item) {
       throw new AppError('NotFoundError');
     }
@@ -51,10 +49,16 @@ class ItemService {
     return item;
   }
 
+  /**
+   * 목록 조회 (페이지네이션)
+   * @param params
+   * @returns
+   */
   async getPublicItems(
     params: GetPublicItemsParams & PaginationOptionType = { mode: 'recent' },
   ) {
     const limit = params.limit ?? 20;
+
     if (params.mode === 'recent') {
       const [totalCount, list] = await Promise.all([
         db.item.count(),
@@ -131,7 +135,7 @@ class ItemService {
     return updatedItem;
   }
 
-  async deleteItem(itemId: number, userId: number) {
+  async deleteItem({ itemId, userId }: DeleteItemParams) {
     const item = await this.getItem(itemId);
 
     if (item.userId !== userId) {
@@ -160,6 +164,11 @@ interface UpdateItemParams {
   userId: number;
   title: string;
   body: string;
+}
+
+interface DeleteItemParams {
+  itemId: number;
+  userId: number;
 }
 
 export default ItemService;
