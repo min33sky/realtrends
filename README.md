@@ -85,6 +85,20 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
 ...
 ```
 
+4. Fastify에서 Route함수에 Schema를 작성해서 넣어주면 타입 변환을 알아서 해준다.
+
+```ts
+fastify.get<GetItemRoute>(
+  '/:id',
+  { schema: GetItemSchema },
+  async (request, reply) => {
+    const { id } = request.params; // id값이 string이여야 하지만 schema에서 number로 설정되어 있어서 number형으로 변환된다.
+    const item = await itemService.getItem(id);
+    return item;
+  },
+);
+```
+
 ## Reference
 
 - ESM을 사용할 때 Import 문제 [[Link]](https://bobbyhadz.com/blog/node-js-error-err-unsupported-dir-import)

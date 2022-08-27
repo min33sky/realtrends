@@ -41,6 +41,8 @@ model Item {
   siteInfo   SiteInfo?  @relation(fields: [siteInfoId], references: [id])
   siteInfoId Int?
   ItemTags   ItemTags[]
+
+  @@index([createdAt(sort: Desc)])
 }
 
 model SiteInfo {
