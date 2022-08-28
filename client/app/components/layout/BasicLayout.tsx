@@ -7,10 +7,16 @@ import FullHeightPage from '../system/FullHeightPage';
 interface Props {
   hasBackButton?: boolean;
   title?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  onGoBack?: () => void;
 }
 
-export default function BasicLayout({ hasBackButton, title, children }: Props) {
+export default function BasicLayout({
+  hasBackButton,
+  title,
+  children,
+  onGoBack,
+}: Props) {
   const goBack = useGoBack();
 
   return (
@@ -18,7 +24,9 @@ export default function BasicLayout({ hasBackButton, title, children }: Props) {
       <Header
         title={title}
         headerLeft={
-          hasBackButton ? <HeaderBackButton onClick={goBack} /> : undefined
+          hasBackButton ? (
+            <HeaderBackButton onClick={onGoBack ?? goBack} />
+          ) : undefined
         }
       />
       <main className="flex flex-1 flex-col">{children}</main>
