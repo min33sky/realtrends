@@ -92,6 +92,7 @@ function AuthForm({ mode, error }: Props) {
         <LabelInput
           label="비밀번호"
           name="password"
+          type="password"
           placeholder={passwordPlaceholder}
           disabled={isLoading}
           errorMessage={errors.password || undefined}
