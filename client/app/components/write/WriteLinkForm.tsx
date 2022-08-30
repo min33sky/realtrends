@@ -6,6 +6,11 @@ interface Props {
   onProceed: () => void;
 }
 
+/**
+ * @deprecated ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
+ * @param param0
+ * @returns
+ */
 export default function WriteLinkForm({ onProceed }: Props) {
   return (
     <BasicLayout title="링크 입력" hasBackButton>

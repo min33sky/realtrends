@@ -19,7 +19,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
   console.log('cookie: ', cookie);
 
-  //? 인증이 필요한 페이지면 리다이렉트 시키는 함수 (안씀)
+  //? 인증이 필요한 페이지라면 리다이렉트 시키는 함수 (사용 안함!!)
+  //? Why? 각 page의 loader 함수의 호출을 여기서 막을 수가 없다.
   // const redirectIfNeeded = () => {
   //   const { pathname, search } = new URL(request.url);
   //   console.log('pathname, search: ', pathname, search);

@@ -35,7 +35,7 @@ const LabelInput = forwardRef<HTMLInputElement, Props>(
         >
           {label}
         </label>
-        <Input onFocus={handleFocus} onBlur={handleBlur} {...rest} />
+        <Input ref={ref} onFocus={handleFocus} onBlur={handleBlur} {...rest} />
       </div>
     );
   },

@@ -3,6 +3,7 @@ import axios from 'axios';
 export const client = axios.create();
 client.defaults.baseURL = 'http://localhost:4000';
 
+
 /**
  * APi 요청할 때 헤더에 쿠키 설정
  * @param cookie 쿠키 문자열

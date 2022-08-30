@@ -1,8 +1,7 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { redirect } from '@remix-run/node';
-import { useState } from 'react';
-import WriteIntroForm from '~/components/write/WriteIntroForm';
-import WriteLinkForm from '~/components/write/WriteLinkForm';
+import { Outlet } from '@remix-run/react';
+import { WriteProvider } from '~/contexts/WriteContext';
 import { checkIsLoggedIn } from '~/lib/protectRoute';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -12,15 +11,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-type Step = 'link' | 'intro';
-
 export default function Write() {
-  const [step, setStep] = useState<Step>('link');
-
-  const stepRenderers = {
-    link: () => <WriteLinkForm onProceed={() => setStep('intro')} />,
-    intro: () => <WriteIntroForm />,
-  };
-
-  return stepRenderers[step]();
+  return (
+    <WriteProvider>
+      <Outlet />
+    </WriteProvider>
+  );
 }

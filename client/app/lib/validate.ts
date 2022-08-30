@@ -14,6 +14,7 @@ export const validate = {
 
     return counter > 1;
   },
+  link: (text: string) => /^(http|https):\/\/[^ "]+$/.test(text),
 };
 
 export function isValidUsername(username: string) {

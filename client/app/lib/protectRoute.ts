@@ -7,8 +7,6 @@ import { setClientCookie } from './client';
 let getMyAccountPromise: Promise<AuthResult> | null = null;
 
 export async function getMemoMyAccount() {
-  console.log('### getMyAccountPromise', getMyAccountPromise);
-
   if (!getMyAccountPromise) {
     getMyAccountPromise = getMyAccount();
   }
@@ -28,6 +26,8 @@ export const checkIsLoggedIn = async (request: Request) => {
     return false;
   }
 
+  //? Root에서 쿠키를 설정해도 Context마다 초기화 되므로
+  //? Axios 요청을 위한 쿠키를 다시 설정해줘야 되는것 같다.
   setClientCookie(cookie);
 
   try {
