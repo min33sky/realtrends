@@ -33,6 +33,10 @@ const errors = {
     statusCode: 403,
     message: 'Forbidden',
   },
+  InvalidURLError: {
+    statusCode: 422,
+    message: 'Invalid URL',
+  },
 };
 
 type ErrorName = keyof typeof errors;
