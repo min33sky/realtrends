@@ -11,6 +11,7 @@ import { createItem } from '~/lib/api/items';
 import { applyAuth } from '~/lib/applyAuth';
 
 export const action: ActionFunction = async ({ request }) => {
+  //? 요청을 보내기 전에 쿠키를 넣어줘야 한다. (쿠키를 알아서 넣어줬으면 좋겠는데.......)
   const applied = await applyAuth(request);
   if (!applied) {
     throw new Error('Not logged in!`');
@@ -42,6 +43,9 @@ export default function Intro() {
     body: '',
   });
 
+  //? Remix Form 다루기...
+  //? 이전 페이지에서 입력한 link와 url과 현재 페이지의 데이터를 합해서 API 요청을 보내기 때문에
+  //? Remix의 useSubmit이나 Form 대신 useFetcher를 사용하였다.
   const fetcher = useFetcher();
 
   const onChange = (
