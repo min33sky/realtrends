@@ -44,7 +44,7 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
 };
 
 /**
- * 인증이 필요한 Protcted Routes
+ ** 인증이 필요한 Protcted Routes
  */
 const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   const itemService = ItemService.getInstance();

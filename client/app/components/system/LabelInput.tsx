@@ -10,6 +10,11 @@ const LabelInput = forwardRef<HTMLInputElement, Props>(
   ({ label, onFocus, onBlur, ...rest }: Props, ref) => {
     const [focused, setFocused] = useState(false);
 
+    // ? onFocus?.(e), onBlur?.(e)
+    // Input의 Props에 onFocus, onBlur를 설정하고 ...rest로 onFocus, onBlur가 넘어가면
+    // ...rest로 넘어간 onFocus, onBlur는 무시된다.
+    // Props의 handler에 onFocus, onBlur를 넣어서 호출하는 방식으로 구현하면 된다.
+
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
         onFocus?.(e);
@@ -17,6 +22,7 @@ const LabelInput = forwardRef<HTMLInputElement, Props>(
       },
       [onFocus],
     );
+
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
         onBlur?.(e);
