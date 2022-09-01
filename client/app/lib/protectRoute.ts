@@ -1,7 +1,6 @@
 import type { AuthResult } from './api/auth';
 import { getMyAccount } from './api/auth';
 import { applyAuth } from './applyAuth';
-import { setClientCookie } from './client';
 
 //? 인증 정보를 담은 Promise.
 //? 인증이 필요한 페이지에서 SSR할 때 사용하기 위해서

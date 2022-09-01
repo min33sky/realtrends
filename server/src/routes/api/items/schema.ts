@@ -33,7 +33,7 @@ ItemSchema.example = {
   thumbnail: null,
   createdAt: '2022-07-29T14:42:40.827Z',
   updatedAt: '2022-07-29T14:42:40.827Z',
-  author: '',
+  author: 'authoooooor',
   user: {
     id: 1,
     username: 'minminmin',
