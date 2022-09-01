@@ -1,9 +1,8 @@
-import * as React from 'react';
-import type { SVGProps } from 'react';
+import * as React from "react";
+import { SVGProps } from "react";
 
 const SvgButtonLoader = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    className="invisible mr-2 inline h-4 w-4 animate-spin text-white group-disabled:visible"
     viewBox="0 0 100 101"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

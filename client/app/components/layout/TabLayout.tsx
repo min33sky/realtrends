@@ -14,7 +14,9 @@ export default function TabLayout({ children }: Props) {
   return (
     <FullHeightPage>
       <Header />
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="flex flex-1 flex-col overflow-y-scroll pt-4 pl-4 pr-4">
+        {children}
+      </main>
       <Footer />
     </FullHeightPage>
   );

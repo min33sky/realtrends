@@ -12,8 +12,8 @@ export interface Item {
   body: string;
   link: string;
   thumbnail: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   author: string;
   user: User;
   publisher: Publisher;
@@ -23,7 +23,7 @@ export interface Publisher {
   id: number;
   name: string;
   domain: string;
-  favicon: string;
+  favicon: string | null;
 }
 
 export interface User {

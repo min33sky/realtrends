@@ -3,6 +3,9 @@ module.exports = {
   content: ['./app/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['pretendard', 'sans-serif'],
+      },
       colors: {
         tahiti: {
           100: '#cffafe',
@@ -30,7 +33,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('prettier-plugin-tailwindcss')
-  ],
+  plugins: [require('prettier-plugin-tailwindcss')],
 };
