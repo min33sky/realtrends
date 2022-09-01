@@ -4,9 +4,12 @@ import Header from '../base/Header';
 import FullHeightPage from '../system/FullHeightPage';
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
+/**
+ * Shows content with a header and a tab bar
+ */
 export default function TabLayout({ children }: Props) {
   return (
     <FullHeightPage>
