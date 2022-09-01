@@ -57,6 +57,7 @@ class ItemService {
       },
       include: {
         user: true,
+        publisher: true,
       },
     });
 
@@ -70,6 +71,7 @@ class ItemService {
       },
       include: {
         user: true,
+        publisher: true,
       },
     });
 
@@ -110,6 +112,7 @@ class ItemService {
                 createdAt: true,
               },
             },
+            publisher: true,
           },
           take: limit,
         }),
