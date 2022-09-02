@@ -16,33 +16,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json(list);
 };
 
-export const action: ActionFunction = async ({ request }) => {
-  const params = parseUrlParams<LikeAcionParams>(request.url);
-
-  if (params.type === 'like' || params.type === 'unlike') {
-    const handle = params.type === 'like' ? likeItem : unlikeItem;
-    const result = await handle(params.itemId);
-    return json({
-      type: params.type,
-      itemId: params.itemId,
-      ItemStats: result.ItemStats,
-    });
-  }
-
-  return null;
-};
-
-interface LikeAcionParams {
-  type: 'like' | 'unlike';
-  itemId: number;
-}
-
-export interface LikeActionResult {
-  type: 'like' | 'unlike';
-  itemId: number;
-  likes: number;
-}
-
 /**
  * 메인 페이지
  */
@@ -74,6 +47,8 @@ export default function Index() {
   useInfinityScroll(loadMoreRef, fetchNext);
 
   const items = pages.flatMap((page) => page.list);
+
+  console.log('pages: ', pages);
 
   return (
     <TabLayout>

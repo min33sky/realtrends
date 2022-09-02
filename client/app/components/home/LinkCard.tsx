@@ -1,6 +1,7 @@
 import { HeartIcon } from '@heroicons/react/outline';
 import React from 'react';
 import { useDateDistance } from '~/hooks/useDateDistance';
+import { useLikeManager } from '~/hooks/useLikeManager';
 import { likeItem } from '~/lib/api/items';
 import type { Item } from '~/lib/api/types';
 import { Globe } from '../vectors';
@@ -12,6 +13,8 @@ interface Props {
 export default function LinkCard({ item }: Props) {
   const { thumbnail, publisher, body, author, user, createdAt, id } = item;
   const dataDistance = useDateDistance(createdAt);
+  const { like, unlike } = useLikeManager();
+  const toggleLike = () => {};
 
   return (
     <div className="flex flex-col">
