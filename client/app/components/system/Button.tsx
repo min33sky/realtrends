@@ -20,7 +20,7 @@ export default function Button({
       } `}
       {...rest}
     >
-      <ButtonLoader />
+      <ButtonLoader className="invisible mr-2 inline h-4 w-4 animate-spin text-white group-disabled:visible" />
       {children}
     </button>
   );
