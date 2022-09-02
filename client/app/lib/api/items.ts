@@ -1,5 +1,6 @@
 import { client } from '../client';
 import type { GetItemsResult, Item } from './types';
+import qs from 'qs';
 
 export async function createItem(params: CreateItemParams) {
   const response = await client.post<Item>('/api/items', params);
@@ -7,8 +8,17 @@ export async function createItem(params: CreateItemParams) {
   return result;
 }
 
-export async function getItems() {
-  const response = await client.get<GetItemsResult>('/api/items');
+export async function getItems(cursor?: number) {
+  const response = await client.get<GetItemsResult>(
+    '/api/items'.concat(
+      qs.stringify(
+        { cursor },
+        {
+          addQueryPrefix: true, //? 앞에 ?를 붙여줌
+        },
+      ),
+    ),
+  );
   return response.data;
 }
 

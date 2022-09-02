@@ -1,4 +1,4 @@
-import { HeartIcon, UserAddIcon } from '@heroicons/react/outline';
+import { HeartIcon } from '@heroicons/react/outline';
 import React from 'react';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import type { Item } from '~/lib/api/types';

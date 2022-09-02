@@ -645,10 +645,6 @@ video {
   height: 1rem;
 }
 
-.h-32{
-  height: 8rem;
-}
-
 .h-12{
   height: 3rem;
 }
@@ -742,10 +738,6 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
-.overflow-hidden{
-  overflow: hidden;
-}
-
 .overflow-y-scroll{
   overflow-y: scroll;
 }
@@ -792,6 +784,11 @@ video {
 .bg-purple-500{
   --tw-bg-opacity: 1;
   background-color: rgb(168 85 247 / var(--tw-bg-opacity));
+}
+
+.bg-violet-600{
+  --tw-bg-opacity: 1;
+  background-color: rgb(124 58 237 / var(--tw-bg-opacity));
 }
 
 .object-cover{

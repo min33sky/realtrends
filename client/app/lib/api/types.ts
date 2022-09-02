@@ -33,5 +33,5 @@ export interface User {
 
 export interface PageInfo {
   hasNextPage: boolean;
-  endCursor: number;
+  endCursor: number | null;
 }
