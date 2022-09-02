@@ -1,6 +1,7 @@
 import { HeartIcon } from '@heroicons/react/outline';
 import React from 'react';
 import { useDateDistance } from '~/hooks/useDateDistance';
+import { likeItem } from '~/lib/api/items';
 import type { Item } from '~/lib/api/types';
 import { Globe } from '../vectors';
 
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export default function LinkCard({ item }: Props) {
-  const { thumbnail, publisher, body, author, user, createdAt } = item;
+  const { thumbnail, publisher, body, author, user, createdAt, id } = item;
   const dataDistance = useDateDistance(createdAt);
 
   return (
@@ -36,7 +37,7 @@ export default function LinkCard({ item }: Props) {
 
       <p className="text-sm text-gray-500 line-clamp-5">{body}</p>
       <footer className="flex items-center justify-between">
-        <HeartIcon className="h-5 w-5" />
+        <HeartIcon className="h-5 w-5" onClick={() => likeItem(id)} />
         <p>
           by <span>{user.username}</span> · {dataDistance}
         </p>

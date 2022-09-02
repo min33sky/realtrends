@@ -28,7 +28,8 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     { schema: GetItemSchema },
     async (request, reply) => {
       const { id } = request.params;
-      const item = await itemService.getItem(id);
+      const userId = request.user?.id;
+      const item = await itemService.getItem(id, userId);
       return item;
     },
   );
@@ -38,10 +39,10 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     { schema: GetItemsSchema },
     async (request) => {
       const { cursor } = request.query;
-      console.log('##### typeof cursor: ', typeof cursor);
       return itemService.getPublicItems({
         mode: 'recent',
         cursor: cursor ? parseInt(cursor, 10) : undefined,
+        userId: request.user?.id,
       });
     },
   );

@@ -1,3 +1,4 @@
+import { Item, ItemLike, ItemStats } from '@prisma/client';
 import AppError from '../lib/AppError';
 import db from '../lib/db';
 import { createPagination, PaginationOptionType } from '../lib/pagination';
@@ -41,7 +42,10 @@ class ItemService {
     userId: number,
     { title, link, tags, body }: CreateItemBodyType,
   ) {
+    // 페이지 정보 추출
     const info = await extractPageInfo(link);
+
+    // 퍼블리셔 정보 조회 및 생성
     const publisher = await this.getPublisher({
       domain: info.domain,
       favicon: info.favicon,
@@ -70,13 +74,16 @@ class ItemService {
       },
     });
 
-    return {
-      ...item,
-      itemStats,
-    };
+    const itemWithItemStats = { ...item, ItemStats: itemStats };
+
+    const itemLikedMap = userId
+      ? await this.getItemLikedMap({ itemIds: [item.id], userId })
+      : null;
+
+    return this.mergeItemLiked(itemWithItemStats, itemLikedMap?.[item.id]);
   }
 
-  async getItem(id: number) {
+  async getItem(id: number, userId: number | null = null) {
     const item = await db.item.findUnique({
       where: {
         id,
@@ -92,7 +99,29 @@ class ItemService {
       throw new AppError('NotFoundError');
     }
 
-    return item;
+    const itemLikedMap = userId
+      ? await this.getItemLikedMap({ itemIds: [id], userId })
+      : null;
+
+    return this.mergeItemLiked(item, itemLikedMap?.[id]);
+  }
+
+  /**
+   * Item 정보에 Item 관련 추가 정보를 합친 객체를 반환하는 함수
+   * @param item
+   * @param itemLike
+   */
+  private mergeItemLiked<T extends Item & { ItemStats: ItemStats | null }>(
+    item: T,
+    itemLike?: ItemLike,
+  ) {
+    return {
+      ...item,
+      ItemStats: {
+        ...item.ItemStats,
+        isLiked: !!itemLike ?? false,
+      },
+    };
   }
 
   /**
@@ -101,7 +130,8 @@ class ItemService {
    * @returns
    */
   async getPublicItems(
-    params: GetPublicItemsParams & PaginationOptionType = { mode: 'recent' },
+    params: GetPublicItemsParams &
+      PaginationOptionType & { userId?: number } = { mode: 'recent' },
   ) {
     const limit = params.limit ?? 20;
 
@@ -126,6 +156,16 @@ class ItemService {
         }),
       ]);
 
+      const itemLikedMap = params.userId
+        ? await this.getItemLikedMap({
+            itemIds: list.map((item) => item.id),
+            userId: params.userId,
+          })
+        : null;
+      const listWithLiked = list.map((item) =>
+        this.mergeItemLiked(item, itemLikedMap?.[item.id]),
+      );
+
       const endCursor = list.at(-1)?.id ?? null;
       const hasNextPage = endCursor
         ? (await db.item.count({
@@ -138,7 +178,7 @@ class ItemService {
         : false;
 
       return createPagination({
-        list,
+        list: listWithLiked,
         pageInfo: {
           endCursor,
           hasNextPage,
@@ -165,16 +205,17 @@ class ItemService {
         body,
       },
       include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
+        user: true,
+        publisher: true,
+        ItemStats: true,
       },
     });
 
-    return updatedItem;
+    const itemLikedMap = userId
+      ? await this.getItemLikedMap({ itemIds: [item.id], userId })
+      : null;
+
+    return this.mergeItemLiked(updatedItem, itemLikedMap?.[item.id]);
   }
 
   async deleteItem({ itemId, userId }: ItemActionParams) {
@@ -234,13 +275,11 @@ class ItemService {
     }
 
     const likes = await this.countLikes(itemId);
-
     const itemStats = await this.updateItemLikes({
       itemId,
       likes,
     });
-
-    return itemStats;
+    return { ...itemStats, isLiked: true };
   }
 
   async unLikeItem({ itemId, userId }: ItemActionParams) {
@@ -256,13 +295,39 @@ class ItemService {
     });
 
     const likes = await this.countLikes(itemId);
-
     const itemStats = await this.updateItemLikes({
       itemId,
       likes,
     });
 
-    return itemStats;
+    return {
+      ...itemStats,
+      isLiked: false,
+    };
+  }
+
+  /**
+   * 해당 사용자가 좋아요를 누른 아이템 목록을 가져오는 함수
+   * @param params
+   * @returns 아이템 번호를 키, 좋아요 모델을 값으로 하는 Map을 리턴
+   */
+  private async getItemLikedMap(params: GetItemLikedParams) {
+    const { userId, itemIds } = params;
+
+    //? 사용자가 좋아요 누른 글 목록 조회
+    const list = await db.itemLike.findMany({
+      where: {
+        userId,
+        itemId: {
+          in: itemIds,
+        },
+      },
+    });
+
+    return list.reduce((acc, cur) => {
+      acc[cur.itemId] = cur;
+      return acc;
+    }, {} as Record<number, ItemLike>);
   }
 }
 
@@ -296,6 +361,11 @@ interface GetPublisherParams {
   domain: string;
   name: string;
   favicon: string | null;
+}
+
+interface GetItemLikedParams {
+  userId: number;
+  itemIds: number[];
 }
 
 export default ItemService;
