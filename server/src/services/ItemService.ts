@@ -84,6 +84,7 @@ class ItemService {
       include: {
         user: true,
         publisher: true,
+        ItemStats: true,
       },
     });
 
@@ -119,6 +120,7 @@ class ItemService {
           include: {
             user: true,
             publisher: true,
+            ItemStats: true,
           },
           take: limit,
         }),
@@ -199,6 +201,17 @@ class ItemService {
     return count;
   }
 
+  async updateItemLikes({ itemId, likes }: UpdateItemLikesParams) {
+    return db.itemStats.update({
+      where: {
+        itemId,
+      },
+      data: {
+        likes,
+      },
+    });
+  }
+
   async likeItem({ itemId, userId }: ItemActionParams) {
     const alreadyLiked = await db.itemLike.findUnique({
       where: {
@@ -220,7 +233,14 @@ class ItemService {
       } catch (error) {}
     }
 
-    return this.countLikes(itemId);
+    const likes = await this.countLikes(itemId);
+
+    await this.updateItemLikes({
+      itemId,
+      likes,
+    });
+
+    return likes;
   }
 
   async unLikeItem({ itemId, userId }: ItemActionParams) {
@@ -235,7 +255,14 @@ class ItemService {
       },
     });
 
-    return this.countLikes(itemId);
+    const likes = await this.countLikes(itemId);
+
+    await this.updateItemLikes({
+      itemId,
+      likes,
+    });
+
+    return likes;
   }
 }
 
@@ -258,6 +285,11 @@ interface UpdateItemParams {
 interface ItemActionParams {
   itemId: number;
   userId: number;
+}
+
+interface UpdateItemLikesParams {
+  itemId: number;
+  likes: number;
 }
 
 interface GetPublisherParams {
