@@ -1,5 +1,6 @@
 import { HeartIcon, UserAddIcon } from '@heroicons/react/outline';
 import React from 'react';
+import { useDateDistance } from '~/hooks/useDateDistance';
 import type { Item } from '~/lib/api/types';
 import { Globe } from '../vectors';
 
@@ -8,7 +9,8 @@ interface Props {
 }
 
 export default function LinkCard({ item }: Props) {
-  const { thumbnail, publisher, body, author, user } = item;
+  const { thumbnail, publisher, body, author, user, createdAt } = item;
+  const dataDistance = useDateDistance(createdAt);
 
   return (
     <div className="flex flex-col">
@@ -36,7 +38,7 @@ export default function LinkCard({ item }: Props) {
       <footer className="flex items-center justify-between">
         <HeartIcon className="h-5 w-5" />
         <p>
-          by <span>{user.username}</span> · {item.createdAt}
+          by <span>{user.username}</span> · {dataDistance}
         </p>
       </footer>
     </div>
