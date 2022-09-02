@@ -645,6 +645,10 @@ video {
   height: 1rem;
 }
 
+.h-32{
+  height: 8rem;
+}
+
 .h-12{
   height: 3rem;
 }
@@ -736,6 +740,10 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.overflow-hidden{
+  overflow: hidden;
 }
 
 .overflow-y-scroll{
@@ -933,6 +941,13 @@ video {
 
 .ease-in-out{
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-clamp-5{
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
 }
 
 .placeholder\:text-gray-400::-moz-placeholder{

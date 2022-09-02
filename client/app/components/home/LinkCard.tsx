@@ -34,7 +34,7 @@ export default function LinkCard({ item }: Props) {
 
       <h3 className="mb-2 font-semibold text-gray-800">{item.title}</h3>
 
-      <p className="text-sm text-gray-500">{body}</p>
+      <p className="text-sm text-gray-500 line-clamp-5">{body}</p>
       <footer className="flex items-center justify-between">
         <HeartIcon className="h-5 w-5" />
         <p>
