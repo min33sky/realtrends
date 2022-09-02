@@ -8,6 +8,10 @@ import {
   GetItemSchema,
   GetItemsRoute,
   GetItemsSchema,
+  LikeItemRoute,
+  LikeItemSchema,
+  UnlikeItemRoute,
+  UnlikeItemSchema,
   UpdateItemRoute,
   UpdateItemSchema,
   WriteItemRoute,
@@ -96,6 +100,39 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
 
       await itemService.deleteItem({ itemId, userId });
       return reply.status(204).send();
+    },
+  );
+
+  /**
+   * 좋아요
+   */
+  fastify.post<LikeItemRoute>(
+    '/:id/likes',
+    { schema: LikeItemSchema },
+    async (request, reply) => {
+      const { id: itemId } = request.params;
+      const userId = request.user!.id;
+      const likes = await itemService.likeItem({ itemId, userId });
+      return {
+        id: itemId,
+        likes,
+      };
+    },
+  );
+
+  /**
+   * 좋아요 취소
+   */
+  fastify.delete<UnlikeItemRoute>(
+    '/:id/likes',
+    {
+      schema: UnlikeItemSchema,
+    },
+    async (request, reply) => {
+      const { id: itemId } = request.params;
+      const userId = request.user!.id;
+      const likes = await itemService.unLikeItem({ itemId, userId });
+      return { id: itemId, likes };
     },
   );
 });

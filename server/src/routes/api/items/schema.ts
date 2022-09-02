@@ -64,6 +64,16 @@ const ItemParamsSchema = Type.Object({
 
 type ItemParamsType = Static<typeof ItemParamsSchema>;
 
+const ItemLikeSchema = Type.Object({
+  id: Type.Integer(),
+  likes: Type.Integer(),
+});
+
+ItemLikeSchema.example = {
+  id: 1,
+  likes: 10,
+};
+
 const UpdateItemBodySchema = Type.Object({
   title: Type.String(),
   body: Type.String(),
@@ -104,6 +114,22 @@ export const DeleteItemSchema: FastifySchema = {
   },
 };
 
+export const LikeItemSchema: FastifySchema = {
+  tags: ['items'],
+  params: ItemParamsSchema,
+  response: {
+    200: ItemLikeSchema,
+  },
+};
+
+export const UnlikeItemSchema: FastifySchema = {
+  tags: ['items'],
+  params: ItemParamsSchema,
+  response: {
+    200: ItemLikeSchema,
+  },
+};
+
 export interface GetItemRoute {
   Params: ItemParamsType;
 }
@@ -120,5 +146,13 @@ export interface UpdateItemRoute {
 }
 
 export interface DeleteItemRoute {
+  Params: ItemParamsType;
+}
+
+export interface LikeItemRoute {
+  Params: ItemParamsType;
+}
+
+export interface UnlikeItemRoute {
   Params: ItemParamsType;
 }

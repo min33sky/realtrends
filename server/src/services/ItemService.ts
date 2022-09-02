@@ -14,6 +14,9 @@ class ItemService {
     return ItemService.instance;
   }
 
+  /**
+   * 퍼블리셔 정보 조회하기
+   */
   private async getPublisher({ domain, favicon, name }: GetPublisherParams) {
     const exists = await db.publisher.findUnique({
       where: {
@@ -61,7 +64,16 @@ class ItemService {
       },
     });
 
-    return item;
+    const itemStats = await db.itemStats.create({
+      data: {
+        itemId: item.id,
+      },
+    });
+
+    return {
+      ...item,
+      itemStats,
+    };
   }
 
   async getItem(id: number) {
@@ -105,13 +117,7 @@ class ItemService {
               : undefined,
           },
           include: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-                createdAt: true,
-              },
-            },
+            user: true,
             publisher: true,
           },
           take: limit,
@@ -169,7 +175,7 @@ class ItemService {
     return updatedItem;
   }
 
-  async deleteItem({ itemId, userId }: DeleteItemParams) {
+  async deleteItem({ itemId, userId }: ItemActionParams) {
     const item = await this.getItem(itemId);
 
     if (item.userId !== userId) {
@@ -181,6 +187,55 @@ class ItemService {
         id: itemId,
       },
     });
+  }
+
+  async countLikes(itemId: number) {
+    const count = await db.itemLike.count({
+      where: {
+        itemId,
+      },
+    });
+
+    return count;
+  }
+
+  async likeItem({ itemId, userId }: ItemActionParams) {
+    const alreadyLiked = await db.itemLike.findUnique({
+      where: {
+        itemId_userId: {
+          itemId,
+          userId,
+        },
+      },
+    });
+
+    if (!alreadyLiked) {
+      try {
+        await db.itemLike.create({
+          data: {
+            itemId,
+            userId,
+          },
+        });
+      } catch (error) {}
+    }
+
+    return this.countLikes(itemId);
+  }
+
+  async unLikeItem({ itemId, userId }: ItemActionParams) {
+    // TODO: 좋아요 누르지 않은 상태에서 좋아요 취소를 누르면 500 에러 발생
+
+    await db.itemLike.delete({
+      where: {
+        itemId_userId: {
+          itemId,
+          userId,
+        },
+      },
+    });
+
+    return this.countLikes(itemId);
   }
 }
 
@@ -200,7 +255,7 @@ interface UpdateItemParams {
   body: string;
 }
 
-interface DeleteItemParams {
+interface ItemActionParams {
   itemId: number;
   userId: number;
 }

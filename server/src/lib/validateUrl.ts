@@ -32,6 +32,10 @@ const client = axios.create({
   timeout: 8000,
 });
 
+/**
+ * 페이지 정보 추출 (url, author, thumbnail 등)
+ * @param url
+ */
 export async function extractPageInfo(
   url: string,
 ): Promise<ExtractPageInfoResult> {

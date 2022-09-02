@@ -42,6 +42,7 @@ model Item {
   publisher   Publisher  @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   publisherId Int
   ItemTags    ItemTags[]
+  ItemStats   ItemStats?
 
   @@index([createdAt(sort: Desc)])
 }
@@ -88,4 +89,14 @@ model ItemLike {
   updatedAt DateTime @updatedAt
 
   @@unique([itemId, userId])
+}
+
+model ItemStats {
+  id        Int      @id @default(autoincrement())
+  likes     Int      @default(0)
+  clicks    Int      @default(0)
+  score     Int      @default(0)
+  updatedAt DateTime @updatedAt
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    Int      @unique
 }
