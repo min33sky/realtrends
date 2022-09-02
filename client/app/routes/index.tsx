@@ -4,6 +4,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import LinkCardList from '~/components/home/LinkCardList';
 import TabLayout from '~/components/layout/TabLayout';
+import { useInfinityScroll } from '~/hooks/useInfinityScroll';
 import { getItems } from '~/lib/api/items';
 import type { GetItemsResult } from '~/lib/api/types';
 import { parseUrlParams } from '~/lib/parseUrlParams';
@@ -43,28 +44,7 @@ export default function Index() {
     setPages(pages.concat(fetcher.data));
   }, [fetcher.data, pages]);
 
-  useEffect(() => {
-    if (!loadMoreRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            console.log('entry: ', entry);
-            fetchNext();
-          }
-        });
-      },
-      {
-        root: loadMoreRef.current.parentElement,
-        rootMargin: '64px',
-        threshold: 1, //? 1이면 완전 다 보여야 isIntersecting이 true가 된다.
-      },
-    );
-    observer.observe(loadMoreRef.current);
-    return () => {
-      observer.disconnect();
-    };
-  }, [fetchNext]);
+  useInfinityScroll(loadMoreRef, fetchNext);
 
   const items = pages.flatMap((page) => page.list);
 

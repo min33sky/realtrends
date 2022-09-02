@@ -796,12 +796,12 @@ video {
      object-fit: cover;
 }
 
-.p-4{
-  padding: 1rem;
-}
-
 .p-2{
   padding: 0.5rem;
+}
+
+.p-4{
+  padding: 1rem;
 }
 
 .px-4{
