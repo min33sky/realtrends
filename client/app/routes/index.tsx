@@ -1,7 +1,7 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LinkCardList from '~/components/home/LinkCardList';
 import TabLayout from '~/components/layout/TabLayout';
 import { getItems } from '~/lib/api/items';
@@ -22,18 +22,20 @@ export default function Index() {
   const data = useLoaderData<GetItemsResult>();
   const [pages, setPages] = useState([data]);
   const fetcher = useFetcher();
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const onClick = () => {
+  const fetchNext = useCallback(() => {
     const { endCursor, hasNextPage } = pages.at(-1)?.pageInfo ?? {
       endCursor: null,
       hasNextPage: false,
     };
 
+    if (fetcher.state === 'loading') return;
     if (!hasNextPage) return;
 
     //? Remix에서 '?index&'를 붙여줘야 현재 페이지의 Loader함수를 불러오는 것 같다....
     fetcher.load(`/?index&cursor=${endCursor}`);
-  };
+  }, [fetcher, pages]);
 
   useEffect(() => {
     if (!fetcher.data) return;
@@ -41,20 +43,40 @@ export default function Index() {
     setPages(pages.concat(fetcher.data));
   }, [fetcher.data, pages]);
 
-  const items = pages.flatMap((page) => page.list);
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            console.log('entry: ', entry);
+            fetchNext();
+          }
+        });
+      },
+      {
+        root: loadMoreRef.current.parentElement,
+        rootMargin: '64px',
+        threshold: 1, //? 1이면 완전 다 보여야 isIntersecting이 true가 된다.
+      },
+    );
+    observer.observe(loadMoreRef.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchNext]);
 
-  console.log('pages: ', pages);
-  console.log('items: ', items);
+  const items = pages.flatMap((page) => page.list);
 
   return (
     <TabLayout>
       <LinkCardList items={items} />
-      <button
-        onClick={onClick}
-        className="bg-violet-600 p-4 text-lg font-semibold text-white"
+      <div
+        ref={loadMoreRef}
+        className="bg-violet-600 p-2 text-lg font-semibold text-white"
       >
-        Click ME
-      </button>
+        More Load
+      </div>
     </TabLayout>
   );
 }
