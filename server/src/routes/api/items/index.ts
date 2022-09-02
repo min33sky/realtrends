@@ -112,10 +112,10 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
-      const likes = await itemService.likeItem({ itemId, userId });
+      const itemStats = await itemService.likeItem({ itemId, userId });
       return {
         id: itemId,
-        likes,
+        itemStats,
       };
     },
   );
@@ -131,8 +131,8 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
-      const likes = await itemService.unLikeItem({ itemId, userId });
-      return { id: itemId, likes };
+      const itemStats = await itemService.unLikeItem({ itemId, userId });
+      return { id: itemId, itemStats };
     },
   );
 });

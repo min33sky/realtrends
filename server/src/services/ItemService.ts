@@ -235,12 +235,12 @@ class ItemService {
 
     const likes = await this.countLikes(itemId);
 
-    await this.updateItemLikes({
+    const itemStats = await this.updateItemLikes({
       itemId,
       likes,
     });
 
-    return likes;
+    return itemStats;
   }
 
   async unLikeItem({ itemId, userId }: ItemActionParams) {
@@ -257,12 +257,12 @@ class ItemService {
 
     const likes = await this.countLikes(itemId);
 
-    await this.updateItemLikes({
+    const itemStats = await this.updateItemLikes({
       itemId,
       likes,
     });
 
-    return likes;
+    return itemStats;
   }
 }
 
