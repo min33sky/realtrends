@@ -83,13 +83,13 @@ type ItemParamsType = Static<typeof ItemParamsSchema>;
 
 const ItemLikeSchema = Type.Object({
   id: Type.Integer(),
-  itemStats: ItemStatsSchema,
+  ItemStats: ItemStatsSchema,
   isLiked: Type.Boolean(),
 });
 
 ItemLikeSchema.example = {
   id: 1,
-  itemStats: {
+  ItemStats: {
     id: 1,
     likes: 1,
   },
