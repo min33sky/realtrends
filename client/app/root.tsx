@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
-import { ItemStatsProvider } from './contexts/ItemStatsContext';
+import { ItemOverrideProvider } from './contexts/ItemStatsContext';
 import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
 import { getMyAccount } from './lib/api/auth';
@@ -73,9 +73,9 @@ export default function App() {
       </head>
       <body>
         <UserContext.Provider value={data}>
-          <ItemStatsProvider>
+          <ItemOverrideProvider>
             <Outlet />
-          </ItemStatsProvider>
+          </ItemOverrideProvider>
         </UserContext.Provider>
         <ScrollRestoration />
         <Scripts />
