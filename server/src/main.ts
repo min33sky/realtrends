@@ -13,7 +13,7 @@ const server = Fastify({ logger: true });
 if (process.env.NODE_ENV === 'development') {
   server.register(cors, {
     origin: /localhost/,
-    allowedHeaders: ['Cookie'],
+    allowedHeaders: ['Cookie', 'Content-Type'],
     credentials: true,
   });
 }

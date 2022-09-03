@@ -9,27 +9,16 @@ import type { ItemStats } from '~/lib/api/types';
 export function useLikeManager() {
   const { actions } = useItemOverride();
 
-  const abortControllers = useRef(new Map<number, AbortController>()).current;
-
-  const getAbortController = useCallback(
-    (id: number) => {
-      const controller = abortControllers.get(id);
-      if (controller) {
-        return controller;
-      }
-      const newController = new AbortController();
-      abortControllers.set(id, newController);
-      return newController;
-    },
-    [abortControllers],
-  );
+  //? 인터넷 속도가 느릴 때 중복 요청이 발생한다면 이전 요청을 취소한다.
+  const abortControllers = useRef(new Map<number, AbortController>()).current; //? Item의 Id와 취소 컨트롤러를 저장해 놓는다.
 
   const like = useCallback(
     async (id: number, initialStats: ItemStats) => {
-      const controller = getAbortController(id);
+      const prevController = abortControllers.get(id);
 
       try {
-        controller.abort();
+        prevController?.abort(); //? 현재 Item의 진행중인 좋아요 요청을 취소
+
         //? 클라이언트에서 값을 미리 변경하고 서버에서 응답받은 값으로 업데이트 한다.
         actions.set(id, {
           isLiked: true,
@@ -39,7 +28,10 @@ export function useLikeManager() {
           },
         });
 
-        const result = await likeItem(id);
+        const controller = new AbortController();
+        abortControllers.set(id, controller); //? 현재 요청을 저장
+        const result = await likeItem(id, controller);
+        abortControllers.delete(id); //? 현재 요청이 끝났으니 맵에서 삭제
 
         actions.set(id, {
           isLiked: true,
@@ -49,15 +41,15 @@ export function useLikeManager() {
         console.error(error);
       }
     },
-    [actions, getAbortController],
+    [abortControllers, actions],
   );
 
   const unlike = useCallback(
     async (id: number, initialStats: ItemStats) => {
-      const controller = getAbortController(id);
+      const prevController = abortControllers.get(id);
 
       try {
-        controller.abort();
+        prevController?.abort();
 
         actions.set(id, {
           ItemStats: {
@@ -67,7 +59,10 @@ export function useLikeManager() {
           isLiked: false,
         });
 
-        const result = await unlikeItem(id);
+        const controller = new AbortController();
+        abortControllers.set(id, controller);
+        const result = await unlikeItem(id, controller);
+        abortControllers.delete(id);
 
         actions.set(id, {
           ItemStats: result.ItemStats,
@@ -77,7 +72,7 @@ export function useLikeManager() {
         console.error(error);
       }
     },
-    [actions, getAbortController],
+    [actions, abortControllers],
   );
 
   return {
