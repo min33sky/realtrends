@@ -1,9 +1,7 @@
-import { HeartIcon } from '@heroicons/react/outline';
 import React from 'react';
 import { useItemOverrideById } from '~/contexts/ItemStatsContext';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
-import { likeItem } from '~/lib/api/items';
 import type { Item } from '~/lib/api/types';
 import LikeButton from '../system/LikeButton';
 import { Globe } from '../vectors';
@@ -13,25 +11,16 @@ interface Props {
 }
 
 export default function LinkCard({ item }: Props) {
-  const {
-    thumbnail,
-    publisher,
-    title,
-    body,
-    author,
-    user,
-    createdAt,
-    id,
-    ItemStats,
-  } = item;
+  const { thumbnail, publisher, title, body, author, user, createdAt, id } =
+    item;
+
   const dataDistance = useDateDistance(createdAt);
   const { like, unlike } = useLikeManager();
   const itemOverride = useItemOverrideById(id);
+  const ItemStats = itemOverride?.ItemStats ?? item.ItemStats;
 
   // ? Context에 있는 값을 우선으로 사용한다.
   const isLiked = itemOverride?.isLiked ?? item.isLiked;
-  console.log('id, ItemStats', id, ItemStats);
-  console.log('id, ItemOverlideItemStats', id, itemOverride);
   const likes = itemOverride?.ItemStats.likes ?? ItemStats.likes;
 
   const toggleLike = () => {
@@ -41,9 +30,6 @@ export default function LinkCard({ item }: Props) {
       like(id, ItemStats);
     }
   };
-
-  // console.log('id, override: ', id, itemOverride);
-  // console.log('Id, 좋아요 갯수: ', id, likes);
 
   return (
     <div className="flex flex-col">
