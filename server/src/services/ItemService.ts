@@ -278,15 +278,16 @@ class ItemService {
 
   async unLikeItem({ itemId, userId }: ItemActionParams) {
     // TODO: 좋아요 누르지 않은 상태에서 좋아요 취소를 누르면 500 에러 발생
-
-    await db.itemLike.delete({
-      where: {
-        itemId_userId: {
-          itemId,
-          userId,
+    try {
+      await db.itemLike.delete({
+        where: {
+          itemId_userId: {
+            itemId,
+            userId,
+          },
         },
-      },
-    });
+      });
+    } catch (error) {}
 
     const likes = await this.countLikes(itemId);
     const itemStats = await this.updateItemLikes({
