@@ -1,9 +1,12 @@
 import type { ActionFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import type { ThrownResponse } from '@remix-run/react';
+import { useActionData } from '@remix-run/react';
 import { useCatch } from '@remix-run/react';
+import { useEffect } from 'react';
 import AuthForm from '~/components/auth/AuthForm';
 import BasicLayout from '~/components/layout/BasicLayout';
+import { useAuthRedirect } from '~/hooks/useAuthRedirect';
 import { login } from '~/lib/api/auth';
 import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
@@ -29,6 +32,13 @@ interface Props {
 }
 
 export default function Login({ error }: Props) {
+  const actionData = useActionData();
+  useAuthRedirect();
+
+  useEffect(() => {
+    if (!actionData) return;
+  }, [actionData]);
+
   return (
     <BasicLayout title="로그인" hasBackButton>
       <AuthForm mode="login" error={error} />
