@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { useItemOverrideById } from '~/contexts/ItemStatsContext';
 import { useDateDistance } from '~/hooks/useDateDistance';
@@ -55,9 +56,20 @@ export default function LinkCard({ item }: Props) {
 
       <p className="mb-2 text-sm text-gray-500 line-clamp-5">{body}</p>
 
-      {likes === 0 ? null : <div>좋아요 {likes.toLocaleString()}개</div>}
+      <AnimatePresence initial={false}>
+        {likes === 0 ? null : (
+          <motion.div
+            key="like"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 24, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+          >
+            좋아요 {likes.toLocaleString()}개
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <footer className="flex items-center justify-between">
+      <footer className="relative flex items-center justify-between ">
         <LikeButton isLiked={isLiked} onClick={toggleLike} />
         <p>
           by <span>{user.username}</span> · {dataDistance}
