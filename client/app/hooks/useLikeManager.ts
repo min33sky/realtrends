@@ -3,6 +3,9 @@ import { useItemStats } from '~/contexts/ItemStatsContext';
 import { likeItem } from '~/lib/api/items';
 import type { ItemStats } from '~/lib/api/types';
 
+/**
+ * 좋아요 관련 기능을 관리하는 커스텀 훅
+ */
 export function useLikeManager() {
   const { actions } = useItemStats();
 

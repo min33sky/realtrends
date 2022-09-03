@@ -18,12 +18,12 @@ export interface Item {
   user: User;
   publisher: Publisher;
   ItemStats: ItemStats;
+  isLiked: boolean;
 }
 
 export interface ItemStats {
   id: number;
   likes: number;
-  isLiked: boolean;
 }
 
 export interface Publisher {
@@ -46,6 +46,7 @@ export interface PageInfo {
 export interface LikeItemResult {
   id: number;
   ItemStats: ItemStats;
+  isLiked: boolean;
 }
 
 export type UnlikeItemRoute = LikeItemResult;

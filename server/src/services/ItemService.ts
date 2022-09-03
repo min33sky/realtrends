@@ -107,20 +107,14 @@ class ItemService {
   }
 
   /**
-   * Item 정보에 Item 관련 추가 정보를 합친 객체를 반환하는 함수
+   * Item에 좋아요 여부 추가하는 함수
    * @param item
    * @param itemLike
    */
-  private mergeItemLiked<T extends Item & { ItemStats: ItemStats | null }>(
-    item: T,
-    itemLike?: ItemLike,
-  ) {
+  private mergeItemLiked<T extends Item>(item: T, itemLike?: ItemLike) {
     return {
       ...item,
-      ItemStats: {
-        ...item.ItemStats,
-        isLiked: !!itemLike ?? false,
-      },
+      isLiked: !!itemLike,
     };
   }
 
@@ -279,7 +273,7 @@ class ItemService {
       itemId,
       likes,
     });
-    return { ...itemStats, isLiked: true };
+    return itemStats;
   }
 
   async unLikeItem({ itemId, userId }: ItemActionParams) {
@@ -300,10 +294,7 @@ class ItemService {
       likes,
     });
 
-    return {
-      ...itemStats,
-      isLiked: false,
-    };
+    return itemStats;
   }
 
   /**
