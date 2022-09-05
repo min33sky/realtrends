@@ -1,6 +1,8 @@
+import { useNavigate } from '@remix-run/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
+import { useDialog } from '~/contexts/DialogContext';
 import { useItemOverrideById } from '~/contexts/ItemStatsContext';
+import { useUser } from '~/contexts/UserContext';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
 import type { Item } from '~/lib/api/types';
@@ -24,7 +26,20 @@ export default function LinkCard({ item }: Props) {
   const isLiked = itemOverride?.isLiked ?? item.isLiked;
   const likes = itemOverride?.ItemStats.likes ?? ItemStats.likes;
 
+  const navigate = useNavigate();
+  const currentUser = useUser();
+  const { open } = useDialog();
+
   const toggleLike = () => {
+    if (!currentUser) {
+      open({
+        title: '로그인이 필요합니다.',
+        description: '로그인이 필요한 기능입니다.',
+        onConfirm: () => navigate('/auth/login'),
+      });
+      return;
+    }
+
     if (isLiked) {
       unlike(id, ItemStats);
     } else {

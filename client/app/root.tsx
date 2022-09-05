@@ -8,6 +8,9 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
+import Dialog from './components/system/Dialog';
+import Modal from './components/system/Modal';
+import DialogProvider from './contexts/DialogContext';
 import { ItemOverrideProvider } from './contexts/ItemStatsContext';
 import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
@@ -72,11 +75,13 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <UserContext.Provider value={data}>
-          <ItemOverrideProvider>
-            <Outlet />
-          </ItemOverrideProvider>
-        </UserContext.Provider>
+        <DialogProvider>
+          <UserContext.Provider value={data}>
+            <ItemOverrideProvider>
+              <Outlet />
+            </ItemOverrideProvider>
+          </UserContext.Provider>
+        </DialogProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
