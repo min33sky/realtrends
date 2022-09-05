@@ -11,21 +11,23 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  Item         Item[]
-  Token        Token[]
+  id                Int       @id @default(autoincrement())
+  username          String    @unique
+  passwordHash      String
+  createdAt         DateTime  @default(now())
+  Item              Item[]
+  Token             Token[]
+  comments          Comment[] @relation("user") // 내가 쓴 댓글
+  mentionedComments Comment[] @relation("mentionUser") // 내가 언급된 댓글
 }
 
 model Token {
   id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now())
-  blocked         Boolean  @default(false)
   rotationCounter Int      @default(1)
   user            User     @relation(fields: [userId], references: [id])
   userId          Int
+  createdAt       DateTime @default(now())
+  blocked         Boolean  @default(false)
 }
 
 model Item {
@@ -41,8 +43,10 @@ model Item {
   userId      Int
   publisher   Publisher  @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   publisherId Int
-  ItemTags    ItemTags[]
-  ItemStats   ItemStats?
+  itemTags    ItemTags[]
+  ItemStats   ItemStats? // Item의 추가 정보
+  itemLikes   ItemLike[] // 좋아요
+  comments    Comment[]
 
   @@index([createdAt(sort: Desc)])
 }
@@ -87,16 +91,43 @@ model ItemLike {
   userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  item      Item     @relation(fields: [itemId], references: [id])
 
   @@unique([itemId, userId])
 }
 
 model ItemStats {
+  id            Int      @id @default(autoincrement())
+  likes         Int      @default(0)
+  clicks        Int      @default(0)
+  score         Int      @default(0)
+  commentsCount Int      @default(0)
+  item          Item     @relation(fields: [itemId], references: [id])
+  itemId        Int      @unique // Item과 1:1 관계
+  updatedAt     DateTime @default(now()) @updatedAt
+}
+
+model Comment {
+  id              Int           @id @default(autoincrement())
+  text            String
+  likesCount      Int           @default(0)
+  parentCommentId Int // 대댓글일 경우 부모 댓글의 id
+  item            Item          @relation(fields: [itemId], references: [id])
+  user            User          @relation("user", fields: [userId], references: [id])
+  mentionUser     User?         @relation("mentionUser", fields: [mentionUserId], references: [id])
+  itemId          Int
+  userId          Int
+  mentionUserId   Int? // 언급한 유저 ID
+  commentLikes    CommentLike[]
+}
+
+model CommentLike {
   id        Int      @id @default(autoincrement())
-  likes     Int      @default(0)
-  clicks    Int      @default(0)
-  score     Int      @default(0)
+  commentId Int
+  userId    Int
+  item      Comment  @relation(fields: [commentId], references: [id])
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  item      Item     @relation(fields: [itemId], references: [id])
-  itemId    Int      @unique
+
+  @@unique([userId, commentId])
 }
