@@ -6,6 +6,7 @@ interface Props {
   visible: boolean;
   title: string;
   description: string;
+  confirmText?: string;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -14,6 +15,7 @@ export default function Dialog({
   visible,
   title,
   description,
+  confirmText,
   onClose,
   onConfirm,
 }: Props) {
@@ -29,7 +31,7 @@ export default function Dialog({
         <Button variant="secondary" onClick={onClose}>
           닫기
         </Button>
-        <Button onClick={onConfirm}>확인</Button>
+        <Button onClick={onConfirm}>{confirmText ?? '확인'}</Button>
       </footer>
     </Modal>
   );

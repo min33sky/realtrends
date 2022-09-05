@@ -8,6 +8,7 @@ interface DialogContextValue {
 interface DialogConfig {
   title: string;
   description: string;
+  confirmText?: string;
   onConfirm: () => void;
   onClose?: () => void;
 }
@@ -46,6 +47,7 @@ export default function DialogProvider({ children }: Props) {
         visible={visible}
         title={config?.title ?? ''}
         description={config?.description ?? ''}
+        confirmText={config?.confirmText}
         onClose={close}
         onConfirm={confirm}
       />
