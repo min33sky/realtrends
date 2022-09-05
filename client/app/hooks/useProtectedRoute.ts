@@ -12,7 +12,7 @@ export function useProtectedRoute() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth/login?redirect=/write');
+      navigate('/auth/login');
     }
   }, [navigate, user]);
 

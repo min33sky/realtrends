@@ -8,8 +8,6 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react';
-import Dialog from './components/system/Dialog';
-import Modal from './components/system/Modal';
 import DialogProvider from './contexts/DialogContext';
 import { ItemOverrideProvider } from './contexts/ItemStatsContext';
 import { UserContext } from './contexts/UserContext';
