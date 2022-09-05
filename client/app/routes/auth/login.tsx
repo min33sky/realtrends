@@ -23,6 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json(result, { headers });
   } catch (e) {
     const error = extractError(e);
+    console.log('로그인 실패: ', e);
     throw json(error, { status: error.statusCode });
   }
 };
@@ -48,6 +49,8 @@ export default function Login({ error }: Props) {
 
 export function CatchBoundary() {
   const caught = useCatch<ThrownResponse<number, AppError>>();
+
+  console.log(caught);
 
   return <Login error={caught.data} />;
 }
