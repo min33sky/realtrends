@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { createAuthorizedRoute } from '../../../plugins/requireAuthPlugin';
 import ItemService from '../../../services/ItemService';
+import { commentsRoute } from './comments';
 import {
   DeleteItemRoute,
   DeleteItemSchema,
@@ -22,6 +23,7 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
   const itemService = ItemService.getInstance();
 
   fastify.register(authorizedItemRoute);
+  fastify.register(commentsRoute, { prefix: '/:id/comments' });
 
   fastify.get<GetItemRoute>(
     '/:id',

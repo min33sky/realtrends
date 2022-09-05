@@ -75,11 +75,11 @@ export interface WriteItemRoute {
   Body: CreateItemBodyType;
 }
 
-const ItemParamsSchema = Type.Object({
+export const ItemParamsSchema = Type.Object({
   id: Type.Integer(),
 });
 
-type ItemParamsType = Static<typeof ItemParamsSchema>;
+export type ItemParamsType = Static<typeof ItemParamsSchema>;
 
 const ItemLikeSchema = Type.Object({
   id: Type.Integer(),
