@@ -20,5 +20,8 @@ export const commentsRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
-  fastify.get<CommentsRoute['GetSubComments']>('/:commentId', async () => {});
+  fastify.get<CommentsRoute['GetSubComments']>(
+    '/:commentId/subcomments',
+    async () => {},
+  );
 };
