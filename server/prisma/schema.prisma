@@ -94,6 +94,7 @@ model ItemLike {
   item      Item     @relation(fields: [itemId], references: [id])
 
   @@unique([itemId, userId])
+  @@index(itemId)
 }
 
 model ItemStats {
@@ -108,17 +109,18 @@ model ItemStats {
 }
 
 model Comment {
-  id              Int           @id @default(autoincrement())
-  text            String
-  likesCount      Int           @default(0)
-  parentCommentId Int // 대댓글일 경우 부모 댓글의 id
-  item            Item          @relation(fields: [itemId], references: [id])
-  user            User          @relation("user", fields: [userId], references: [id])
-  mentionUser     User?         @relation("mentionUser", fields: [mentionUserId], references: [id])
-  itemId          Int
-  userId          Int
-  mentionUserId   Int? // 언급한 유저 ID
-  commentLikes    CommentLike[]
+  id               Int           @id @default(autoincrement())
+  text             String
+  likesCount       Int           @default(0) // 좋아요 개수
+  subcommentsCount Int           @default(0) // 대댓글 개수
+  parentCommentId  Int? // 대댓글일 경우 부모 댓글의 id
+  item             Item          @relation(fields: [itemId], references: [id])
+  user             User          @relation("user", fields: [userId], references: [id])
+  mentionUser      User?         @relation("mentionUser", fields: [mentionUserId], references: [id])
+  itemId           Int
+  userId           Int
+  mentionUserId    Int? // 언급한 유저 ID
+  commentLikes     CommentLike[]
 }
 
 model CommentLike {
@@ -130,4 +132,5 @@ model CommentLike {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, commentId])
+  @@index(commentId)
 }
