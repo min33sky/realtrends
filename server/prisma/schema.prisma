@@ -121,13 +121,20 @@ model Comment {
   userId           Int
   mentionUserId    Int? // 언급한 유저 ID
   commentLikes     CommentLike[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime? // 삭제된 시간
+
+  @@index(createdAt)
+  @@index(deletedAt)
+  @@index(parentCommentId)
 }
 
 model CommentLike {
   id        Int      @id @default(autoincrement())
   commentId Int
   userId    Int
-  item      Comment  @relation(fields: [commentId], references: [id])
+  Comment   Comment  @relation(fields: [commentId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

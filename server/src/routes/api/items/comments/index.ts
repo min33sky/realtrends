@@ -14,8 +14,19 @@ export const commentsRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
+  fastify.get<CommentsRoute['GetComment']>(
+    '/:commentId',
+    { schema: CommentsRouteSchema.GetComment },
+    async (request) => {
+      return commentService.getComment(request.params.commentId, true);
+    },
+  );
+
   fastify.get<CommentsRoute['GetSubComments']>(
     '/:commentId/subcomments',
+    {
+      schema: CommentsRouteSchema.GetSubComments,
+    },
     async (request) => {
       return commentService.getSubcomments(request.params.commentId);
     },
@@ -34,6 +45,7 @@ const authorizedCommentsRoute = createAuthorizedRoute(async (fastify) => {
       const { id } = request.params;
       const { text, parentCommentId } = request.body;
       const userId = request.user?.id!;
+
       return commentService.createComment({
         itemId: id,
         text,
@@ -48,14 +60,17 @@ const authorizedCommentsRoute = createAuthorizedRoute(async (fastify) => {
     {
       schema: CommentsRouteSchema.LikeComment,
     },
-
     async (request) => {
       const { commentId } = request.params;
       const userId = request.user?.id!;
-      return commentService.likeComment({
+      const likes = await commentService.likeComment({
         commentId,
         userId,
       });
+      return {
+        id: commentId,
+        likes,
+      };
     },
   );
 
@@ -64,22 +79,28 @@ const authorizedCommentsRoute = createAuthorizedRoute(async (fastify) => {
     async (request) => {
       const { commentId } = request.params;
       const userId = request.user?.id!;
-      return commentService.unlikeComment({
+      const likes = await commentService.unlikeComment({
         commentId,
         userId,
       });
+      return {
+        id: commentId,
+        likes,
+      };
     },
   );
 
   fastify.delete<CommentsRoute['DeleteComment']>(
     '/:commentId',
-    async (request) => {
+    async (request, reply) => {
       const userId = request.user?.id!;
       const { commentId } = request.params;
-      return commentService.deleteComment({
+      await commentService.deleteComment({
         commentId,
         userId,
       });
+
+      reply.status(204);
     },
   );
 

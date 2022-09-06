@@ -1,3 +1,4 @@
+import { Comment } from '@prisma/client';
 import AppError from '../lib/AppError';
 import db from '../lib/db';
 
@@ -12,7 +13,7 @@ class CommentService {
   }
 
   async getComments(itemId: number) {
-    return await db.comment.findMany({
+    const comments = await db.comment.findMany({
       where: {
         itemId,
       },
@@ -23,17 +24,81 @@ class CommentService {
         user: true,
       },
     });
+
+    return this.groupSubcomments(this.redact(comments));
   }
 
-  async getComment(commentId: number) {
+  redact(comments: Comment[]) {
+    return comments.map((comment) => {
+      //? 삭제된 댓글 (deletedAt이 존재)인 경우 댓글 정보를 변조해서 내보낸다.
+      if (!comment.deletedAt) return comment;
+      const someDate = new Date(0);
+      return {
+        ...comment,
+        likesCount: 0,
+        createdAt: someDate,
+        updatedAt: someDate,
+        subcommentsCount: 0,
+        text: '삭제된 댓글입니다.',
+        user: {
+          id: -1,
+          username: 'deleted',
+        },
+        mentionUser: null,
+        subcomments: [],
+      };
+    });
+  }
+
+  /**
+   * 댓글 배열에 대댓글 배열을 추가해서 리턴하는 함수
+   * @param comments
+   */
+  async groupSubcomments(comments: Comment[]) {
+    const rootComments = comments.filter(
+      (comment) => comment.parentCommentId === null,
+    );
+
+    //? 대댓글이 있는 댓글들을 찾아서 맵에 저장한다. (key: 루트 댓글 ID, value: 대댓글 배열)
+    const subCommentsMap = new Map<number, Comment[]>();
+
+    comments.forEach((comment) => {
+      if (!comment.parentCommentId) return; // 루트 댓글은 제외
+      const subcommentsArr = subCommentsMap.get(comment.parentCommentId) ?? [];
+      subcommentsArr.push(comment);
+      subCommentsMap.set(comment.parentCommentId, subcommentsArr);
+    });
+
+    // 루트 댓글에 대댓글 배열 정보를 추가한다.
+    const merged = rootComments.map((comment) => ({
+      ...comment,
+      subcomments: subCommentsMap.get(comment.id) ?? [],
+    }));
+
+    return merged;
+  }
+
+  async getComment(commentId: number, withSubComments: boolean = false) {
     const comment = await db.comment.findUnique({
       where: {
         id: commentId,
       },
+      include: {
+        user: true,
+        mentionUser: true,
+      },
     });
 
-    if (!comment) {
+    if (!comment || comment.deletedAt) {
       throw new AppError('NotFoundError');
+    }
+
+    if (withSubComments) {
+      const subcomments = await this.getSubcomments(commentId);
+      return {
+        ...comment,
+        subcomments,
+      };
     }
 
     return comment;
@@ -49,6 +114,7 @@ class CommentService {
       },
       include: {
         user: true,
+        mentionUser: true,
       },
     });
   }
@@ -67,17 +133,19 @@ class CommentService {
       : null;
 
     const rootParentCommentId = parentComment?.parentCommentId;
+    const targetParentCommentId = rootParentCommentId ?? parentCommentId;
 
     const comment = await db.comment.create({
       data: {
         text,
         itemId,
         userId,
-        parentCommentId: rootParentCommentId ?? parentCommentId,
-        mentionUserId: parentComment?.userId, //? 대댓글을 달 대상의 ID
+        parentCommentId: targetParentCommentId,
+        mentionUserId: parentComment?.userId, //? 대댓글을 달 댓글의 userID
       },
       include: {
         user: true,
+        mentionUser: true,
       },
     });
 
@@ -87,13 +155,13 @@ class CommentService {
     if (parentCommentId) {
       const subcommentsCount = await db.comment.count({
         where: {
-          parentCommentId,
+          parentCommentId: targetParentCommentId,
         },
       });
 
       await db.comment.update({
         where: {
-          id: parentCommentId,
+          id: targetParentCommentId,
         },
         data: {
           subcommentsCount,
@@ -101,18 +169,23 @@ class CommentService {
       });
     }
 
-    return comment;
+    return {
+      comment,
+      subcomments: [],
+    };
   }
 
   async likeComment({ commentId, userId }: CommentParams) {
-    await db.commentLike.create({
-      data: {
-        commentId,
-        userId,
-      },
-    });
+    try {
+      await db.commentLike.create({
+        data: {
+          commentId,
+          userId,
+        },
+      });
+    } catch (e) {}
 
-    return null;
+    return this.countAndSyncCommentLikes(commentId);
   }
 
   async unlikeComment({ commentId, userId }: CommentParams) {
@@ -147,9 +220,12 @@ class CommentService {
       throw new AppError('ForbiddenError');
     }
 
-    await db.comment.delete({
+    await db.comment.update({
       where: {
         id: commentId,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
   }
@@ -173,7 +249,7 @@ class CommentService {
       },
     });
 
-    return updateComment;
+    return this.getComment(commentId, true);
   }
 }
 
