@@ -21,12 +21,12 @@ export const CommentsRouteSchema = createRouteSchema({
   GetComments: {
     params: ItemParamsSchema,
   },
+  GetSubComments: {
+    params: CommentParamsSchema,
+  },
   CreateComment: {
     params: ItemParamsSchema,
     body: CreateCommentBodySchema,
-  },
-  GetSubComments: {
-    params: CommentParamsSchema,
   },
   LikeComment: {
     params: CommentParamsSchema,
