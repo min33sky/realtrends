@@ -169,8 +169,10 @@ class CommentService {
       });
     }
 
+    await this.countAndSyncComments(itemId);
+
     return {
-      comment,
+      ...comment,
       subcomments: [],
     };
   }
@@ -204,12 +206,51 @@ class CommentService {
     return count;
   }
 
+  /**
+   * 댓글 좋아요 갯수를 파악하고 댓글 테이블을 업데이트하는 함수
+   * @param commentId 댓글 ID
+   * @returns 댓글 좋아요 갯수
+   */
   async countAndSyncCommentLikes(commentId: number) {
     const count = await db.commentLike.count({
       where: {
         commentId,
       },
     });
+
+    await db.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        likesCount: count,
+      },
+    });
+
+    return count;
+  }
+
+  /**
+   * 댓글 갯수를 파악하고 아이템 스텟 테이블을 업데이트하는 함수
+   * @param itemId 아이템 ID
+   * @returns 댓글 갯수
+   */
+  async countAndSyncComments(itemId: number) {
+    const count = await db.comment.count({
+      where: {
+        itemId,
+      },
+    });
+
+    await db.itemStats.update({
+      where: {
+        itemId,
+      },
+      data: {
+        commentsCount: count,
+      },
+    });
+
     return count;
   }
 

@@ -14,13 +14,15 @@ const CreateItemSchema = Type.Object({
 export type CreateItemBodyType = Static<typeof CreateItemSchema>;
 
 const ItemStatsSchema = Type.Object({
-  id: Type.Number(),
-  likes: Type.Number(),
+  id: Type.Integer(),
+  likes: Type.Integer(),
+  commentsCount: Type.Integer(),
 });
 
 ItemStatsSchema.example = {
   id: 1,
   likes: 10,
+  commentsCount: 5,
 };
 
 const ItemSchema = Type.Object({
