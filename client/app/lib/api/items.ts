@@ -4,8 +4,7 @@ import qs from 'qs';
 
 export async function createItem(params: CreateItemParams) {
   const response = await client.post<Item>('/api/items', params);
-  const result = response.data;
-  return result;
+  return response.data;
 }
 
 export async function getItems(cursor?: number) {
@@ -22,6 +21,12 @@ export async function getItems(cursor?: number) {
   return response.data;
 }
 
+export async function getItem(itemId: number) {
+  const response = await client.get<Item>(`/api/items/${itemId}`);
+  return response.data;
+}
+
+//? controller? : Axios에서 요청 취소할 때 사용하는 컨트롤러
 export async function likeItem(itemId: number, controller?: AbortController) {
   const response = await client.post<LikeItemResult>(
     `/api/items/${itemId}/likes`,

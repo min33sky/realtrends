@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useItemOverrideById } from '~/contexts/ItemStatsContext';
 import { useUser } from '~/contexts/UserContext';
 import { useDateDistance } from '~/hooks/useDateDistance';
@@ -43,27 +44,35 @@ export default function LinkCard({ item }: Props) {
 
   return (
     <div className="flex flex-col">
-      <figure>
-        <img
-          src={thumbnail}
-          className="mb-2 block aspect-[288/192] w-full rounded-xl object-cover shadow"
-          alt="thumbnail"
-        />
-      </figure>
+      <Link to={`/items/${item.id}`}>
+        <figure>
+          {thumbnail ? (
+            <img
+              src={thumbnail}
+              className="mb-2 block aspect-[288/192] w-full rounded-xl object-cover shadow"
+              alt="thumbnail"
+            />
+          ) : null}
+        </figure>
 
-      <div aria-label="publisher" className="mb-2 flex items-center">
-        {publisher.favicon ? (
-          <img src={publisher.favicon} className="mr-2 h-4 w-4" alt="favicon" />
-        ) : (
-          <Globe className="mr-2" />
-        )}
-        <p>{author ? `${author} · ` : ''}</p>
-        <p className="ml-1 text-sm text-gray-600">{publisher.name}</p>
-      </div>
+        <div aria-label="publisher" className="mb-2 flex items-center">
+          {publisher.favicon ? (
+            <img
+              src={publisher.favicon}
+              className="mr-2 h-4 w-4"
+              alt="favicon"
+            />
+          ) : (
+            <Globe className="mr-2" />
+          )}
+          <p>{author ? `${author} · ` : ''}</p>
+          <p className="ml-1 text-sm text-gray-600">{publisher.name}</p>
+        </div>
 
-      <h3 className="mb-2 font-semibold text-gray-800">{title}</h3>
+        <h3 className="mb-2 font-semibold text-gray-800">{title}</h3>
 
-      <p className="mb-2 text-sm text-gray-500 line-clamp-5">{body}</p>
+        <p className="mb-2 text-sm text-gray-500 line-clamp-5">{body}</p>
+      </Link>
 
       <AnimatePresence initial={false}>
         {likes === 0 ? null : (

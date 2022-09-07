@@ -1,11 +1,11 @@
-import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import LinkCardList from '~/components/home/LinkCardList';
 import TabLayout from '~/components/layout/TabLayout';
 import { useInfinityScroll } from '~/hooks/useInfinityScroll';
-import { getItems, likeItem, unlikeItem } from '~/lib/api/items';
+import { getItems } from '~/lib/api/items';
 import type { GetItemsResult } from '~/lib/api/types';
 import { parseUrlParams } from '~/lib/parseUrlParams';
 

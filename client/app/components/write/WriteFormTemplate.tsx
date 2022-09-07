@@ -19,7 +19,7 @@ export default function WriteFormTemplate({
       className="flex flex-1 flex-col  pt-4 pl-4 pr-4 pb-6"
       onSubmit={onSubmit}
     >
-      <h3 className="mt-0 mb-4 text-lg leading-5 text-gray-800 ">
+      <h3 className="mt-0 mb-4 text-lg leading-normal text-gray-800 ">
         {description}
       </h3>
       <section className="flex flex-1 flex-col ">{children}</section>

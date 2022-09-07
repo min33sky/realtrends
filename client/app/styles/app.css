@@ -692,6 +692,26 @@ video {
   height: 100vh;
 }
 
+.h-auto{
+  height: auto;
+}
+
+.max-h-80{
+  max-height: 20rem;
+}
+
+.max-h-\[8vh\]{
+  max-height: 8vh;
+}
+
+.max-h-\[80vh\]{
+  max-height: 80vh;
+}
+
+.max-h-\[20vh\]{
+  max-height: 20vh;
+}
+
 .w-6{
   width: 1.5rem;
 }
@@ -720,6 +740,10 @@ video {
 
 .w-\[calc\(100vw-32px\)\]{
   width: calc(100vw - 32px);
+}
+
+.w-\[50vw\]{
+  width: 50vw;
 }
 
 .flex-1{
@@ -881,6 +905,11 @@ video {
 
 .fill-current{
   fill: currentColor;
+}
+
+.object-contain{
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 .object-cover{

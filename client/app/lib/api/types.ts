@@ -11,7 +11,7 @@ export interface Item {
   title: string;
   body: string;
   link: string;
-  thumbnail: string;
+  thumbnail: string | null;
   createdAt: string;
   updatedAt: string;
   author: string;
@@ -24,6 +24,7 @@ export interface Item {
 export interface ItemStats {
   id: number;
   likes: number;
+  commentsCount: number;
 }
 
 export interface Publisher {

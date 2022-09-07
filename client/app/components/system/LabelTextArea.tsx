@@ -30,7 +30,7 @@ const LabelTextArea = React.forwardRef<HTMLTextAreaElement, Props>(
         </label>
         <textarea
           ref={ref}
-          className={`flex-1 resize-none rounded border p-4 text-base leading-6 text-gray-800 outline-none transition ease-in-out
+          className={`flex-1 resize-none rounded border p-4 text-base leading-normal text-gray-800 outline-none transition ease-in-out
           placeholder:text-gray-400 disabled:cursor-not-allowed disabled:bg-gray-500
           ${focused ? 'border-purple-500' : 'border-gray-400'}
           `}
