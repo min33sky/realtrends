@@ -17,7 +17,7 @@ export default function LinkCard({ item }: Props) {
   const { thumbnail, publisher, title, body, author, user, createdAt, id } =
     item;
 
-  const dataDistance = useDateDistance(createdAt);
+  const dateDIstance = useDateDistance(createdAt);
   const { like, unlike } = useLikeManager();
   const itemOverride = useItemOverrideById(id);
   const ItemStats = itemOverride?.ItemStats ?? item.ItemStats;
@@ -90,7 +90,7 @@ export default function LinkCard({ item }: Props) {
       <footer className="relative flex items-center justify-between ">
         <LikeButton isLiked={isLiked} onClick={toggleLike} />
         <p>
-          by <span>{user.username}</span> · {dataDistance}
+          by <span>{user.username}</span> · {dateDIstance}
         </p>
       </footer>
     </div>

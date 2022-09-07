@@ -51,3 +51,14 @@ export interface LikeItemResult {
 }
 
 export type UnlikeItemRoute = LikeItemResult;
+
+export interface Comment {
+  id: number;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+  likesCount: number;
+  subCommentsCount: number;
+  user: User;
+  subcomments?: Comment[];
+}

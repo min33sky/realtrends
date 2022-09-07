@@ -29,7 +29,7 @@ export default function BasicLayout({
           ) : undefined
         }
       />
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="flex flex-1 flex-col overflow-y-scroll">{children}</main>
     </FullHeightPage>
   );
 }

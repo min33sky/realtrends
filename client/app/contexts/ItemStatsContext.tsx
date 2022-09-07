@@ -47,12 +47,21 @@ export function ItemOverrideProvider({ children }: Props) {
   );
 }
 
+/**
+ * 클라이언트 상태값을 덮어씌우기 위한 컨텍스트
+ * ? Optimistic UI를 구현하기 위해 사용
+ */
 export function useItemOverride() {
   const context = useContext(ItemOverrideContext);
   if (!context) throw new Error('ItemOverrideContext.Provider not used');
   return context;
 }
 
+/**
+ * 해당 ID의 상태값을 가져오는 함수
+ * @param itemId
+ * @returns ItemStats State (client state)
+ */
 export function useItemOverrideById(
   itemId: number,
 ): OverridableItem | undefined {

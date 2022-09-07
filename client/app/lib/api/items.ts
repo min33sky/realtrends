@@ -1,5 +1,5 @@
 import { client } from '../client';
-import type { GetItemsResult, Item, LikeItemResult } from './types';
+import type { Comment, GetItemsResult, Item, LikeItemResult } from './types';
 import qs from 'qs';
 
 export async function createItem(params: CreateItemParams) {
@@ -47,6 +47,11 @@ export async function unlikeItem(itemId: number, contoller?: AbortController) {
     },
   );
 
+  return response.data;
+}
+
+export async function getComments(itemId: number) {
+  const response = await client.get<Comment[]>(`/api/items/${itemId}/comments`);
   return response.data;
 }
 
