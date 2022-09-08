@@ -1,6 +1,8 @@
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import React from 'react';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import type { Comment } from '~/lib/api/types';
+import LikeButton from '../system/LikeButton';
 import SubcommentList from './SubcommentList';
 
 interface Props {
@@ -9,12 +11,12 @@ interface Props {
 }
 
 export default function CommentItem({ comment, isSubcomment }: Props) {
-  const { user, createdAt, text, subcomments } = comment;
+  const { user, createdAt, text, subcomments, likesCount } = comment;
   const dateDistance = useDateDistance(createdAt);
 
   return (
     <li className="flex flex-col">
-      <header className="flex items-center justify-end gap-1">
+      <header className="flex items-center justify-start gap-x-1">
         <div className="text-base font-semibold text-gray-800">
           {user.username}
         </div>
@@ -25,6 +27,15 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
       <p className="mt-1 mb-2 whitespace-pre-wrap leading-normal text-gray-800">
         {text}
       </p>
+      <footer className="flex gap-2 text-xs leading-normal text-gray-400">
+        <div className="flex items-center gap-x-2">
+          <LikeButton size="small" />
+          <span className="min-w-[24px]">{likesCount.toLocaleString()}</span>
+        </div>
+        <button className="flex items-center gap-x-1">
+          <ChatBubbleLeftRightIcon className="h-4 w-4" /> 댓글 달기
+        </button>
+      </footer>
       {!isSubcomment && subcomments && (
         <SubcommentList comments={subcomments} />
       )}

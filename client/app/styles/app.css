@@ -742,6 +742,14 @@ video {
   width: calc(100vw - 32px);
 }
 
+.min-w-\[24px\]{
+  min-width: 24px;
+}
+
+.max-w-\[24px\]{
+  max-width: 24px;
+}
+
 .flex-1{
   flex: 1 1 0%;
 }
@@ -793,6 +801,10 @@ video {
   align-items: center;
 }
 
+.justify-start{
+  justify-content: flex-start;
+}
+
 .justify-end{
   justify-content: flex-end;
 }
@@ -823,6 +835,16 @@ video {
 
 .gap-4{
   gap: 1rem;
+}
+
+.gap-x-2{
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem;
+}
+
+.gap-x-1{
+  -moz-column-gap: 0.25rem;
+       column-gap: 0.25rem;
 }
 
 .space-y-4 > :not([hidden]) ~ :not([hidden]){
