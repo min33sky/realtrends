@@ -11,9 +11,28 @@ interface Props {
 }
 
 export default function CommentItem({ comment, isSubcomment }: Props) {
-  const { user, createdAt, text, subcomments, likesCount, mentionUser } =
-    comment;
+  const {
+    user,
+    createdAt,
+    text,
+    subcomments,
+    likesCount,
+    mentionUser,
+    isDeleted,
+  } = comment;
+
   const dateDistance = useDateDistance(createdAt);
+
+  if (isDeleted) {
+    return (
+      <div>
+        <p>삭제된 댓글입니다.</p>
+        {!isSubcomment && subcomments && (
+          <SubcommentList comments={subcomments} />
+        )}
+      </div>
+    );
+  }
 
   return (
     <li className="flex flex-col">
