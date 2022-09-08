@@ -1,17 +1,17 @@
 import React from 'react';
 import {
-  BookmarkAltIcon,
+  BookmarkIcon,
   CogIcon,
   PlusCircleIcon,
-  SearchIcon,
-} from '@heroicons/react/outline';
-import { HomeIcon } from '@heroicons/react/solid';
-import { Link, NavLink } from '@remix-run/react';
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
+import { HomeIcon } from '@heroicons/react/24/solid';
+import { NavLink } from '@remix-run/react';
 
 const iconMap = {
   home: HomeIcon,
-  search: SearchIcon,
-  bookmark: BookmarkAltIcon,
+  search: MagnifyingGlassIcon,
+  bookmark: BookmarkIcon,
   plus: PlusCircleIcon,
   setting: CogIcon,
 };

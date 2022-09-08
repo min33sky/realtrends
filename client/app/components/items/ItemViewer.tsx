@@ -17,7 +17,7 @@ export default function ItemViewer({ item }: Props) {
   const { thumbnail, id, publisher, author, title, body, user, createdAt } =
     item;
 
-  const itemOverride = useItemOverrideById(id);
+  const itemOverride = useItemOverrideById(id); //? Context에 있는 값을 우선으로 사용한다.
   const dateDistance = useDateDistance(createdAt);
 
   const itemStats = itemOverride?.ItemStats ?? item.ItemStats;

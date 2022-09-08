@@ -1,16 +1,25 @@
-import { HeartIcon } from '@heroicons/react/outline';
+import { HeartIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 
+type Size = 'small' | 'medium';
+
 interface Props {
-  onClick: () => void;
-  isLiked: boolean;
+  onClick?: () => void;
+  isLiked?: boolean;
+  size?: Size;
 }
 
-export default function LikeButton({ onClick, isLiked }: Props) {
+export default function LikeButton({
+  onClick,
+  isLiked,
+  size = 'medium',
+}: Props) {
   return (
     <button
       aria-label="좋아요 버튼"
-      className="relative h-full "
+      className={`relative inline-flex  ${
+        size === 'small' ? 'h-4 w-4' : 'h-6 w-6'
+      } `}
       onClick={onClick}
     >
       <AnimatePresence initial={false}>
@@ -32,7 +41,7 @@ export default function LikeButton({ onClick, isLiked }: Props) {
             exit={{ scale: 0 }}
             className="absolute left-0 top-0 grid h-full place-items-center"
           >
-            <HeartIcon className={` h-5 w-5 text-red-400`} />
+            <HeartIcon className={`h-full w-full text-red-400`} />
           </motion.span>
         )}
       </AnimatePresence>
