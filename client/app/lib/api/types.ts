@@ -60,5 +60,6 @@ export interface Comment {
   likesCount: number;
   subCommentsCount: number;
   user: User;
+  mentionUser: User | null;
   subcomments?: Comment[];
 }

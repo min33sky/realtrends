@@ -11,7 +11,8 @@ interface Props {
 }
 
 export default function CommentItem({ comment, isSubcomment }: Props) {
-  const { user, createdAt, text, subcomments, likesCount } = comment;
+  const { user, createdAt, text, subcomments, likesCount, mentionUser } =
+    comment;
   const dateDistance = useDateDistance(createdAt);
 
   return (
@@ -24,7 +25,10 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
           {dateDistance}
         </div>
       </header>
-      <p className="mt-1 mb-2 whitespace-pre-wrap leading-normal text-gray-800">
+      <p className="mt-1 mb-3 whitespace-pre-wrap text-sm leading-normal text-gray-800">
+        {mentionUser ? (
+          <span className="mr-1 text-violet-500">@{mentionUser.username}</span>
+        ) : null}
         {text}
       </p>
       <footer className="flex gap-2 text-xs leading-normal text-gray-400">
