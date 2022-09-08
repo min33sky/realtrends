@@ -15,6 +15,7 @@ import type { User } from './lib/api/auth';
 import { getMyAccount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
 import { extractError } from './lib/error';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import styles from './styles/app.css';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -62,6 +63,8 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1',
 });
 
+const queryClient = new QueryClient();
+
 export default function App() {
   const data = useLoaderData<User | null>();
   console.log('User-Data: ', data);
@@ -73,13 +76,15 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <DialogProvider>
-          <UserContext.Provider value={data}>
-            <ItemOverrideProvider>
-              <Outlet />
-            </ItemOverrideProvider>
-          </UserContext.Provider>
-        </DialogProvider>
+        <QueryClientProvider client={queryClient}>
+          <DialogProvider>
+            <UserContext.Provider value={data}>
+              <ItemOverrideProvider>
+                <Outlet />
+              </ItemOverrideProvider>
+            </UserContext.Provider>
+          </DialogProvider>
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

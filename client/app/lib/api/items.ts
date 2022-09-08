@@ -55,6 +55,20 @@ export async function getComments(itemId: number) {
   return response.data;
 }
 
+export async function createComment({
+  itemId,
+  parentCommentId,
+}: {
+  itemId: number;
+  parentCommentId?: number;
+}) {
+  const response = await client.post<Comment>(`/api/items/${itemId}`, {
+    itemId,
+    parentCommentId,
+  });
+  return response.data;
+}
+
 interface CreateItemParams {
   title: string;
   body: string;

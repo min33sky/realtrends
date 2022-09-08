@@ -18,17 +18,11 @@ export const commentsRoute: FastifyPluginAsync = async (fastify) => {
     '/:commentId',
     { schema: CommentsRouteSchema.GetComment },
     async (request) => {
-      try {
-        const result = await commentService.getComment(
-          request.params.commentId,
-          true,
-        );
-
-        console.log('댓글: ', JSON.stringify(result));
-        return result;
-      } catch (error) {
-        console.log('#### error: ', error);
-      }
+      const result = await commentService.getComment(
+        request.params.commentId,
+        true,
+      );
+      return result;
     },
   );
 
@@ -102,6 +96,9 @@ const authorizedCommentsRoute = createAuthorizedRoute(async (fastify) => {
 
   fastify.delete<CommentsRoute['DeleteComment']>(
     '/:commentId',
+    {
+      schema: CommentsRouteSchema.DeleteComment,
+    },
     async (request, reply) => {
       const userId = request.user?.id!;
       const { commentId } = request.params;

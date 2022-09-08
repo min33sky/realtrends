@@ -32,7 +32,12 @@ class CommentService {
   redact(comments: Comment[]) {
     return comments.map((comment) => {
       //? 삭제된 댓글 (deletedAt이 존재)인 경우 댓글 정보를 변조해서 내보낸다.
-      if (!comment.deletedAt) return comment;
+      if (!comment.deletedAt)
+        return {
+          ...comment,
+          isDeleted: false,
+        };
+
       const someDate = new Date(0);
       return {
         ...comment,
@@ -47,6 +52,7 @@ class CommentService {
         },
         mentionUser: null,
         subcomments: [],
+        isDeleted: true,
       };
     });
   }
@@ -64,17 +70,25 @@ class CommentService {
     const subCommentsMap = new Map<number, Comment[]>();
 
     comments.forEach((comment) => {
-      if (!comment.parentCommentId) return; // 루트 댓글은 제외
+      if (!comment.parentCommentId) return; //* 루트 댓글은 제외
+      if (comment.deletedAt !== null) return; //* 삭제된 댓글은 제외
       const subcommentsArr = subCommentsMap.get(comment.parentCommentId) ?? [];
       subcommentsArr.push(comment);
       subCommentsMap.set(comment.parentCommentId, subcommentsArr);
     });
 
-    // 루트 댓글에 대댓글 배열 정보를 추가한다.
-    const merged = rootComments.map((comment) => ({
-      ...comment,
-      subcomments: subCommentsMap.get(comment.id) ?? [],
-    }));
+    //? 루트 댓글에 대댓글 배열 정보를 추가한다.
+    //? 댓글이 삭제된 경우에는 배열에서 제외한다.
+    //? 단, 대댓글이 있는 댓글의 경우 댓글이 삭제되었어도 배열에 포함한다.
+    const merged = rootComments
+      .map((comment) => ({
+        ...comment,
+        subcomments: subCommentsMap.get(comment.id) ?? [],
+      }))
+      .filter(
+        (comment) =>
+          comment.deletedAt === null || comment.subcomments.length !== 0,
+      );
 
     return merged;
   }
@@ -109,10 +123,14 @@ class CommentService {
       return {
         ...comment,
         subcomments,
+        isDeleted: false,
       };
     }
 
-    return comment;
+    return {
+      ...comment,
+      isDeleted: false,
+    };
   }
 
   async getSubcomments(commentId: number) {

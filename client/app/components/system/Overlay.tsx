@@ -11,7 +11,6 @@ interface Props {
  * @returns
  */
 export default function Overlay({ visible }: Props) {
-  /** @TODO visible 설정 해줘야함 */
   return (
     <AnimatePresence initial={false}>
       {visible && (

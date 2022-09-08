@@ -1,9 +1,11 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import CommentInputOverlay from '~/components/items/CommentInputOverlay';
 import CommentList from '~/components/items/CommentList';
 import ItemViewer from '~/components/items/ItemViewer';
 import BasicLayout from '~/components/layout/BasicLayout';
+import { useCommentsQuery } from '~/hooks/query/useCommentsQuery';
 import { getComments, getItem } from '~/lib/api/items';
 import type { Comment, Item } from '~/lib/api/types';
 
@@ -28,15 +30,18 @@ interface ItemLoaderData {
 }
 
 export default function ItemPage() {
-  const { item, comments } = useLoaderData<ItemLoaderData>();
+  const loaderData = useLoaderData<ItemLoaderData>();
 
-  console.log('item', item);
-  console.log('comments', comments);
+  const { data: comments } = useCommentsQuery(loaderData.item.id, {
+    initialData: loaderData.comments,
+  });
 
   return (
     <BasicLayout hasBackButton title={null}>
-      <ItemViewer item={item} />
-      <CommentList comments={comments} />
+      <ItemViewer item={loaderData.item} />
+      {/* 'comments' is always valid due to SSR */}
+      <CommentList comments={comments!} />
+      <CommentInputOverlay />
     </BasicLayout>
   );
 }

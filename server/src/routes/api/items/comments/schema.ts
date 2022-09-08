@@ -40,6 +40,7 @@ CommentSchema = Type.Object({
   user: UserSchema,
   mentionUser: Nullable(UserSchema),
   subcomments: Type.Optional(Type.Array(CommentSchema)), //! 위에 선언으로 이동시키면 순환 참조 에러 발생
+  isDeleted: Type.Boolean(),
 });
 
 const CommentLikeSchema = Type.Object({
