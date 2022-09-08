@@ -22,6 +22,7 @@ class CommentService {
       },
       include: {
         user: true,
+        mentionUser: true,
       },
     });
 
@@ -84,8 +85,18 @@ class CommentService {
         id: commentId,
       },
       include: {
-        user: true,
-        mentionUser: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        mentionUser: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
       },
     });
 
@@ -113,8 +124,18 @@ class CommentService {
         id: 'asc',
       },
       include: {
-        user: true,
-        mentionUser: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        mentionUser: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
       },
     });
   }
@@ -134,6 +155,7 @@ class CommentService {
 
     const rootParentCommentId = parentComment?.parentCommentId;
     const targetParentCommentId = rootParentCommentId ?? parentCommentId;
+    const shouldMention = !!rootParentCommentId && parentComment?.userId;
 
     const comment = await db.comment.create({
       data: {
@@ -141,7 +163,7 @@ class CommentService {
         itemId,
         userId,
         parentCommentId: targetParentCommentId,
-        mentionUserId: parentComment?.userId, //? 대댓글을 달 댓글의 userID
+        mentionUserId: shouldMention ? parentComment?.userId : null, //? 대댓글을 달 댓글의 userID
       },
       include: {
         user: true,

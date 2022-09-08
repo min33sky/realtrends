@@ -1,7 +1,7 @@
 import { Static, Type } from '@sinclair/typebox';
 
 export const UserSchema = Type.Object({
-  id: Type.String(),
+  id: Type.Integer(),
   username: Type.String(),
 });
 
