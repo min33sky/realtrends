@@ -22,8 +22,8 @@ import {
 export const itemRoute: FastifyPluginAsync = async (fastify) => {
   const itemService = ItemService.getInstance();
 
-  fastify.register(authorizedItemRoute);
-  fastify.register(commentsRoute, { prefix: '/:id/comments' });
+  fastify.register(authorizedItemRoute);  //? 인증된 사용자만 접근 가능한 라우트
+  fastify.register(commentsRoute, { prefix: '/:id/comments' }); //? 해당 글에대한 댓글 라우트
 
   fastify.get<GetItemRoute>(
     '/:id',
