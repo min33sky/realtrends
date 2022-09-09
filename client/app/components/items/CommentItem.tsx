@@ -35,7 +35,7 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
   }
 
   return (
-    <li className="flex flex-col">
+    <article className="flex flex-col">
       <header className="flex items-center justify-start gap-x-1">
         <div className="text-base font-semibold text-gray-800">
           {user.username}
@@ -62,6 +62,6 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
       {!isSubcomment && subcomments && (
         <SubcommentList comments={subcomments} />
       )}
-    </li>
+    </article>
   );
 }
