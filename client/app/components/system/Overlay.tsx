@@ -1,16 +1,15 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
 
 interface Props {
   visible: boolean;
+  onClose: () => void;
 }
 
 /**
  * Modal Overlay
  * @param visible show or hide modal
- * @returns
  */
-export default function Overlay({ visible }: Props) {
+export default function Overlay({ visible, onClose }: Props) {
   return (
     <AnimatePresence initial={false}>
       {visible && (
@@ -20,6 +19,7 @@ export default function Overlay({ visible }: Props) {
           animate={{ opacity: 0.6 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black"
+          onClick={onClose}
         />
       )}
     </AnimatePresence>

@@ -58,13 +58,16 @@ export async function getComments(itemId: number) {
 export async function createComment({
   itemId,
   parentCommentId,
+  text,
 }: {
   itemId: number;
   parentCommentId?: number;
+  text: string;
 }) {
-  const response = await client.post<Comment>(`/api/items/${itemId}`, {
+  const response = await client.post<Comment>(`/api/items/${itemId}/comments`, {
     itemId,
     parentCommentId,
+    text,
   });
   return response.data;
 }
