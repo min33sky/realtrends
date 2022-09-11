@@ -1,7 +1,7 @@
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import React from 'react';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import type { Comment } from '~/lib/api/types';
+import { useCommentInputStore } from '~/lib/stores/useCommentInputStore';
 import LikeButton from '../system/LikeButton';
 import SubcommentList from './SubcommentList';
 
@@ -21,7 +21,12 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
     isDeleted,
   } = comment;
 
+  const { open } = useCommentInputStore();
   const dateDistance = useDateDistance(createdAt);
+
+  const onReply = () => {
+    open(comment.id);
+  };
 
   if (isDeleted) {
     return (
@@ -48,18 +53,20 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
           {dateDistance}
         </div>
       </header>
+
       <p className="mt-1 mb-3 whitespace-pre-wrap text-sm leading-normal text-gray-800">
         {mentionUser ? (
           <span className="mr-1 text-violet-500">@{mentionUser.username}</span>
         ) : null}
         {text}
       </p>
+
       <footer className="flex gap-2 text-xs leading-normal text-gray-400">
         <div className="flex items-center gap-x-2">
           <LikeButton size="small" />
           <span className="min-w-[24px]">{likesCount.toLocaleString()}</span>
         </div>
-        <button className="flex items-center gap-x-1">
+        <button onClick={onReply} className="flex items-center gap-x-1">
           <ChatBubbleLeftRightIcon className="h-4 w-4" /> 댓글 달기
         </button>
       </footer>

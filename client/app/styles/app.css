@@ -837,10 +837,6 @@ video {
   gap: 1rem;
 }
 
-.gap-12{
-  gap: 3rem;
-}
-
 .gap-x-1{
   -moz-column-gap: 0.25rem;
        column-gap: 0.25rem;
@@ -978,8 +974,8 @@ video {
   padding-left: 1.5rem;
 }
 
-.pt-3{
-  padding-top: 0.75rem;
+.pt-6{
+  padding-top: 1.5rem;
 }
 
 .pt-4{
@@ -996,10 +992,6 @@ video {
 
 .pb-4{
   padding-bottom: 1rem;
-}
-
-.pt-6{
-  padding-top: 1.5rem;
 }
 
 .text-center{

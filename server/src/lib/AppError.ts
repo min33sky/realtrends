@@ -1,3 +1,5 @@
+//! Deprecated /
+
 type ErrorName =
   | 'UserExistsError'
   | 'AuthenticationError'
@@ -67,6 +69,10 @@ const statusCodeMap: Record<ErrorName, ErrorInfo> = {
   },
 };
 
+/**
+ * # DEPRECATED
+ * @deprecated Use NextAppError instead
+ */
 export default class AppError extends Error {
   public statusCode: number;
 

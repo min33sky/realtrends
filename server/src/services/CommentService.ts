@@ -1,5 +1,5 @@
 import { Comment } from '@prisma/client';
-import AppError from '../lib/AppError';
+import AppError from '../lib/NextAppError';
 import db from '../lib/db';
 
 class CommentService {
@@ -115,7 +115,7 @@ class CommentService {
     });
 
     if (!comment || comment.deletedAt) {
-      throw new AppError('NotFoundError');
+      throw new AppError('NotFound');
     }
 
     if (withSubComments) {
@@ -164,6 +164,12 @@ class CommentService {
     userId,
     parentCommentId,
   }: CreateCommentParams) {
+    if (text.length > 300 || text.length === 0) {
+      throw new AppError('BadRequest', {
+        message: '댓글은 1자 이상 300자 이하로 작성해주세요.',
+      });
+    }
+
     //? 대댓글, 대대댓글 등의 경우 부모 댓글 ID를 댓글 대상이 아닌 최상단 댓글로 지정한다.
     //? 대신 대댓글의 userId를 맨션유저아이디로 지정해서 어느 댓글의 대댓글인지 구별할 수 있도록 한다.
 
@@ -173,7 +179,9 @@ class CommentService {
 
     const rootParentCommentId = parentComment?.parentCommentId;
     const targetParentCommentId = rootParentCommentId ?? parentCommentId;
-    const shouldMention = !!rootParentCommentId && parentComment?.userId;
+    //? 맨션 조건: 타인의 댓글에 대댓글을 달 때만 허용
+    const shouldMention =
+      !!rootParentCommentId && parentComment?.userId !== userId;
 
     const comment = await db.comment.create({
       data: {
@@ -299,7 +307,7 @@ class CommentService {
     const comment = await this.getComment(commentId);
 
     if (comment.userId !== userId) {
-      throw new AppError('ForbiddenError');
+      throw new AppError('Forbidden');
     }
 
     await db.comment.update({
@@ -316,7 +324,7 @@ class CommentService {
     const comment = await this.getComment(commentId);
 
     if (comment.userId !== userId) {
-      throw new AppError('ForbiddenError');
+      throw new AppError('Forbidden');
     }
 
     const updateComment = await db.comment.update({

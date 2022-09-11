@@ -48,7 +48,7 @@ interface ErrorPayload {
   BadRequest: any;
 }
 
-//? 모든 에러에 대한 payload를 undeifnd로 설정하고,
+//? 모든 에러에 대한 payload를 undefind로 설정하고,
 //? ErrorPayload가 존재하는 에러는 Omit으로 제거하고 payload가 있는 타입으로 바꿔치기한다.
 type ErrorPayloadWithDefault = Omit<
   Record<ErrorName, undefined>,
@@ -61,7 +61,7 @@ export default class AppError extends Error {
 
   constructor(
     public name: ErrorName,
-    public payload: ErrorPayloadWithDefault[ErrorName],
+    public payload?: ErrorPayloadWithDefault[ErrorName],
   ) {
     const errorInfo = errors[name];
     super(errorInfo.message);
