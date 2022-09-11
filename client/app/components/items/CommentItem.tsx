@@ -1,7 +1,7 @@
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import type { Comment } from '~/lib/api/types';
-import { useCommentInputStore } from '~/lib/stores/useCommentInputStore';
+import { useCommentInputStore } from '~/stores/useCommentInputStore';
 import LikeButton from '../system/LikeButton';
 import SubcommentList from './SubcommentList';
 

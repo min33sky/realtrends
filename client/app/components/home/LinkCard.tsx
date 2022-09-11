@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useItemOverrideById } from '~/contexts/ItemStatsContext';
 import { useUser } from '~/contexts/UserContext';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import type { Item } from '~/lib/api/types';
+import { useItemOverrideById } from '~/stores/useItemOverrideStore';
 import LikeButton from '../system/LikeButton';
 import { Globe } from '../vectors';
 

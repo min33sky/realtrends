@@ -1,3 +1,5 @@
+//! Deprecated /
+
 import { createContext, useContext, useMemo, useState } from 'react';
 import type { ItemStats } from '~/lib/api/types';
 
@@ -25,6 +27,10 @@ interface Props {
 
 const ItemOverrideContext = createContext<ItemOverrideContextType | null>(null);
 
+/**
+ * ## Deprecated
+ * @deprecated use useItemOverrideState instead
+ */
 export function ItemOverrideProvider({ children }: Props) {
   const [state, setState] = useState<ItemOverrideContextState>({});
 
@@ -48,8 +54,10 @@ export function ItemOverrideProvider({ children }: Props) {
 }
 
 /**
+ * ## Deprecated
  * 클라이언트 상태값을 덮어씌우기 위한 컨텍스트
  * ? Optimistic UI를 구현하기 위해 사용
+ * @deprecated use useItemStatsStore instead
  */
 export function useItemOverride() {
   const context = useContext(ItemOverrideContext);
@@ -58,9 +66,11 @@ export function useItemOverride() {
 }
 
 /**
+ * ## Deprecated
  * 해당 ID의 상태값을 가져오는 함수
  * @param itemId
  * @returns ItemStats State (client state)
+ * @deprecated use useItemStatsStore instead
  */
 export function useItemOverrideById(
   itemId: number,

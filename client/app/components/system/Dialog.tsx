@@ -9,6 +9,7 @@ interface Props {
   confirmText?: string;
   onClose: () => void;
   onConfirm: () => void;
+  mode?: 'OK' | 'YESNO';
 }
 
 export default function Dialog({
@@ -18,6 +19,7 @@ export default function Dialog({
   confirmText,
   onClose,
   onConfirm,
+  mode = 'OK',
 }: Props) {
   return (
     <Modal visible={visible}>
@@ -28,9 +30,11 @@ export default function Dialog({
         {description}
       </p>
       <footer className="flex justify-end gap-2">
-        <Button variant="secondary" onClick={onClose}>
-          닫기
-        </Button>
+        {mode === 'YESNO' && (
+          <Button variant="secondary" onClick={onClose}>
+            닫기
+          </Button>
+        )}
         <Button onClick={onConfirm}>{confirmText ?? '확인'}</Button>
       </footer>
     </Modal>

@@ -1,7 +1,6 @@
-import React from 'react';
 import { useUser } from '~/contexts/UserContext';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
-import { useCommentInputStore } from '~/lib/stores/useCommentInputStore';
+import { useCommentInputStore } from '~/stores/useCommentInputStore';
 
 export default function CommentInput() {
   const open = useCommentInputStore((store) => store.open);

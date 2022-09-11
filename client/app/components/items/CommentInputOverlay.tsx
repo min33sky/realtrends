@@ -5,16 +5,18 @@ import useCreateCommentMutation from '~/hooks/mutation/useCreateCommentMutation'
 import { useCommentsQuery } from '~/hooks/query/useCommentsQuery';
 import useItemId from '~/hooks/useItemId';
 import type { Comment } from '~/lib/api/types';
-import { useCommentInputStore } from '~/lib/stores/useCommentInputStore';
 import Button from '../system/Button';
 import Overlay from '../system/Overlay';
 import produce from 'immer';
+import { useCommentInputStore } from '~/stores/useCommentInputStore';
+import { useDialog } from '~/contexts/DialogContext';
 
 /**
  * 댓글 인풋 | 대댓글 버튼을 눌렀을 때 나오는 댓글 입력 오버레이
  */
 export default function CommentInputOverlay() {
   const { visible, close, parentCommentId } = useCommentInputStore();
+  const { open } = useDialog();
   const [text, setText] = useState('');
   const itemId = useItemId(); // 현재 글의 ID
   const queryClient = useQueryClient();
@@ -72,6 +74,12 @@ export default function CommentInputOverlay() {
 
       close();
     },
+    onError(error, variables, context) {
+      open({
+        title: '오류',
+        description: '댓글 작성 실패',
+      });
+    },
   });
 
   useEffect(() => {
@@ -82,6 +90,14 @@ export default function CommentInputOverlay() {
 
   const onClick = () => {
     if (!itemId) return;
+    if (text.length === 0) {
+      open({
+        title: '오류',
+        description: '댓글을 입력하지 않으셨습니다.',
+      });
+      return;
+    }
+
     mutate({ parentCommentId: parentCommentId ?? undefined, itemId, text });
   };
 

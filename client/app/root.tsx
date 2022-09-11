@@ -9,7 +9,6 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import DialogProvider from './contexts/DialogContext';
-import { ItemOverrideProvider } from './contexts/ItemStatsContext';
 import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
 import { getMyAccount } from './lib/api/auth';
@@ -79,9 +78,7 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <DialogProvider>
             <UserContext.Provider value={data}>
-              <ItemOverrideProvider>
-                <Outlet />
-              </ItemOverrideProvider>
+              <Outlet />
             </UserContext.Provider>
           </DialogProvider>
         </QueryClientProvider>

@@ -20,6 +20,7 @@ export default function useOpenLoginDialog() {
         description,
         confirmText: '로그인',
         onConfirm: () => navigate(`/auth/login?next=${location.pathname}`), //? 로그인 후 현재 위치로 돌아오기 위한 설정
+        mode: 'YESNO',
       });
     },
     [location, navigate, open],
