@@ -3,10 +3,6 @@ import type {
   UseMutationOptions,
 } from '@tanstack/react-query';
 
-// (Omit<UseQueryOptions<Comment[], unknown, Comment[], (string | number)[]>, "initialData" | ... 1 more ... | "queryKey"> & {
-//   ...;
-// }) | undefined
-
 export type UseQueryOptionsOf<T extends (...args: any) => any> =
   UseQueryOptions<
     Awaited<ReturnType<T>>,

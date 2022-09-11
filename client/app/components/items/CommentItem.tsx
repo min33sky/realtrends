@@ -35,7 +35,11 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
   }
 
   return (
-    <article className="flex flex-col">
+    <article
+      aria-label="댓글"
+      data-comment-id={comment.id}
+      className="flex flex-col"
+    >
       <header className="flex items-center justify-start gap-x-1">
         <div className="text-base font-semibold text-gray-800">
           {user.username}
