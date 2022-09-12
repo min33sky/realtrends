@@ -1,4 +1,4 @@
-import { Comment } from '@prisma/client';
+import { Comment, CommentLike } from '@prisma/client';
 import AppError from '../lib/NextAppError';
 import db from '../lib/db';
 
@@ -12,7 +12,17 @@ class CommentService {
     return CommentService.instance;
   }
 
-  async getComments(itemId: number) {
+  /**
+   * 댓글 목록 가져오기
+   * @description userId가 존재하면 댓글 좋아요 여부도 함께 가져온다.
+   */
+  async getComments({
+    itemId,
+    userId,
+  }: {
+    itemId: number;
+    userId?: number | null;
+  }) {
     const comments = await db.comment.findMany({
       where: {
         itemId,
@@ -21,12 +31,26 @@ class CommentService {
         id: 'asc',
       },
       include: {
-        user: true,
-        mentionUser: true,
+        user: true, // 작성자 정보
+        mentionUser: true, // 맨션된 유저 정보
       },
     });
 
-    return this.groupSubcomments(this.redact(comments));
+    //? userId가 있다면 좋아요 누른 댓글 정보도 가져온다.
+    const commentLikedMap = userId
+      ? await this.getCommentLikedMap({
+          commentIds: comments.map((c) => c.id),
+          userId,
+        })
+      : {};
+
+    // 좋아요 정보를 추가한다.
+    const commentsWithIsLiked = comments.map((comment) => ({
+      ...comment,
+      isLiked: !!commentLikedMap[comment.id],
+    }));
+
+    return this.groupSubcomments(this.redact(commentsWithIsLiked));
   }
 
   redact(comments: Comment[]) {
@@ -41,7 +65,7 @@ class CommentService {
       const someDate = new Date(0);
       return {
         ...comment,
-        likesCount: 0,
+        likes: 0,
         createdAt: someDate,
         updatedAt: someDate,
         subcommentsCount: 0,
@@ -58,16 +82,16 @@ class CommentService {
   }
 
   /**
-   * 댓글 배열에 대댓글 배열을 추가해서 리턴하는 함수
+   * 댓글 배열에 대댓글 배열을 추가해서 반환하는 함수
    * @param comments
    */
-  async groupSubcomments(comments: Comment[]) {
+  async groupSubcomments<T extends Comment>(comments: T[]) {
     const rootComments = comments.filter(
       (comment) => comment.parentCommentId === null,
     );
 
     //? 대댓글이 있는 댓글들을 찾아서 맵에 저장한다. (key: 루트 댓글 ID, value: 대댓글 배열)
-    const subCommentsMap = new Map<number, Comment[]>();
+    const subCommentsMap = new Map<number, T[]>();
 
     comments.forEach((comment) => {
       if (!comment.parentCommentId) return; //* 루트 댓글은 제외
@@ -93,7 +117,18 @@ class CommentService {
     return merged;
   }
 
-  async getComment(commentId: number, withSubComments: boolean = false) {
+  /**
+   * 댓글 가져오기
+   */
+  async getComment({
+    commentId,
+    userId,
+    withSubcomments,
+  }: {
+    commentId: number;
+    withSubcomments?: boolean;
+    userId?: number | null;
+  }) {
     const comment = await db.comment.findUnique({
       where: {
         id: commentId,
@@ -114,29 +149,55 @@ class CommentService {
       },
     });
 
+    //? userId가 있다면 좋아요 누른 댓글인지 확인한다.
+    const commentLike = userId
+      ? await db.commentLike.findUnique({
+          where: {
+            userId_commentId: {
+              userId,
+              commentId,
+            },
+          },
+        })
+      : null;
+
     if (!comment || comment.deletedAt) {
       throw new AppError('NotFound');
     }
 
-    if (withSubComments) {
-      const subcomments = await this.getSubcomments(commentId);
+    if (withSubcomments) {
+      const subcomments = await this.getSubcomments({ commentId, userId });
+
       return {
         ...comment,
         subcomments,
+        isLiked: !!commentLike,
         isDeleted: false,
       };
     }
 
     return {
       ...comment,
+      isLiked: !!commentLike,
       isDeleted: false,
     };
   }
 
-  async getSubcomments(commentId: number) {
-    return await db.comment.findMany({
+  /**
+   * 대댓글 가져오기
+   * @description userId가 있다면 좋아요 누른 대댓글 정보도 가져온다.
+   */
+  async getSubcomments({
+    commentId,
+    userId,
+  }: {
+    commentId: number;
+    userId?: number | null;
+  }) {
+    const subcomments = await db.comment.findMany({
       where: {
         parentCommentId: commentId,
+        deletedAt: null,
       },
       orderBy: {
         id: 'asc',
@@ -156,8 +217,25 @@ class CommentService {
         },
       },
     });
+
+    const commentLikedMap = userId
+      ? await this.getCommentLikedMap({
+          commentIds: subcomments.map((comment) => comment.id),
+          userId,
+        })
+      : {};
+
+    return subcomments.map((subcomment) => ({
+      ...subcomment,
+      isLiked: !!commentLikedMap[subcomment.id],
+      isDeleted: false,
+    }));
   }
 
+  /**
+   * 댓글 작성
+   * @description parentCommentId는 댓글을 달 댓글의 ID라고 생각하자. (루트 댓글은 undefined)
+   */
   async createComment({
     itemId,
     text,
@@ -170,16 +248,18 @@ class CommentService {
       });
     }
 
-    //? 대댓글, 대대댓글 등의 경우 부모 댓글 ID를 댓글 대상이 아닌 최상단 댓글로 지정한다.
-    //? 대신 대댓글의 userId를 맨션유저아이디로 지정해서 어느 댓글의 대댓글인지 구별할 수 있도록 한다.
+    //? 댓글은 parentCommentId가 null, 대댓글의 경우 parentCommentId가 있다
+    //? 대대댓글의 경우 대댓글과 동일한 parentCommentId를 가진다.
+    //? 대신 대댓글의 userId를 mentionUserId로 지정해서 어느 대댓글의 대대댓글인지 구별할 수 있도록 한다.
 
     const parentComment = parentCommentId
-      ? await this.getComment(parentCommentId)
+      ? await this.getComment({ commentId: parentCommentId })
       : null;
 
-    const rootParentCommentId = parentComment?.parentCommentId;
-    const targetParentCommentId = rootParentCommentId ?? parentCommentId;
-    //? 맨션 조건: 타인의 댓글에 대댓글을 달 때만 허용
+    const rootParentCommentId = parentComment?.parentCommentId; // 루트댓글의 경우에는 null
+    const targetParentCommentId = rootParentCommentId ?? parentCommentId; // 대댓글 이상에서만 존재하는 값
+
+    //? mention 조건: 타인의 댓글에 대댓글을 달 때만 허용
     const shouldMention =
       !!rootParentCommentId && parentComment?.userId !== userId;
 
@@ -188,8 +268,8 @@ class CommentService {
         text,
         itemId,
         userId,
-        parentCommentId: targetParentCommentId,
-        mentionUserId: shouldMention ? parentComment?.userId : null, //? 대댓글을 달 댓글의 userID
+        parentCommentId: targetParentCommentId, //? 대댓글 이상에서만 존재
+        mentionUserId: shouldMention ? parentComment?.userId : null, //? 대대댓글을 달 대댓글의 userID
       },
       include: {
         user: true,
@@ -272,7 +352,7 @@ class CommentService {
         id: commentId,
       },
       data: {
-        likesCount: count,
+        likes: count,
       },
     });
 
@@ -303,8 +383,11 @@ class CommentService {
     return count;
   }
 
+  /**
+   * 댓글 삭제
+   */
   async deleteComment({ commentId, userId }: CommentParams) {
-    const comment = await this.getComment(commentId);
+    const comment = await this.getComment({ commentId });
 
     if (comment.userId !== userId) {
       throw new AppError('Forbidden');
@@ -320,8 +403,11 @@ class CommentService {
     });
   }
 
+  /**
+   * 댓글 수정
+   */
   async updateComment({ commentId, text, userId }: UpdateCommentParams) {
-    const comment = await this.getComment(commentId);
+    const comment = await this.getComment({ commentId });
 
     if (comment.userId !== userId) {
       throw new AppError('Forbidden');
@@ -339,7 +425,34 @@ class CommentService {
       },
     });
 
-    return this.getComment(commentId, true);
+    return this.getComment({ commentId, withSubcomments: true });
+  }
+
+  /**
+   * 주어진 댓글들 중에서 해당 유저가 좋아요를 누른 댓글을 Map으로 반환하는 함수
+   * @returns 댓글 번호를 Key, 좋아요 정보 객체를 value로 하는 Map을 반환
+   */
+  async getCommentLikedMap({
+    commentIds,
+    userId,
+  }: {
+    commentIds: number[];
+    userId: number;
+  }) {
+    //? 좋아요를 누른 댓글 목록을 가져온다.
+    const list = await db.commentLike.findMany({
+      where: {
+        userId,
+        commentId: {
+          in: commentIds,
+        },
+      },
+    });
+
+    return list.reduce((acc, cur) => {
+      acc[cur.commentId] = cur;
+      return acc;
+    }, {} as Record<number, CommentLike>);
   }
 }
 

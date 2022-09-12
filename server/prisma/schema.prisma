@@ -111,7 +111,7 @@ model ItemStats {
 model Comment {
   id               Int           @id @default(autoincrement())
   text             String
-  likesCount       Int           @default(0) // 좋아요 개수
+  likes            Int           @default(0) // 좋아요 개수
   subcommentsCount Int           @default(0) // 대댓글 개수
   parentCommentId  Int? // 대댓글일 경우 부모 댓글의 id
   item             Item          @relation(fields: [itemId], references: [id])

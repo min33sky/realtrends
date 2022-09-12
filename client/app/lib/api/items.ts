@@ -1,5 +1,11 @@
 import { client } from '../client';
-import type { Comment, GetItemsResult, Item, LikeItemResult } from './types';
+import type {
+  Comment,
+  GetItemsResult,
+  Item,
+  LikeCommentResult,
+  LikeItemResult,
+} from './types';
 import qs from 'qs';
 
 export async function createItem(params: CreateItemParams) {
@@ -55,6 +61,10 @@ export async function getComments(itemId: number) {
   return response.data;
 }
 
+/**
+ * 댓글 작성
+ * @description 루트 댓글일 경우 parentCommentId는 undefined
+ */
 export async function createComment({
   itemId,
   parentCommentId,
@@ -69,6 +79,23 @@ export async function createComment({
     parentCommentId,
     text,
   });
+  return response.data;
+}
+
+/**
+ * 댓글 좋아요 API
+ */
+export async function likeComment({
+  commentId,
+  itemId,
+}: {
+  itemId: number;
+  commentId: number;
+}) {
+  const response = await client.post<LikeCommentResult>(
+    `/api/items/${itemId}/comments/${commentId}/likes`,
+    {},
+  );
   return response.data;
 }
 

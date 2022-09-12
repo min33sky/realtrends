@@ -62,5 +62,11 @@ export interface Comment {
   user: User;
   mentionUser: User | null;
   subcomments?: Comment[];
+  isLiked: boolean;
   isDeleted: boolean;
+}
+
+export interface LikeCommentResult {
+  id: number;
+  likes: number;
 }

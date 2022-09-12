@@ -23,10 +23,12 @@ export let CommentSchema = Type.Object({
   text: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
-  likesCount: Type.Number(),
+  likes: Type.Number(),
   subcommentsCount: Type.Number(),
   user: UserSchema,
   mentionUser: Nullable(UserSchema),
+  isDeleted: Type.Boolean(),
+  isLiked: Type.Boolean(),
 });
 
 //? subcomments에서 CommentSchema 순환 참조 에러가 발생해서 덮어씌우는 방식으로 구현...
@@ -35,12 +37,13 @@ CommentSchema = Type.Object({
   text: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
-  likesCount: Type.Number(),
+  likes: Type.Number(),
   subcommentsCount: Type.Number(),
   user: UserSchema,
   mentionUser: Nullable(UserSchema),
   subcomments: Type.Optional(Type.Array(CommentSchema)), //! 위에 선언으로 이동시키면 순환 참조 에러 발생
   isDeleted: Type.Boolean(),
+  isLiked: Type.Boolean(),
 });
 
 const CommentLikeSchema = Type.Object({
