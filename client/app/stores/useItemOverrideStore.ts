@@ -2,6 +2,8 @@ import produce from 'immer';
 import create from 'zustand';
 import type { ItemStats } from '~/lib/api/types';
 
+//? Item의 좋아요 여부, Item과 관련된 정보를 관리하는 스토어
+
 interface OverridableItem {
   isLiked: boolean;
   ItemStats: ItemStats;

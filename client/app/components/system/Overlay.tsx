@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 interface Props {
   visible: boolean;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 /**

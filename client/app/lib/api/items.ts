@@ -113,6 +113,19 @@ export async function unlikeComment({
   return respnose.data;
 }
 
+export async function deleteComment({
+  commentId,
+  itemId,
+}: {
+  itemId: number;
+  commentId: number;
+}) {
+  const response = await client.delete(
+    `/api/items/${itemId}/comments/${commentId}`,
+  );
+  return response.data;
+}
+
 interface CreateItemParams {
   title: string;
   body: string;

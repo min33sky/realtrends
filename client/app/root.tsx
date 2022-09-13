@@ -16,6 +16,7 @@ import { setClientCookie } from './lib/client';
 import { extractError } from './lib/error';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import styles from './styles/app.css';
+import GlobalBottomSheetModal from './components/system/GlobalBottomSheetModal';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
@@ -81,6 +82,7 @@ export default function App() {
               <Outlet />
             </UserContext.Provider>
           </DialogProvider>
+          <GlobalBottomSheetModal />
         </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
