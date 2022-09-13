@@ -302,6 +302,7 @@ class CommentService {
     return {
       ...comment,
       isDeleted: false,
+      isLiked: false,
       subcomments: [],
     };
   }
