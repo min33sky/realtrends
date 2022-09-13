@@ -5,6 +5,7 @@ import type {
   Item,
   LikeCommentResult,
   LikeItemResult,
+  UnlikeCommentResult,
 } from './types';
 import qs from 'qs';
 
@@ -97,6 +98,19 @@ export async function likeComment({
     {},
   );
   return response.data;
+}
+
+export async function unlikeComment({
+  commentId,
+  itemId,
+}: {
+  itemId: number;
+  commentId: number;
+}) {
+  const respnose = await client.delete<UnlikeCommentResult>(
+    `/api/items/${itemId}/comments/${commentId}/likes`,
+  );
+  return respnose.data;
 }
 
 interface CreateItemParams {

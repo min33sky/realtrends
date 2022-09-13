@@ -31,7 +31,7 @@ export default function LikeButton({
             exit={{ scale: 0 }}
             className="absolute left-0 top-0 grid h-full place-items-center"
           >
-            <HeartIcon className={` h-5 w-5 fill-current text-red-400`} />
+            <HeartIcon className={`h-full w-full fill-current text-red-400`} />
           </motion.span>
         ) : (
           <motion.span

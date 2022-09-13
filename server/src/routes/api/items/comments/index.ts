@@ -90,6 +90,9 @@ const authorizedCommentsRoute = createAuthorizedRoute(async (fastify) => {
 
   fastify.delete<CommentsRoute['UnlikeComment']>(
     '/:commentId/likes',
+    {
+      schema: CommentsRouteSchema.UnlikeComment,
+    },
     async (request) => {
       const { commentId } = request.params;
       const userId = request.user?.id!;
