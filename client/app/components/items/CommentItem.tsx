@@ -25,7 +25,7 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
     comment;
 
   const itemId = useItemId();
-  const { open } = useCommentInputStore();
+  const { write, edit } = useCommentInputStore();
   const commentLike = useCommentLikeById(comment.id);
   const { like, unlike } = useCommentLike();
   const openLoginDialog = useOpenLoginDialog();
@@ -38,7 +38,7 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
     openBottomSheetModal([
       {
         name: '수정',
-        onClick: () => {},
+        onClick: () => edit(comment.id, text),
       },
       {
         name: '삭제',
@@ -68,8 +68,11 @@ export default function CommentItem({ comment, isSubcomment }: Props) {
     }
   };
 
+  /**
+   * 대댓글 달기 핸들러
+   */
   const onReply = () => {
-    open(comment.id);
+    write(comment.id);
   };
 
   if (isDeleted) {

@@ -3,7 +3,7 @@ import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import { useCommentInputStore } from '~/stores/useCommentInputStore';
 
 export default function CommentInput() {
-  const open = useCommentInputStore((store) => store.open);
+  const write = useCommentInputStore((store) => store.write);
   const user = useUser();
   const openLoginDialog = useOpenLoginDialog();
 
@@ -12,7 +12,8 @@ export default function CommentInput() {
       openLoginDialog('comment');
       return;
     }
-    open();
+
+    write(); //? store의 visible이 true로 변경되면서 commentInputOVerlay가 보여진다.
   };
 
   return (

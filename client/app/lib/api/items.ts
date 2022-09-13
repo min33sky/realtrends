@@ -126,6 +126,24 @@ export async function deleteComment({
   return response.data;
 }
 
+export async function editComment({
+  commentId,
+  itemId,
+  text,
+}: {
+  itemId: number;
+  commentId: number;
+  text: string;
+}) {
+  const response = await client.patch<Comment>(
+    `/api/items/${itemId}/comments/${commentId}`,
+    {
+      text,
+    },
+  );
+  return response.data;
+}
+
 interface CreateItemParams {
   title: string;
   body: string;
