@@ -12,19 +12,19 @@ export const PaginationSchema = <T extends TSchema>(type: T) =>
     totalCount: Type.Integer(),
     pageInfo: Type.Object({
       hasNextPage: Type.Boolean(),
-      endCursor: Nullable(Type.Integer()),
+      endCursor: Type.Optional(Nullable(Type.Integer())), //? 일반적인 페이지네이션에서 사용
+      nextOffset: Type.Optional(Nullable(Type.Integer())), //? algolia에서 사용
     }),
   });
-
-interface PageInfo {
-  hasNextPage: boolean;
-  endCursor: number | null;
-}
 
 export interface PaginationType<T> {
   list: T[];
   totalCount: number;
-  pageInfo: PageInfo;
+  pageInfo: {
+    nextOffset?: number | null;
+    endCursor?: number | null;
+    hasNextPage: boolean;
+  };
 }
 
 export const PaginationOptionSchema = Type.Object({
