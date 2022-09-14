@@ -8,6 +8,7 @@ interface Props {
   hasBackButton?: boolean;
   title?: React.ReactNode;
   children?: React.ReactNode;
+  headerRight?: React.ReactNode;
   onGoBack?: () => void;
 }
 
@@ -16,6 +17,7 @@ export default function BasicLayout({
   title,
   children,
   onGoBack,
+  headerRight,
 }: Props) {
   const goBack = useGoBack();
 
@@ -28,6 +30,7 @@ export default function BasicLayout({
             <HeaderBackButton onClick={onGoBack ?? goBack} />
           ) : undefined
         }
+        headerRight={headerRight}
       />
       <main className="flex flex-1 flex-col overflow-y-scroll">{children}</main>
     </FullHeightPage>

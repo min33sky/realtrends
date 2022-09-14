@@ -9,6 +9,7 @@ interface DialogConfig {
   title: string;
   description: string;
   confirmText?: string;
+  cancelText?: string;
   onConfirm?: () => void;
   onClose?: () => void;
   mode?: 'OK' | 'YESNO';
@@ -49,6 +50,7 @@ export default function DialogProvider({ children }: Props) {
         title={config?.title ?? ''}
         description={config?.description ?? ''}
         confirmText={config?.confirmText}
+        cancelText={config?.cancelText}
         onClose={close}
         onConfirm={confirm}
         mode={config?.mode ?? 'OK'}

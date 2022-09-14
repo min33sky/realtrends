@@ -5,12 +5,13 @@ import Overlay from './Overlay';
 interface Props {
   visible: boolean;
   children: React.ReactNode;
+  onClose?: () => void;
 }
 
-export default function Modal({ visible, children }: Props) {
+export default function Modal({ visible, children, onClose }: Props) {
   return (
     <>
-      <Overlay visible={visible} />
+      <Overlay visible={visible} onClose={onClose} />
       <div
         aria-label="Positioner"
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 "
