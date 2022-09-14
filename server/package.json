@@ -20,6 +20,7 @@
     "@fastify/type-provider-typebox": "^2.3.0",
     "@prisma/client": "4.2.1",
     "@sinclair/typebox": "^0.24.28",
+    "algoliasearch": "^4.14.2",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.1",
