@@ -27,7 +27,7 @@ export default function Dialog({
   mode = 'OK',
 }: Props) {
   return (
-    <Modal visible={visible}>
+    <Modal visible={visible} onClose={onClose}>
       <h3 className="mb-2 text-lg font-semibold leading-normal text-gray-800">
         {title}
       </h3>

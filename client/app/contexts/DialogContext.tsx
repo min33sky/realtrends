@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function DialogProvider({ children }: Props) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false); //? 다이얼로그를 보여줄 지 여부는 따로 상태로 관리하는게 편하다. (어던 다이얼로근지 알 필요가 없으니까)
   const [config, setConfig] = useState<DialogConfig | null>(null);
 
   const open = useCallback((config: DialogConfig) => {
