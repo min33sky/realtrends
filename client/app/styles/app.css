@@ -672,10 +672,6 @@ video {
   display: none;
 }
 
-.aspect-\[288\/192\]{
-  aspect-ratio: 288/192;
-}
-
 .h-14{
   height: 3.5rem;
 }
@@ -720,16 +716,12 @@ video {
   height: 100vh;
 }
 
-.max-h-\[80vh\]{
-  max-height: 80vh;
-}
-
-.max-h-5{
-  max-height: 1.25rem;
-}
-
 .max-h-\[40vh\]{
   max-height: 40vh;
+}
+
+.max-h-\[80vh\]{
+  max-height: 80vh;
 }
 
 .w-6{

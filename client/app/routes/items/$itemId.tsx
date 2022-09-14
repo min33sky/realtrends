@@ -47,7 +47,7 @@ export default function ItemPage() {
       {
         name: '수정',
         onClick() {
-          // TODO
+          navigate(`/write/edit?itemId=${loaderData.item.id}`);
         },
       },
       {

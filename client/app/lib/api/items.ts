@@ -57,6 +57,23 @@ export async function unlikeItem(itemId: number, contoller?: AbortController) {
   return response.data;
 }
 
+export async function updateItem({
+  body,
+  itemId,
+  title,
+}: {
+  itemId: number;
+  title: string;
+  body: string;
+}) {
+  const response = await client.patch<Item>(`/api/items/${itemId}`, {
+    title,
+    body,
+    tags: [], //! 아직 미구현. 에러 방지를 위해 빈배열을 보냄
+  });
+  return response.data;
+}
+
 export async function deleteItem(itemId: number) {
   return client.delete(`/api/items/${itemId}`);
 }
