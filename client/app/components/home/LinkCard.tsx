@@ -49,7 +49,7 @@ export default function LinkCard({ item }: Props) {
           {thumbnail ? (
             <img
               src={thumbnail}
-              className="mb-2 block aspect-[288/192] w-full rounded-xl object-cover shadow"
+              className="mb-2 block max-h-[40vh] w-full rounded-xl object-cover shadow"
               alt="thumbnail"
             />
           ) : null}
