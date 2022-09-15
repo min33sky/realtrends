@@ -412,6 +412,12 @@ video {
   height: auto;
 }
 
+em {
+  font-style: normal;
+  font-weight: 600;
+  color: violet;
+}
+
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -740,12 +746,12 @@ video {
   width: 9rem;
 }
 
-.w-5{
-  width: 1.25rem;
-}
-
 .w-full{
   width: 100%;
+}
+
+.w-5{
+  width: 1.25rem;
 }
 
 .w-4{
@@ -849,6 +855,10 @@ video {
 .gap-x-2{
   -moz-column-gap: 0.5rem;
        column-gap: 0.5rem;
+}
+
+.gap-y-6{
+  row-gap: 1.5rem;
 }
 
 .space-y-4 > :not([hidden]) ~ :not([hidden]){

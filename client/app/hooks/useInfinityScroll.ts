@@ -17,7 +17,7 @@ export function useInfinityScroll(
       },
       {
         root: targetRef.current.parentElement,
-        rootMargin: '64px',
+        rootMargin: '300px',
         threshold: 1, //? 1이면 완전 다 보여야 isIntersecting이 true가 된다.
       },
     );
