@@ -1,4 +1,6 @@
+import { Publisher } from '@prisma/client';
 import algoliasearch from 'algoliasearch';
+import { ItemType } from '../routes/api/items/schema';
 import { PaginationType } from './pagination';
 
 if (!process.env.ALGOLIA_APP_ID) {
@@ -17,8 +19,9 @@ const client = algoliasearch(
 const index = client.initIndex('realtrends_items');
 
 const algolia = {
+  // algolia에서 검색하기
   async search(query: string, { offset = 0, length = 20 }: SearchOption = {}) {
-    const result = await index.search(query, { offset, length });
+    const result = await index.search<ItemType>(query, { offset, length });
 
     const hasNextPage = offset + length < result.nbHits;
 
@@ -33,11 +36,32 @@ const algolia = {
 
     return pagination;
   },
+
+  //? algolia와 db를 동기화하는 함수
+  sync(item: ItemSchemaForAlgolia) {
+    return index.saveObject({ ...item, objectID: item.id });
+  },
+
+  //? algolia에서 해당 값을 제거
+  delete(objectID: number) {
+    return index.deleteObject(objectID.toString());
+  },
 };
 
 interface SearchOption {
   offset?: number;
   length?: number;
+}
+
+interface ItemSchemaForAlgolia {
+  id: number;
+  title: string;
+  body: string;
+  author: string | null;
+  link: string | null;
+  thumbnail: string | null;
+  username: string;
+  publisher: Publisher;
 }
 
 export default algolia;

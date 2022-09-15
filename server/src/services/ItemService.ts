@@ -1,4 +1,5 @@
-import { Item, ItemLike, ItemStats } from '@prisma/client';
+import { Item, ItemLike, ItemStats, Publisher, User } from '@prisma/client';
+import algolia from '../lib/algolia';
 import AppError from '../lib/AppError';
 import db from '../lib/db';
 import { createPagination, PaginationOptionType } from '../lib/pagination';
@@ -79,6 +80,20 @@ class ItemService {
     const itemLikedMap = userId
       ? await this.getItemLikedMap({ itemIds: [item.id], userId })
       : null;
+
+    //? algolia에 저장
+    algolia
+      .sync({
+        id: item.id,
+        author: item.author,
+        body: item.body,
+        link: item.link,
+        thumbnail: item.thumbnail,
+        title: item.title,
+        username: item.user.username,
+        publisher: item.publisher,
+      })
+      .catch(console.error);
 
     return this.mergeItemLiked(itemWithItemStats, itemLikedMap?.[item.id]);
   }
@@ -180,6 +195,36 @@ class ItemService {
         totalCount,
       });
     }
+
+    return [];
+  }
+
+  async getItemsByIds(itemIds: number[]) {
+    const result = await db.item.findMany({
+      where: {
+        id: {
+          in: itemIds,
+        },
+      },
+      include: {
+        user: true,
+        publisher: true,
+        ItemStats: true,
+      },
+    });
+
+    type FullItem = Item & {
+      user: User;
+      publisher: Publisher;
+      ItemStats: ItemStats | null;
+    };
+
+    const itemMap = result.reduce<Record<number, FullItem>>((acc, item) => {
+      acc[item.id] = item;
+      return acc;
+    }, {});
+
+    return itemMap;
   }
 
   async updateItem({ itemId, userId, title, body }: UpdateItemParams) {
@@ -209,6 +254,20 @@ class ItemService {
       ? await this.getItemLikedMap({ itemIds: [item.id], userId })
       : null;
 
+    algolia
+      .sync({
+        id: item.id,
+        author: item.author,
+        body: item.body,
+        link: item.link,
+        thumbnail: item.thumbnail,
+        title: item.title,
+        username: item.user.username,
+        publisher: item.publisher,
+      })
+      .then(console.log)
+      .catch(console.error);
+
     return this.mergeItemLiked(updatedItem, itemLikedMap?.[item.id]);
   }
 
@@ -224,6 +283,8 @@ class ItemService {
         id: itemId,
       },
     });
+
+    algolia.delete(itemId).catch(console.error);
   }
 
   async countLikes(itemId: number) {
