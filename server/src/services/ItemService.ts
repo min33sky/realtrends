@@ -3,6 +3,7 @@ import algolia from '../lib/algolia';
 import AppError from '../lib/AppError';
 import db from '../lib/db';
 import { createPagination, PaginationOptionType } from '../lib/pagination';
+import { calcurateRankingScore } from '../lib/ranking';
 import { extractPageInfo } from '../lib/validateUrl';
 import { CreateItemBodyType } from '../routes/api/items/schema';
 
@@ -334,6 +335,9 @@ class ItemService {
       itemId,
       likes,
     });
+
+    this.recalculateRanking(itemId, likes).catch(console.error);
+
     return itemStats;
   }
 
@@ -355,6 +359,8 @@ class ItemService {
       itemId,
       likes,
     });
+
+    this.recalculateRanking(itemId, likes).catch(console.error);
 
     return itemStats;
   }
@@ -381,6 +387,35 @@ class ItemService {
       acc[cur.itemId] = cur;
       return acc;
     }, {} as Record<number, ItemLike>);
+  }
+
+  /**
+   * Trending Score 계산 함순
+   */
+  async recalculateRanking(itemId: number, likeCount?: number) {
+    const item = await db.item.findUnique({
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (!item) return;
+
+    const likes = likeCount ?? (await this.countLikes(itemId));
+
+    const age =
+      (Date.now() - new Date(item.createdAt).getTime()) / 1000 / 60 / 60;
+
+    const score = calcurateRankingScore(likes, age);
+
+    return db.itemStats.update({
+      where: {
+        itemId,
+      },
+      data: {
+        score,
+      },
+    });
   }
 }
 
