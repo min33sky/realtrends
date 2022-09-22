@@ -134,6 +134,14 @@ class ItemService {
     };
   }
 
+  async getRecentItems({
+    limit,
+    cursor,
+  }: {
+    limit?: number;
+    cursor?: number;
+  }) {}
+
   /**
    * 목록 조회 (페이지네이션)
    * @param params
@@ -207,11 +215,24 @@ class ItemService {
         },
       });
 
+      const cursorItem = params.cursor
+        ? await db.item.findUnique({
+            where: {
+              id: params.cursor,
+            },
+            include: {
+              ItemStats: true,
+            },
+          })
+        : null;
+
       const list = await db.item.findMany({
         where: {
+          ...(params.cursor ? { id: { lt: params.cursor } } : {}),
           ItemStats: {
             score: {
               gte: 0.001,
+              ...(cursorItem ? { lte: cursorItem.ItemStats?.score } : {}),
             },
           },
         },
@@ -256,7 +277,7 @@ class ItemService {
                   lte: list.at(-1)?.ItemStats?.score,
                 },
                 itemId: {
-                  not: endCursor,
+                  lt: endCursor,
                 },
               },
             },
