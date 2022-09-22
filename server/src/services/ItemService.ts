@@ -139,8 +139,140 @@ class ItemService {
     cursor,
   }: {
     limit?: number;
-    cursor?: number;
-  }) {}
+    cursor?: number | null;
+  }) {
+    const [totalCount, list] = await Promise.all([
+      db.item.count(),
+      db.item.findMany({
+        orderBy: {
+          id: 'desc',
+        },
+        where: {
+          id: cursor
+            ? {
+                lt: cursor,
+              }
+            : undefined,
+        },
+        include: {
+          user: true,
+          publisher: true,
+          ItemStats: true,
+        },
+        take: limit,
+      }),
+    ]);
+
+    const endCursor = list.at(-1)?.id ?? null;
+    const hasNextPage = endCursor
+      ? (await db.item.count({
+          where: {
+            id: {
+              lt: endCursor,
+            },
+          },
+          orderBy: {
+            id: 'desc',
+          },
+        })) > 0
+      : false;
+
+    return { totalCount, list, endCursor, hasNextPage };
+  }
+
+  async getTrendingItems({
+    limit,
+    cursor,
+  }: {
+    limit: number;
+    cursor?: number | null;
+  }) {
+    const totalCount = await db.itemStats.count({
+      where: {
+        score: {
+          gte: 0.001,
+        },
+      },
+    });
+
+    const cursorItem = cursor
+      ? await db.item.findUnique({
+          where: {
+            id: cursor,
+          },
+          include: {
+            ItemStats: true,
+          },
+        })
+      : null;
+
+    const list = await db.item.findMany({
+      where: {
+        ...(cursor ? { id: { lt: cursor } } : {}),
+        ItemStats: {
+          score: {
+            gte: 0.001,
+            ...(cursorItem ? { lte: cursorItem.ItemStats?.score } : {}),
+          },
+        },
+      },
+      orderBy: [
+        {
+          ItemStats: {
+            score: 'desc',
+          },
+        },
+        {
+          ItemStats: {
+            itemId: 'desc',
+          },
+        },
+      ],
+      include: {
+        user: true,
+        publisher: true,
+        ItemStats: true,
+      },
+      take: limit,
+    });
+
+    const endCursor = list.at(-1)?.id ?? null;
+
+    const hasNextPage = endCursor
+      ? (await db.item.count({
+          where: {
+            ItemStats: {
+              score: {
+                gte: 0.001,
+                lte: list.at(-1)?.ItemStats?.score,
+              },
+              itemId: {
+                lt: endCursor,
+              },
+            },
+          },
+          orderBy: [
+            {
+              ItemStats: {
+                score: 'desc',
+              },
+            },
+            {
+              ItemStats: {
+                itemId: 'desc',
+              },
+            },
+          ],
+        })) > 0
+      : false;
+
+    return {
+      totalCount,
+      list,
+      endCursor,
+      hasNextPage,
+    };
+  }
 
   /**
    * 목록 조회 (페이지네이션)
@@ -148,163 +280,43 @@ class ItemService {
    * @returns
    */
   async getPublicItems(
-    params: GetPublicItemsParams &
-      PaginationOptionType & { userId?: number } = { mode: 'recent' },
+    {
+      mode,
+      cursor,
+      limit,
+      userId,
+    }: GetPublicItemsParams & PaginationOptionType & { userId?: number } = {
+      mode: 'recent',
+    },
   ) {
-    const limit = params.limit ?? 20;
+    const { endCursor, hasNextPage, list, totalCount } = await (() => {
+      if (mode === 'trending') {
+        return this.getTrendingItems({ limit: limit ?? 20, cursor });
+      }
+      if (mode === 'past') {
+      }
+      return this.getRecentItems({ limit: limit ?? 20, cursor });
+    })();
 
-    if (params.mode === 'recent') {
-      const [totalCount, list] = await Promise.all([
-        db.item.count(),
-        db.item.findMany({
-          orderBy: { id: 'desc' },
-          where: {
-            id: params.cursor
-              ? {
-                  lt: params.cursor,
-                }
-              : undefined,
-          },
-          include: {
-            user: true,
-            publisher: true,
-            ItemStats: true,
-          },
-          take: limit,
-        }),
-      ]);
+    const itemLikedMap = userId
+      ? await this.getItemLikedMap({
+          itemIds: list.map((item) => item.id),
+          userId: userId,
+        })
+      : null;
 
-      const itemLikedMap = params.userId
-        ? await this.getItemLikedMap({
-            itemIds: list.map((item) => item.id),
-            userId: params.userId,
-          })
-        : null;
-      const listWithLiked = list.map((item) =>
-        this.mergeItemLiked(item, itemLikedMap?.[item.id]),
-      );
+    const listWithLiked = list.map((item) =>
+      this.mergeItemLiked(item, itemLikedMap?.[item.id]),
+    );
 
-      const endCursor = list.at(-1)?.id ?? null;
-      const hasNextPage = endCursor
-        ? (await db.item.count({
-            where: {
-              id: {
-                lt: endCursor,
-              },
-            },
-            orderBy: {
-              id: 'desc',
-            },
-          })) > 0
-        : false;
-
-      return createPagination({
-        list: listWithLiked,
-        pageInfo: {
-          endCursor,
-          hasNextPage,
-        },
-        totalCount,
-      });
-    } else if (params.mode === 'trending') {
-      const totalCount = await db.itemStats.count({
-        where: {
-          score: {
-            gte: 0.001,
-          },
-        },
-      });
-
-      const cursorItem = params.cursor
-        ? await db.item.findUnique({
-            where: {
-              id: params.cursor,
-            },
-            include: {
-              ItemStats: true,
-            },
-          })
-        : null;
-
-      const list = await db.item.findMany({
-        where: {
-          ...(params.cursor ? { id: { lt: params.cursor } } : {}),
-          ItemStats: {
-            score: {
-              gte: 0.001,
-              ...(cursorItem ? { lte: cursorItem.ItemStats?.score } : {}),
-            },
-          },
-        },
-        orderBy: [
-          {
-            ItemStats: {
-              score: 'desc',
-            },
-          },
-          {
-            ItemStats: {
-              itemId: 'desc',
-            },
-          },
-        ],
-        include: {
-          user: true,
-          publisher: true,
-          ItemStats: true,
-        },
-        take: limit,
-      });
-
-      const itemLikedMap = params.userId
-        ? await this.getItemLikedMap({
-            itemIds: list.map((item) => item.id),
-            userId: params.userId,
-          })
-        : null;
-      const listWithLiked = list.map((item) =>
-        this.mergeItemLiked(item, itemLikedMap?.[item.id]),
-      );
-
-      const endCursor = list.at(-1)?.id ?? null;
-
-      const hasNextPage = endCursor
-        ? (await db.item.count({
-            where: {
-              ItemStats: {
-                score: {
-                  gte: 0.001,
-                  lte: list.at(-1)?.ItemStats?.score,
-                },
-                itemId: {
-                  lt: endCursor,
-                },
-              },
-            },
-            orderBy: [
-              {
-                ItemStats: {
-                  score: 'desc',
-                },
-              },
-              {
-                ItemStats: {
-                  itemId: 'desc',
-                },
-              },
-            ],
-          })) > 0
-        : false;
-
-      return createPagination({
-        list: listWithLiked,
-        pageInfo: {
-          endCursor: hasNextPage ? endCursor : null,
-          hasNextPage,
-        },
-        totalCount,
-      });
-    }
+    return createPagination({
+      list: listWithLiked,
+      totalCount,
+      pageInfo: {
+        endCursor: hasNextPage ? endCursor : null,
+        hasNextPage,
+      },
+    });
   }
 
   async getItemsByIds(itemIds: number[]) {
