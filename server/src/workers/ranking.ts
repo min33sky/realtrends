@@ -64,4 +64,5 @@ async function recalculate() {
 //? 1. 점수가 0.001보다 낮은 아이템들을 찾는다.
 //? 2. 점수를 다시 계산한다.
 //? 3. 점수를 업데이트한다.
+recalculate();
 cron.schedule('*/5 * * * *', recalculate);

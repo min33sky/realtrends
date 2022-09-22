@@ -40,9 +40,9 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     '/',
     { schema: GetItemsSchema },
     async (request) => {
-      const { cursor } = request.query;
+      const { cursor, mode } = request.query;
       return itemService.getPublicItems({
-        mode: 'recent',
+        mode: mode ?? 'recent',
         cursor: cursor ? parseInt(cursor, 10) : undefined,
         userId: request.user?.id,
         limit: 20,

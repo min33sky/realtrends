@@ -31,8 +31,10 @@ export default function Index() {
       hasNextPage: false,
     };
 
+    console.log('hasNextPage', hasNextPage);
     if (fetcher.state === 'loading') return;
     if (!hasNextPage) return;
+    console.log('load more');
 
     //? Remix에서 '?index&'를 붙여줘야 현재 페이지의 Loader함수를 불러오는 것 같다....
     fetcher.load(`/?index&cursor=${endCursor}`);
