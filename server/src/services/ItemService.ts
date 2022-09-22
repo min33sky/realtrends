@@ -279,13 +279,13 @@ class ItemService {
    * @param params
    * @returns
    */
-  async getPublicItems(
+  async getItems(
     {
       mode,
       cursor,
       limit,
       userId,
-    }: GetPublicItemsParams & PaginationOptionType & { userId?: number } = {
+    }: GetItemsParams & PaginationOptionType & { userId?: number } = {
       mode: 'recent',
     },
   ) {
@@ -538,7 +538,7 @@ class ItemService {
   }
 }
 
-type GetPublicItemsParams =
+type GetItemsParams =
   | {
       mode: 'trending' | 'recent';
     }
