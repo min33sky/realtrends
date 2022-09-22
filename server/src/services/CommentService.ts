@@ -1,5 +1,5 @@
 import { Comment, CommentLike } from '@prisma/client';
-import AppError from '../lib/NextAppError';
+import NextAppError from '../lib/NextAppError';
 import db from '../lib/db';
 
 class CommentService {
@@ -162,7 +162,7 @@ class CommentService {
       : null;
 
     if (!comment || comment.deletedAt) {
-      throw new AppError('NotFound');
+      throw new NextAppError('NotFound');
     }
 
     if (withSubcomments) {
@@ -243,7 +243,7 @@ class CommentService {
     parentCommentId,
   }: CreateCommentParams) {
     if (text.length > 300 || text.length === 0) {
-      throw new AppError('BadRequest', {
+      throw new NextAppError('BadRequest', {
         message: '댓글은 1자 이상 300자 이하로 작성해주세요.',
       });
     }
@@ -391,7 +391,7 @@ class CommentService {
     const comment = await this.getComment({ commentId });
 
     if (comment.userId !== userId) {
-      throw new AppError('Forbidden');
+      throw new NextAppError('Forbidden');
     }
 
     await db.comment.update({
@@ -411,7 +411,7 @@ class CommentService {
     const comment = await this.getComment({ commentId });
 
     if (comment.userId !== userId) {
-      throw new AppError('Forbidden');
+      throw new NextAppError('Forbidden');
     }
 
     const updateComment = await db.comment.update({
