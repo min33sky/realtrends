@@ -8,6 +8,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^18.7.6",
+    "@types/node-cron": "^3.0.4",
     "nodemon": "^2.0.19",
     "pino-pretty": "^9.0.0",
     "ts-node": "^10.9.1",
@@ -31,11 +32,13 @@
     "metascraper-image": "^5.30.3",
     "metascraper-logo-favicon": "^5.30.3",
     "metascraper-publisher": "^5.30.3",
+    "node-cron": "^3.0.2",
     "p-queue": "^7.3.0",
     "prisma": "^4.2.1"
   },
   "scripts": {
     "start": "ts-node-esm --transpileOnly --experimental-specifier-resolution=node ./src/main.ts | pino-pretty",
-    "dev": "NODE_ENV=development nodemon --watch ./src --exec \"yarn start\" -e ts"
+    "dev": "NODE_ENV=development nodemon --watch ./src --exec \"yarn start\" -e ts",
+    "worker:ranking": "ts-node-esm --transpileOnly --experimental-specifier-resolution=node ./src/workers/ranking.ts"
   }
 }
