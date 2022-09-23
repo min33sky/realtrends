@@ -192,6 +192,8 @@ class ItemService {
     startDate?: string;
     endDate?: string;
   }) {
+    console.log('####### getPastItems: ', startDate, endDate);
+
     if (!startDate || !endDate) {
       throw new NextAppError('BadRequest', {
         message: 'startDate or endDate is missing',
@@ -202,7 +204,9 @@ class ItemService {
       new Date(endDate).getTime() - new Date(startDate).getTime();
 
     //? throw Error if not yyyy-mm-dd format
-    if ([startDate, endDate].some((date) => !/^\d{4}-\d{2}-\d{2$/.test(date))) {
+    if (
+      [startDate, endDate].some((date) => !/^\d{4}-\d{2}-\d{2}$/.test(date))
+    ) {
       throw new NextAppError('BadRequest', {
         message: 'startDate or endDate is not yyyy-mm-dd format',
       });

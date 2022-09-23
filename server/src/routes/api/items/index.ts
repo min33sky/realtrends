@@ -41,6 +41,10 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     { schema: GetItemsSchema },
     async (request) => {
       const { cursor, mode, endDate, startDate } = request.query;
+
+      console.log('#### startDate', startDate);
+      console.log('#### endDate', endDate);
+
       return itemService.getItems({
         mode: mode ?? 'recent',
         cursor: cursor ? parseInt(cursor, 10) : undefined,
