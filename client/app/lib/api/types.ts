@@ -93,3 +93,5 @@ export interface Highlight {
 }
 
 export type SearchItemsResult = Pagination<SearchResultItem>;
+
+export type ListMode = 'recent' | 'past' | 'trending';

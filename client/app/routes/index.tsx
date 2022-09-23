@@ -1,18 +1,26 @@
 import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import LinkCardList from '~/components/home/LinkCardList';
+import ListModeSelector from '~/components/home/ListModeSelector';
 import TabLayout from '~/components/layout/TabLayout';
 import { useInfinityScroll } from '~/hooks/useInfinityScroll';
 import { getItems } from '~/lib/api/items';
-import type { GetItemsResult } from '~/lib/api/types';
+import type { GetItemsResult, ListMode } from '~/lib/api/types';
 import { parseUrlParams } from '~/lib/parseUrlParams';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { cursor } = parseUrlParams<{ cursor?: string }>(request.url);
+  const { cursor, mode } = parseUrlParams<{ cursor?: string; mode?: string }>(
+    request.url,
+  );
   const parsedCursor = cursor ? parseInt(cursor, 10) : undefined;
-  const list = await getItems(parsedCursor);
+  const fallbackedMode = mode ?? 'trending'; //TODO : trending으로 바꿔줘야함
+
+  const list = await getItems({
+    mode: fallbackedMode as any,
+    cursor: parsedCursor,
+  });
   return json(list);
 };
 
@@ -24,6 +32,13 @@ export default function Index() {
   const [pages, setPages] = useState([data]);
   const fetcher = useFetcher();
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [mode, setMode] = useState<ListMode>('trending');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const nextUrl = mode === 'trending' ? '/' : `/?mode=${mode}`;
+    navigate(nextUrl, { replace: true });
+  }, [mode, navigate]);
 
   const fetchNext = useCallback(() => {
     const { endCursor, hasNextPage } = pages.at(-1)?.pageInfo ?? {
@@ -31,10 +46,8 @@ export default function Index() {
       hasNextPage: false,
     };
 
-    console.log('hasNextPage', hasNextPage);
     if (fetcher.state === 'loading') return;
     if (!hasNextPage) return;
-    console.log('load more');
 
     //? Remix에서 '?index&'를 붙여줘야 현재 페이지의 Loader함수를 불러오는 것 같다....
     fetcher.load(`/?index&cursor=${endCursor}`);
@@ -54,6 +67,7 @@ export default function Index() {
 
   return (
     <TabLayout>
+      <ListModeSelector mode={mode} onSelectMode={setMode} />
       <LinkCardList items={items} />
       <div
         ref={loadMoreRef}
