@@ -7,6 +7,7 @@ import 'dotenv/config';
 import { authPlugin } from './plugins/authPlugin';
 import fastifyCookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import { isNextAppError } from './lib/NextAppError';
 
 const server = Fastify({ logger: true });
 
@@ -24,6 +25,17 @@ server.register(fastifyCookie);
 
 server.setErrorHandler(async (error, request, reply) => {
   reply.statusCode = error.statusCode ?? 500;
+  if (isNextAppError(error)) {
+    console.log(error);
+    return {
+      statusCode: error.statusCode,
+      name: error.name,
+      message: error.message,
+      payload: error.payload,
+    };
+  }
+
+  //TODO: Deprecated... 나중에 삭제
   if (error instanceof AppError) {
     return {
       statusCode: error.statusCode,

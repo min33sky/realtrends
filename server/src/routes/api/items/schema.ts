@@ -25,7 +25,7 @@ ItemStatsSchema.example = {
   commentsCount: 5,
 };
 
-const ItemSchema = Type.Object({
+export const ItemSchema = Type.Object({
   id: Type.Integer(),
   title: Type.String(),
   body: Type.String(),

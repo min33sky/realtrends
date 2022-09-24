@@ -11,14 +11,16 @@ datasource db {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
-  username          String    @unique
+  id                Int           @id @default(autoincrement())
+  username          String        @unique
   passwordHash      String
-  createdAt         DateTime  @default(now())
+  createdAt         DateTime      @default(now())
   Item              Item[]
   Token             Token[]
-  comments          Comment[] @relation("user") // 내가 쓴 댓글
-  mentionedComments Comment[] @relation("mentionUser") // 내가 언급된 댓글
+  comments          Comment[]     @relation("user") // 내가 쓴 댓글
+  mentionedComments Comment[]     @relation("mentionUser") // 내가 언급된 댓글
+  commentLikes      CommentLike[]
+  bookmarks         Bookmark[]
 }
 
 model Token {
@@ -47,6 +49,7 @@ model Item {
   ItemStats   ItemStats? // Item의 추가 정보
   itemLikes   ItemLike[] // 좋아요
   comments    Comment[]
+  bookmarks   Bookmark[]
 
   @@index([createdAt(sort: Desc)])
 }
@@ -138,9 +141,24 @@ model CommentLike {
   commentId Int
   userId    Int
   Comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId, commentId])
   @@index(commentId)
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  item Item @relation(fields: [itemId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([itemId, userId])
+  @@index(userId)
+  @@index(createdAt)
 }

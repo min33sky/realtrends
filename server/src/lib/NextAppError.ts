@@ -37,6 +37,10 @@ const errors = {
     statusCode: 422,
     message: 'Invalid URL',
   },
+  AlreadyExists: {
+    statusCode: 409,
+    message: 'Already Exists',
+  },
 };
 
 type ErrorName = keyof typeof errors;
@@ -64,7 +68,11 @@ export default class NextAppError extends Error {
     public payload?: ErrorPayloadWithDefault[ErrorName] & { message?: string },
   ) {
     const errorInfo = errors[name];
-    super(payload.message ?? errorInfo.message);
+    super(payload?.message ?? errorInfo.message);
     this.statusCode = errorInfo.statusCode;
   }
+}
+
+export function isNextAppError(error: any): error is NextAppError {
+  return error instanceof NextAppError;
 }

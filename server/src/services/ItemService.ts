@@ -599,7 +599,7 @@ class ItemService {
    * @param params
    * @returns 아이템 번호를 키, 좋아요 모델을 값으로 하는 Map을 리턴
    */
-  private async getItemLikedMap(params: GetItemLikedParams) {
+  async getItemLikedMap(params: GetItemLikedParams) {
     const { userId, itemIds } = params;
 
     //? 사용자가 좋아요 누른 글 목록 조회
