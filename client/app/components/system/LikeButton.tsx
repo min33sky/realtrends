@@ -1,5 +1,5 @@
 import { HeartIcon } from '@heroicons/react/24/outline';
-import { AnimatePresence, motion } from 'framer-motion';
+import IconToggleButton from './IconToggleButton';
 
 type Size = 'small' | 'medium';
 
@@ -15,36 +15,14 @@ export default function LikeButton({
   size = 'medium',
 }: Props) {
   return (
-    <button
-      aria-label="좋아요 버튼"
-      className={`relative inline-flex  ${
-        size === 'small' ? 'h-4 w-4' : 'h-6 w-6'
-      } `}
+    <IconToggleButton
+      activeIcon={
+        <HeartIcon className={`h-full w-full fill-current text-red-400`} />
+      }
+      inactiveIcon={<HeartIcon className={`h-full w-full text-red-400`} />}
+      isActive={isLiked}
       onClick={onClick}
-    >
-      <AnimatePresence initial={false}>
-        {isLiked ? (
-          <motion.span
-            key="fill"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            className="absolute left-0 top-0 grid h-full place-items-center"
-          >
-            <HeartIcon className={`h-full w-full fill-current text-red-400`} />
-          </motion.span>
-        ) : (
-          <motion.span
-            key="outline"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            className="absolute left-0 top-0 grid h-full place-items-center"
-          >
-            <HeartIcon className={`h-full w-full text-red-400`} />
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </button>
+      size={size}
+    />
   );
 }

@@ -6,6 +6,7 @@ import { useLikeManager } from '~/hooks/useLikeManager';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import type { Item } from '~/lib/api/types';
 import { useItemOverrideById } from '~/stores/useItemOverrideStore';
+import BookmarkButton from '../system/BookmarkButton';
 import LikeButton from '../system/LikeButton';
 import { Globe } from '../vectors';
 
@@ -90,7 +91,10 @@ export default function ItemViewer({ item }: Props) {
         </AnimatePresence>
 
         <footer className="relative flex h-9 items-center justify-between">
-          <LikeButton isLiked={isLiked} onClick={toggleLike} />
+          <div>
+            <LikeButton isLiked={isLiked} onClick={toggleLike} />
+            <BookmarkButton isAciive={true} onClick={() => {}} />
+          </div>
           <p>
             by <span>{user.username}</span> · {dateDistance}
           </p>
