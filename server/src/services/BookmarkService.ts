@@ -1,3 +1,4 @@
+import { Bookmark } from '@prisma/client';
 import db from '../lib/db';
 import NextAppError from '../lib/NextAppError';
 import ItemService from './ItemService';
@@ -29,14 +30,8 @@ export default class BookmarkService {
           },
         },
       });
-      {
-      }
-      console.log('따ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ악');
 
-      return {
-        ...bookmark,
-        isLiked: false,
-      };
+      return bookmark;
     } catch (error) {
       if ((error as any)?.message?.includes(['Unique constraint failed'])) {
         throw new NextAppError('AlreadyExists');
@@ -51,8 +46,8 @@ export default class BookmarkService {
     limit,
   }: {
     userId: number;
-    cursor?: number;
     limit: number;
+    cursor?: number;
   }) {
     //? cursor가 있다면 해당 cursor의 createdAt을 가져온다.
     const cursorDate = cursor
@@ -97,17 +92,10 @@ export default class BookmarkService {
     ]);
 
     const itemService = ItemService.getInstance();
-    const itemLikedMap = await itemService.getItemLikedMap({
-      userId,
-      itemIds: bookmarks.map((bookmark) => bookmark.itemId),
-    });
 
     const list = bookmarks.map((bookmark) => ({
       ...bookmark,
-      item: {
-        ...bookmark.item,
-        isLiked: !!itemLikedMap[bookmark.itemId],
-      },
+      item: itemService.serialize(bookmark.item),
     }));
 
     const endCursor = list.at(-1)?.id ?? null;
@@ -158,5 +146,27 @@ export default class BookmarkService {
         id: bookmarkId,
       },
     });
+  }
+
+  async getBookmarkMap({
+    itemIds,
+    userId,
+  }: {
+    itemIds: number[];
+    userId: number;
+  }) {
+    const bookmarks = await db.bookmark.findMany({
+      where: {
+        userId,
+        itemId: {
+          in: itemIds,
+        },
+      },
+    });
+
+    return bookmarks.reduce<Record<number, Bookmark>>((acc, current) => {
+      acc[current.itemId] = current;
+      return acc;
+    }, {});
   }
 }

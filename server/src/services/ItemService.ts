@@ -1,4 +1,11 @@
-import { Item, ItemLike, ItemStats, Publisher, User } from '@prisma/client';
+import {
+  Bookmark,
+  Item,
+  ItemLike,
+  ItemStats,
+  Publisher,
+  User,
+} from '@prisma/client';
 import algolia from '../lib/algolia';
 import AppError from '../lib/AppError';
 import db from '../lib/db';
@@ -79,10 +86,6 @@ class ItemService {
 
     const itemWithItemStats = { ...item, ItemStats: itemStats };
 
-    const itemLikedMap = userId
-      ? await this.getItemLikedMap({ itemIds: [item.id], userId })
-      : null;
-
     //? algolia에 저장
     algolia
       .sync({
@@ -97,7 +100,7 @@ class ItemService {
       })
       .catch(console.error);
 
-    return this.mergeItemLiked(itemWithItemStats, itemLikedMap?.[item.id]);
+    return this.serialize(itemWithItemStats);
   }
 
   async getItem(id: number, userId: number | null = null) {
@@ -109,6 +112,8 @@ class ItemService {
         user: true,
         publisher: true,
         ItemStats: true,
+        bookmarks: userId ? { where: { userId } } : false,
+        itemLikes: userId ? { where: { userId } } : false,
       },
     });
 
@@ -116,11 +121,7 @@ class ItemService {
       throw new AppError('NotFoundError');
     }
 
-    const itemLikedMap = userId
-      ? await this.getItemLikedMap({ itemIds: [id], userId })
-      : null;
-
-    return this.mergeItemLiked(item, itemLikedMap?.[id]);
+    return this.serialize(item);
   }
 
   /**
@@ -135,12 +136,27 @@ class ItemService {
     };
   }
 
+  /**
+   * Item 정보에 isLiked, isBookmarked 추가하여 반환하는 함수
+   */
+  serialize<
+    T extends Item & { itemLikes?: ItemLike[]; bookmarks?: Bookmark[] },
+  >(item: T) {
+    return {
+      ...item,
+      isLiked: !!item.itemLikes?.length,
+      isBookmarked: !!item.bookmarks?.length,
+    };
+  }
+
   async getRecentItems({
     limit,
     cursor,
+    userId,
   }: {
     limit?: number;
     cursor?: number | null;
+    userId?: number;
   }) {
     const [totalCount, list] = await Promise.all([
       db.item.count(),
@@ -159,6 +175,8 @@ class ItemService {
           user: true,
           publisher: true,
           ItemStats: true,
+          itemLikes: userId ? { where: { userId } } : false,
+          bookmarks: userId ? { where: { userId } } : false,
         },
         take: limit,
       }),
@@ -186,14 +204,14 @@ class ItemService {
     cursor,
     endDate,
     startDate,
+    userId,
   }: {
     limit: number;
     cursor?: number | null;
     startDate?: string;
     endDate?: string;
+    userId?: number;
   }) {
-    console.log('####### getPastItems: ', startDate, endDate);
-
     if (!startDate || !endDate) {
       throw new NextAppError('BadRequest', {
         message: 'startDate or endDate is missing',
@@ -212,6 +230,10 @@ class ItemService {
       });
     }
 
+    /**
+     *? 1주일 이상의 기간은 조회할 수 없음
+     * @example 일요일을 기준으로 토요일까지 1주일 기간이므로 시작일부터 6일 이상 차이나면 에러
+     * */
     if (dateDiff > 1000 * 60 * 60 * 24 * 6) {
       throw new NextAppError('BadRequest', {
         message: 'Date range bigger than 7 days',
@@ -252,6 +274,8 @@ class ItemService {
           user: true,
           publisher: true,
           ItemStats: true,
+          itemLikes: userId ? { where: { userId } } : false,
+          bookmarks: userId ? { where: { userId } } : false,
         },
         take: limit,
       }),
@@ -288,9 +312,11 @@ class ItemService {
   async getTrendingItems({
     limit,
     cursor,
+    userId,
   }: {
     limit: number;
     cursor?: number | null;
+    userId?: number;
   }) {
     const totalCount = await db.itemStats.count({
       where: {
@@ -337,6 +363,8 @@ class ItemService {
         user: true,
         publisher: true,
         ItemStats: true,
+        itemLikes: userId ? { where: { userId } } : false,
+        bookmarks: userId ? { where: { userId } } : false,
       },
       take: limit,
     });
@@ -405,22 +433,13 @@ class ItemService {
       if (mode === 'past') {
         return this.getPastItems({ limit: _limit, cursor, startDate, endDate });
       }
-      return this.getRecentItems({ limit: _limit, cursor });
+      return this.getRecentItems({ limit: _limit, cursor, userId });
     })();
 
-    const itemLikedMap = userId
-      ? await this.getItemLikedMap({
-          itemIds: list.map((item) => item.id),
-          userId: userId,
-        })
-      : null;
-
-    const listWithLiked = list.map((item) =>
-      this.mergeItemLiked(item, itemLikedMap?.[item.id]),
-    );
+    const serializedList = list.map(this.serialize);
 
     return createPagination({
-      list: listWithLiked,
+      list: serializedList,
       totalCount,
       pageInfo: {
         endCursor: hasNextPage ? endCursor : null,
@@ -429,7 +448,7 @@ class ItemService {
     });
   }
 
-  async getItemsByIds(itemIds: number[]) {
+  async getItemsByIds(itemIds: number[], userId?: number) {
     const result = await db.item.findMany({
       where: {
         id: {
@@ -440,6 +459,8 @@ class ItemService {
         user: true,
         publisher: true,
         ItemStats: true,
+        bookmarks: userId ? { where: { userId } } : false,
+        itemLikes: userId ? { where: { userId } } : false,
       },
     });
 
@@ -450,7 +471,7 @@ class ItemService {
     };
 
     const itemMap = result.reduce<Record<number, FullItem>>((acc, item) => {
-      acc[item.id] = item;
+      acc[item.id] = this.serialize(item);
       return acc;
     }, {});
 
@@ -477,12 +498,10 @@ class ItemService {
         user: true,
         publisher: true,
         ItemStats: true,
+        bookmarks: userId ? { where: { userId } } : false,
+        itemLikes: userId ? { where: { userId } } : false,
       },
     });
-
-    const itemLikedMap = userId
-      ? await this.getItemLikedMap({ itemIds: [item.id], userId })
-      : null;
 
     algolia
       .sync({
@@ -498,7 +517,7 @@ class ItemService {
       .then(console.log)
       .catch(console.error);
 
-    return this.mergeItemLiked(updatedItem, itemLikedMap?.[item.id]);
+    return this.serialize(updatedItem);
   }
 
   async deleteItem({ itemId, userId }: ItemActionParams) {
@@ -592,30 +611,6 @@ class ItemService {
     this.recalculateRanking(itemId, likes).catch(console.error);
 
     return itemStats;
-  }
-
-  /**
-   * 해당 사용자가 좋아요를 누른 아이템 목록을 가져오는 함수
-   * @param params
-   * @returns 아이템 번호를 키, 좋아요 모델을 값으로 하는 Map을 리턴
-   */
-  async getItemLikedMap(params: GetItemLikedParams) {
-    const { userId, itemIds } = params;
-
-    //? 사용자가 좋아요 누른 글 목록 조회
-    const list = await db.itemLike.findMany({
-      where: {
-        userId,
-        itemId: {
-          in: itemIds,
-        },
-      },
-    });
-
-    return list.reduce((acc, cur) => {
-      acc[cur.itemId] = cur;
-      return acc;
-    }, {} as Record<number, ItemLike>);
   }
 
   /**

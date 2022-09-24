@@ -16,6 +16,7 @@ export const searchRoute: FastifyPluginAsync = async (fastify) => {
       const hits = await algolia.search(q, { offset, length: limit });
       const items = await itemService.getItemsByIds(
         hits.list.map((item) => item.id),
+        request.user?.id,
       );
 
       const sealizedList = hits.list
