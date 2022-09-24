@@ -14,15 +14,19 @@ import { parseUrlParams } from '~/lib/parseUrlParams';
 import { getWeekRangeFromDate } from '~/lib/week';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { mode } = parseUrlParams<{ mode?: string }>(request.url);
+  const { mode, start, end } = parseUrlParams<{
+    mode?: string;
+    start?: string;
+    end?: string;
+  }>(request.url);
+
   const fallbackedMode = mode ?? 'trending';
 
   const range = mode === 'past' ? getWeekRangeFromDate(new Date()) : undefined;
-  const startDate = range?.[0];
-  const endDate = range?.[1];
 
-  console.log('##### startDate: ', startDate);
-  console.log('##### endDate: ', endDate);
+  //? URL parsing값을 우선으로 사용함
+  const startDate = start ?? range?.[0];
+  const endDate = end ?? range?.[1];
 
   // TODO: throw error if invalid error
   const list = await getItems({
@@ -39,26 +43,46 @@ export const loader: LoaderFunction = async ({ request }) => {
  */
 export default function Index() {
   const initialData = useLoaderData<GetItemsResult>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [mode, setMode] = useState<ListMode>(
     (searchParams.get('mode') as any) ?? 'trending',
   );
-  const navigate = useNavigate();
   const defaultDateRange = useMemo(() => getWeekRangeFromDate(new Date()), []);
-  const startDate = searchParams.get('startDate');
-  const endEate = searchParams.get('endDate');
+  const startDate = searchParams.get('start');
+  const endEate = searchParams.get('end');
   const [dateRange, setDateRange] = useState(
     startDate && endEate ? [startDate, endEate] : defaultDateRange,
   );
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  console.log('start: ', startDate);
-  console.log('end: ', endEate);
-  console.log('daterange: ', dateRange);
+  //? URL의 startDate, endDate가 변경되면 dateRange를 변경함
+  useEffect(() => {
+    if (mode === 'past') {
+      setDateRange(
+        startDate && endEate ? [startDate, endEate] : defaultDateRange,
+      );
+    }
+  }, [defaultDateRange, endEate, mode, startDate]);
+
+  //? tab이 변경되면 URL을 Parsing해서 Mode의 상태값을 변경한다.
+  useEffect(() => {
+    const nextMode = (searchParams.get('mode') as ListMode) ?? 'trending';
+    if (nextMode !== mode) {
+      setMode(nextMode);
+    }
+  }, [mode, searchParams]);
 
   const { data, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    ['items', mode],
-    ({ pageParam }) => getItems({ mode, cursor: pageParam }),
+    // ['items', mode, mode === 'past' ? { dateRange } : undefined].filter((item) => !!item),
+    ['items', mode, mode === 'past' && { dateRange }],
+    ({ pageParam }) =>
+      getItems({
+        mode,
+        cursor: pageParam,
+        ...(mode === 'past'
+          ? { startDate: dateRange[0], endDate: dateRange[1] }
+          : {}),
+      }),
     {
       initialData: {
         pageParams: [undefined],
@@ -70,11 +94,6 @@ export default function Index() {
       },
     },
   );
-
-  useEffect(() => {
-    const nextUrl = mode === 'trending' ? '/' : `/?mode=${mode}`;
-    navigate(nextUrl, { replace: true });
-  }, [mode, navigate]);
 
   const fetchNext = useCallback(() => {
     if (hasNextPage) {
@@ -88,9 +107,13 @@ export default function Index() {
 
   console.log('pages: ', items);
 
+  const onSelectMode = (mode: ListMode) => {
+    setSearchParams({ mode });
+  };
+
   return (
     <TabLayout>
-      <ListModeSelector mode={mode} onSelectMode={setMode} />
+      <ListModeSelector mode={mode} onSelectMode={onSelectMode} />
       {mode === 'past' && <WeekSelector dateRange={dateRange} />}
       {items && <LinkCardList items={items} />}
       <div
