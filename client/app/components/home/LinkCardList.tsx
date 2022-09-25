@@ -8,7 +8,7 @@ interface Props {
 
 export default function LinkCardList({ items }: Props) {
   return (
-    <ul className="flex flex-col gap-6">
+    <ul className="mx-auto grid gap-12 md:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => (
         <LinkCard key={item.id} item={item} />
       ))}

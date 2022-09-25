@@ -23,7 +23,7 @@ export default function Bookmarks() {
   const initialData = useLoaderData<GetBookmarksResult>();
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const { data, hasNextPage, fetchNextPage } = useInfiniteQuery(
+  const { data, fetchNextPage } = useInfiniteQuery(
     ['bookmarks'],
     ({ pageParam }) => getBookmarks(pageParam),
     {
@@ -46,8 +46,10 @@ export default function Bookmarks() {
 
   return (
     <TabLayout>
-      {items ? <LinkCardList items={items} /> : null}
-      <div ref={loaderRef}></div>
+      <div className="xl:mx-auto xl:max-w-7xl">
+        {items ? <LinkCardList items={items} /> : null}
+        <div ref={loaderRef}></div>
+      </div>
     </TabLayout>
   );
 }

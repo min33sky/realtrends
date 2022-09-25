@@ -88,21 +88,23 @@ export default function LinkCard({ item }: Props) {
 
         <h3 className="mb-2 font-semibold text-gray-800">{title}</h3>
 
-        <p className="mb-2 text-sm text-gray-500 line-clamp-5">{body}</p>
+        <p className="mb-2 text-sm text-gray-500 line-clamp-4">{body}</p>
       </Link>
 
-      <AnimatePresence initial={false}>
-        {likes === 0 ? null : (
-          <motion.div
-            key="like"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 24, opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-          >
-            좋아요 {likes.toLocaleString()}개
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div aria-label="like-wrapper" className="md:h-[26px]">
+        <AnimatePresence initial={false}>
+          {likes === 0 ? null : (
+            <motion.div
+              key="like"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 24, opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+            >
+              좋아요 {likes.toLocaleString()}개
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <footer className="relative flex items-center justify-between ">
         <div className="flex items-center gap-2">

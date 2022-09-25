@@ -9,7 +9,7 @@ import { parseUrlParams } from '~/lib/parseUrlParams';
 import { searchItems } from '~/lib/api/search';
 import { useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
 import type { SearchItemsResult } from '~/lib/api/types';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useInfinityScroll } from '~/hooks/useInfinityScroll';
 import { stringify } from 'qs';
 import SearchResultCardList from '~/components/search/SearchResultCardList';
@@ -43,7 +43,6 @@ export default function Search() {
   const {
     hasNextPage,
     data: infiniteData,
-    isFetching,
     fetchNextPage,
   } = useInfiniteQuery(
     ['searchResults', deboundcedSearchText],
@@ -52,7 +51,7 @@ export default function Search() {
     {
       enabled: !!deboundcedSearchText,
       getNextPageParam: (lastPage, pages) => {
-        if (!lastPage.pageInfo.hasNextPage) return null;
+        if (!lastPage.pageInfo.hasNextPage) return undefined;
         return lastPage.pageInfo.nextOffset;
       },
       initialData: {
@@ -61,6 +60,15 @@ export default function Search() {
       },
     },
   );
+
+  //? 검색이 제대로 안되는 현상을 막기 위한 코드인데 이렇게 하는 것이 맞는것인가
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    queryClient.setQueriesData(['searchResults', deboundcedSearchText], {
+      pageParams: [undefined],
+      pages: [data],
+    });
+  }, [data, deboundcedSearchText, queryClient]);
 
   const fetchNext = useCallback(() => {
     if (!hasNextPage) return;

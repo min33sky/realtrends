@@ -113,14 +113,16 @@ export default function Index() {
 
   return (
     <TabLayout>
-      <ListModeSelector mode={mode} onSelectMode={onSelectMode} />
-      {mode === 'past' && <WeekSelector dateRange={dateRange} />}
-      {items && <LinkCardList items={items} />}
-      <div
-        ref={loadMoreRef}
-        className="bg-violet-600 p-2 text-lg font-semibold text-white"
-      >
-        More Load
+      <div className="xl:mx-auto xl:max-w-7xl">
+        <ListModeSelector mode={mode} onSelectMode={onSelectMode} />
+        {mode === 'past' && <WeekSelector dateRange={dateRange} />}
+        {items && <LinkCardList items={items} />}
+        <div
+          ref={loadMoreRef}
+          className="bg-violet-600 p-2 text-lg font-semibold text-white"
+        >
+          More Load
+        </div>
       </div>
     </TabLayout>
   );

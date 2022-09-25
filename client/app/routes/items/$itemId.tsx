@@ -87,10 +87,12 @@ export default function ItemPage() {
         )
       }
     >
-      <ItemViewer item={loaderData.item} />
-      {/* 'comments' is always valid due to SSR */}
-      <CommentList comments={comments!} />
-      <CommentInputOverlay />
+      <div className="mx-auto md:mt-16 md:max-w-3xl md:px-4">
+        <ItemViewer item={loaderData.item} />
+        {/* 'comments' is always valid due to SSR */}
+        <CommentList comments={comments!} />
+        <CommentInputOverlay />
+      </div>
     </BasicLayout>
   );
 }
