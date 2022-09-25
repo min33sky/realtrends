@@ -43,6 +43,7 @@ export const ItemSchema = Type.Object({
   }),
   ItemStats: ItemStatsSchema,
   isLiked: Type.Boolean(),
+  isBookmarked: Type.Boolean(),
 });
 
 export type ItemType = Static<typeof ItemSchema>;

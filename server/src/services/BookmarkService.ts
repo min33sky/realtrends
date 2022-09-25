@@ -26,12 +26,21 @@ export default class BookmarkService {
               user: true,
               publisher: true,
               ItemStats: true,
+              itemLikes: userId ? { where: { userId } } : false,
             },
           },
         },
       });
 
-      return bookmark;
+      const itemService = ItemService.getInstance();
+
+      return {
+        ...bookmark,
+        item: {
+          ...itemService.serialize(bookmark.item), //? isLiked 속성을 추가
+          isBookmarked: true, //? bookmark create 함수니까 bookmark는 true로 설정
+        },
+      };
     } catch (error) {
       if ((error as any)?.message?.includes(['Unique constraint failed'])) {
         throw new NextAppError('AlreadyExists');
@@ -81,6 +90,7 @@ export default class BookmarkService {
               user: true,
               publisher: true,
               ItemStats: true,
+              itemLikes: userId ? { where: { userId } } : false,
             },
           },
         },
@@ -95,7 +105,10 @@ export default class BookmarkService {
 
     const list = bookmarks.map((bookmark) => ({
       ...bookmark,
-      item: itemService.serialize(bookmark.item),
+      item: {
+        ...itemService.serialize(bookmark.item),
+        isBookmarked: true,
+      },
     }));
 
     const endCursor = list.at(-1)?.id ?? null;
@@ -120,16 +133,13 @@ export default class BookmarkService {
     };
   }
 
-  async deleteBookmark({
-    bookmarkId,
-    userId,
-  }: {
-    userId: number;
-    bookmarkId: number;
-  }) {
+  async deleteBookmark({ itemId, userId }: { userId: number; itemId: number }) {
     const bookmark = await db.bookmark.findUnique({
       where: {
-        id: bookmarkId,
+        itemId_userId: {
+          itemId,
+          userId,
+        },
       },
     });
 
@@ -143,7 +153,10 @@ export default class BookmarkService {
 
     await db.bookmark.delete({
       where: {
-        id: bookmarkId,
+        itemId_userId: {
+          itemId,
+          userId,
+        },
       },
     });
   }

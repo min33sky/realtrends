@@ -428,10 +428,16 @@ class ItemService {
       const _limit = limit ?? 20;
 
       if (mode === 'trending') {
-        return this.getTrendingItems({ limit: _limit, cursor });
+        return this.getTrendingItems({ limit: _limit, cursor, userId });
       }
       if (mode === 'past') {
-        return this.getPastItems({ limit: _limit, cursor, startDate, endDate });
+        return this.getPastItems({
+          limit: _limit,
+          cursor,
+          startDate,
+          endDate,
+          userId,
+        });
       }
       return this.getRecentItems({ limit: _limit, cursor, userId });
     })();

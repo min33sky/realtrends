@@ -1,6 +1,7 @@
 import { Link } from '@remix-run/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUser } from '~/contexts/UserContext';
+import useBookmarkManager from '~/hooks/useBookmarkManager';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
@@ -23,9 +24,11 @@ export default function ItemViewer({ item }: Props) {
 
   const itemStats = itemOverride?.ItemStats ?? item.ItemStats;
   const isLiked = itemOverride?.isLiked ?? item.isLiked;
-  const likes = itemOverride?.ItemStats.likes ?? item.ItemStats.likes;
+  const likes = itemOverride?.ItemStats?.likes ?? itemStats.likes;
+  const isBookmarked = itemOverride?.isBookmarked ?? item.isBookmarked;
 
   const { like, unlike } = useLikeManager();
+  const { create, remove } = useBookmarkManager();
   const openLoginDialog = useOpenLoginDialog();
   const currentUser = useUser();
 
@@ -42,7 +45,18 @@ export default function ItemViewer({ item }: Props) {
     }
   };
 
-  console.log('item link: ', item.link);
+  const toggleBookmark = () => {
+    if (!currentUser) {
+      openLoginDialog('bookmark');
+      return;
+    }
+
+    if (isBookmarked) {
+      remove(id);
+    } else {
+      create(id);
+    }
+  };
 
   return (
     <article className="flex flex-col">
@@ -91,12 +105,12 @@ export default function ItemViewer({ item }: Props) {
         </AnimatePresence>
 
         <footer className="relative flex h-9 items-center justify-between">
-          <div>
+          <div className="flex items-center gap-2">
             <LikeButton isLiked={isLiked} onClick={toggleLike} />
-            <BookmarkButton isAciive={true} onClick={() => {}} />
+            <BookmarkButton isAciive={isBookmarked} onClick={toggleBookmark} />
           </div>
           <p>
-            by <span>{user.username}</span> · {dateDistance}
+            by <span>{user.username}</span> · {dateDistance}5
           </p>
         </footer>
       </div>

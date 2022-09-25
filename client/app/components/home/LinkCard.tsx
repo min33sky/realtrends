@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useUser } from '~/contexts/UserContext';
+import useBookmarkManager from '~/hooks/useBookmarkManager';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import type { Item } from '~/lib/api/types';
 import { useItemOverrideById } from '~/stores/useItemOverrideStore';
+import BookmarkButton from '../system/BookmarkButton';
 import LikeButton from '../system/LikeButton';
 import { Globe } from '../vectors';
 
@@ -19,12 +21,14 @@ export default function LinkCard({ item }: Props) {
 
   const dateDIstance = useDateDistance(createdAt);
   const { like, unlike } = useLikeManager();
+  const { create, remove } = useBookmarkManager();
   const itemOverride = useItemOverrideById(id);
   const ItemStats = itemOverride?.ItemStats ?? item.ItemStats;
 
   // ? Context에 있는 값을 우선으로 사용한다.
   const isLiked = itemOverride?.isLiked ?? item.isLiked;
-  const likes = itemOverride?.ItemStats.likes ?? ItemStats.likes;
+  const likes = itemOverride?.ItemStats?.likes ?? ItemStats.likes;
+  const isBookmarked = itemOverride?.isBookmarked ?? item.isBookmarked;
 
   const currentUser = useUser();
   const openLoginDialog = useOpenLoginDialog();
@@ -39,6 +43,19 @@ export default function LinkCard({ item }: Props) {
       unlike(id, ItemStats);
     } else {
       like(id, ItemStats);
+    }
+  };
+
+  const toggleBookmark = () => {
+    if (!currentUser) {
+      openLoginDialog('bookmark');
+      return;
+    }
+
+    if (isBookmarked) {
+      remove(id);
+    } else {
+      create(id);
     }
   };
 
@@ -88,7 +105,10 @@ export default function LinkCard({ item }: Props) {
       </AnimatePresence>
 
       <footer className="relative flex items-center justify-between ">
-        <LikeButton isLiked={isLiked} onClick={toggleLike} />
+        <div className="flex items-center gap-2">
+          <LikeButton isLiked={isLiked} onClick={toggleLike} />
+          <BookmarkButton isAciive={isBookmarked} onClick={toggleBookmark} />
+        </div>
         <p>
           by <span>{user.username}</span> · {dateDIstance}
         </p>
