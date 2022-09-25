@@ -7,14 +7,14 @@ interface Props {
   headerRight?: React.ReactNode;
 }
 
-function Header({
+function MobileHeader({
   title = <Logo className="h-10 w-36" />,
   titleFullWidth,
   headerLeft,
   headerRight,
 }: Props) {
   return (
-    <header className="relative flex h-[56px] items-center justify-center border-b border-b-gray-400 px-4">
+    <header className="relative flex h-[56px] items-center justify-center border-b border-b-gray-400 px-4 xs:hidden">
       {headerLeft && (
         <div className="absolute left-4 flex h-full items-center">
           {headerLeft}
@@ -38,4 +38,4 @@ function Header({
   );
 }
 
-export default Header;
+export default MobileHeader;

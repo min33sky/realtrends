@@ -1,6 +1,6 @@
 import React from 'react';
 import useGoBack from '~/hooks/useGoBack';
-import Header from '../base/Header';
+import MobileHeader from '../base/MobileHeader';
 import HeaderBackButton from '../base/HeaderBackButton';
 import FullHeightPage from '../system/FullHeightPage';
 
@@ -23,7 +23,7 @@ export default function BasicLayout({
 
   return (
     <FullHeightPage>
-      <Header
+      <MobileHeader
         title={title}
         headerLeft={
           hasBackButton ? (

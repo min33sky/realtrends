@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Header from '~/components/base/Header';
+import MobileHeader from '~/components/base/MobileHeader';
 import TabLayout from '~/components/layout/TabLayout';
 import SearchInput from '~/components/search/SearchInput';
 import { useDebounce } from 'use-debounce';
@@ -86,7 +86,7 @@ export default function Search() {
   return (
     <TabLayout
       header={
-        <Header
+        <MobileHeader
           title={
             <SearchInput value={searchText} onChangeText={setSearchText} />
           }

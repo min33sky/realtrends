@@ -1,4 +1,3 @@
-import { Link } from '@remix-run/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUser } from '~/contexts/UserContext';
 import useBookmarkManager from '~/hooks/useBookmarkManager';

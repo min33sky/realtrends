@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { createBookmark, deleteBookmark } from '~/lib/api/bookmark';
 import { useItemOverrideSetter } from '~/stores/useItemOverrideStore';
 
