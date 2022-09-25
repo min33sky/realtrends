@@ -1,5 +1,4 @@
 import { Link } from '@remix-run/react';
-import React from 'react';
 import Button from '../system/Button';
 import { Logo } from '../vectors';
 import SearchArea from './SearchArea';
@@ -15,10 +14,12 @@ export default function DesktopHeader() {
         <div className="flex items-center">
           <SearchArea />
           <div className="flex gap-2">
-            <Button variant="text" size="small">
+            <Button variant="text" size="small" to="/auth/login">
               로그인
             </Button>
-            <Button size="small">회원가입</Button>
+            <Button size="small" to="/auth/register">
+              회원가입
+            </Button>
           </div>
         </div>
       </div>
