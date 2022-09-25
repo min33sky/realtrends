@@ -1,4 +1,4 @@
-import { Form, useActionData, useSearchParams } from '@remix-run/react';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useForm } from '~/hooks/useForm';
 import { useSubmitLoading } from '~/hooks/useSubmitLoading';
@@ -6,6 +6,7 @@ import type { AppError } from '~/lib/error';
 import { validate } from '~/lib/validate';
 import Button from '../system/Button';
 import LabelInput from '../system/LabelInput';
+import { Logo } from '../vectors';
 import QuestionLink from './QuestionLink';
 
 interface Props {
@@ -80,10 +81,14 @@ function AuthForm({ mode, error }: Props) {
   return (
     <Form
       method="post"
-      className="flex flex-1 flex-col justify-between p-4"
+      className="flex flex-1 flex-col justify-between p-4 xs:w-[460px] xs:justify-center xs:self-center"
       onSubmit={onSubmit}
     >
-      <div className="flex flex-col space-y-4">
+      <Link to="/" className="mb-12 hidden justify-center xs:flex">
+        <Logo className="h-8 w-auto text-gray-500" />
+      </Link>
+
+      <div aria-label="input-group" className="flex flex-col space-y-4 ">
         <LabelInput
           label="아이디"
           name="username"
@@ -104,7 +109,10 @@ function AuthForm({ mode, error }: Props) {
         />
       </div>
 
-      <footer className="flex flex-col items-center space-y-4">
+      <footer
+        aria-label="actionsBox"
+        className="flex flex-col items-center space-y-4 xs:mt-6"
+      >
         {error?.name === 'AuthenticationError' && (
           <div className="text-sm text-red-500">잘못된 계정 정보입니다.</div>
         )}

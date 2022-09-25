@@ -671,6 +671,10 @@ em {
   margin-top: 0px;
 }
 
+.mb-12{
+  margin-bottom: 3rem;
+}
+
 .block{
   display: block;
 }
@@ -1381,11 +1385,27 @@ em {
 }
 
 @media (min-width: 500px){
+  .xs\:mt-6{
+    margin-top: 1.5rem;
+  }
+
   .xs\:flex{
     display: flex;
   }
 
   .xs\:hidden{
     display: none;
+  }
+
+  .xs\:w-\[460px\]{
+    width: 460px;
+  }
+
+  .xs\:justify-center{
+    justify-content: center;
+  }
+
+  .xs\:self-center{
+    align-self: center;
   }
 }
