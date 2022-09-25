@@ -975,9 +975,9 @@ em {
   border-color: rgb(156 163 175 / var(--tw-border-opacity));
 }
 
-.border-gray-200{
+.border-gray-50{
   --tw-border-opacity: 1;
-  border-color: rgb(229 231 235 / var(--tw-border-opacity));
+  border-color: rgb(249 250 251 / var(--tw-border-opacity));
 }
 
 .border-gray-100{
@@ -1000,6 +1000,10 @@ em {
   background-color: rgb(124 58 237 / var(--tw-bg-opacity));
 }
 
+.bg-transparent{
+  background-color: transparent;
+}
+
 .bg-purple-500{
   --tw-bg-opacity: 1;
   background-color: rgb(168 85 247 / var(--tw-bg-opacity));
@@ -1013,10 +1017,6 @@ em {
 .bg-gray-50{
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
-}
-
-.bg-transparent{
-  background-color: transparent;
 }
 
 .bg-purple-100{
@@ -1071,8 +1071,8 @@ em {
   padding-right: 0.75rem;
 }
 
-.pl-2{
-  padding-left: 0.5rem;
+.pl-3{
+  padding-left: 0.75rem;
 }
 
 .pr-\[14px\]{
@@ -1105,6 +1105,10 @@ em {
 
 .pb-4{
   padding-bottom: 1rem;
+}
+
+.pl-8{
+  padding-left: 2rem;
 }
 
 .text-center{
@@ -1281,16 +1285,6 @@ em {
 .hover\:bg-indigo-100:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(224 231 255 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-50:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-200:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-gray-100:hover{

@@ -13,6 +13,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useInfinityScroll } from '~/hooks/useInfinityScroll';
 import { stringify } from 'qs';
 import SearchResultCardList from '~/components/search/SearchResultCardList';
+import DesktopHeader from '~/components/base/DesktopHeader';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const { q } = parseUrlParams<{ q?: string }>(request.url);
@@ -86,12 +87,15 @@ export default function Search() {
   return (
     <TabLayout
       header={
-        <MobileHeader
-          title={
-            <SearchInput value={searchText} onChangeText={setSearchText} />
-          }
-          titleFullWidth
-        />
+        <>
+          <MobileHeader
+            title={
+              <SearchInput value={searchText} onChangeText={setSearchText} />
+            }
+            titleFullWidth
+          />
+          <DesktopHeader />
+        </>
       }
     >
       <SearchResultCardList items={items || []} />
