@@ -29,7 +29,7 @@ export default function UserMenu({ visible, onClose }: Props) {
           />
 
           <div
-            className="hidden cursor-pointer p-4 transition hover:bg-gray-100 md:block"
+            className="block cursor-pointer p-4 transition hover:bg-gray-100 md:hidden"
             onClick={() => navigate('/write')}
           >
             새 글 등록
