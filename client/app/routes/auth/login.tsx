@@ -41,7 +41,7 @@ export default function Login({ error }: Props) {
   }, [actionData]);
 
   return (
-    <BasicLayout title="로그인" hasBackButton>
+    <BasicLayout title="로그인" hasBackButton desktopHeaderVisible={false}>
       <AuthForm mode="login" error={error} />
     </BasicLayout>
   );

@@ -24,12 +24,10 @@ export const action: ActionFunction = async ({ request }) => {
   const title = form.get('title') as string;
   const body = form.get('body') as string;
 
-  console.log({ link, title, body });
-
   try {
     // api 호출
-    await createItem({ link, title, body });
-    return redirect('/');
+    const item = await createItem({ link, title, body });
+    return redirect(`/items/${item.id}}`);
   } catch (e) {
     const error = extractError(e);
     throw json(error, {

@@ -16,7 +16,7 @@ export default function WriteFormTemplate({
 }: Props) {
   return (
     <form
-      className="flex flex-1 flex-col  pt-4 pl-4 pr-4 pb-6"
+      className="flex flex-1 flex-col  pt-4 pl-4 pr-4 pb-6 xs:w-[460px] xs:justify-center xs:self-center"
       onSubmit={onSubmit}
     >
       {description && (
@@ -25,7 +25,7 @@ export default function WriteFormTemplate({
         </h3>
       )}
 
-      <section className="flex flex-1 flex-col ">{children}</section>
+      <section className="flex flex-1 flex-col xs:pb-6 ">{children}</section>
 
       <Button type="submit" layoutMode="fullWidth">
         {buttonText}
