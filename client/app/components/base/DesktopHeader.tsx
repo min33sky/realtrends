@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react';
-import { useUser } from '~/contexts/UserContext';
+import { useUser } from '~/states/user';
 import Button from '../system/Button';
 import { Logo } from '../vectors';
 import SearchArea from './SearchArea';

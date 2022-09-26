@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import type { ListMode } from '~/lib/api/types';
 import type { ListModeSelectorProps } from './ListModeSelector';
 
@@ -20,8 +20,10 @@ export default function ListModeItem({
   onUpdateSize,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const useIsmorphicEffect =
+    typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-  useLayoutEffect(() => {
+  useIsmorphicEffect(() => {
     if (!ref.current) return;
     onUpdateSize(index, ref.current.clientWidth);
   }, [index, onUpdateSize]);

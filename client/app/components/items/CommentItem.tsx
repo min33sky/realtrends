@@ -2,13 +2,13 @@ import {
   ChatBubbleLeftRightIcon,
   EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
-import { useUser } from '~/contexts/UserContext';
 import { useCommentLike } from '~/hooks/useCommentLike';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useDeleteComment } from '~/hooks/useDeleteComment';
 import useItemId from '~/hooks/useItemId';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import type { Comment } from '~/lib/api/types';
+import { useUser } from '~/states/user';
 import { useBottomSheetModalStore } from '~/stores/useBottomSheetModalStore';
 import { useCommentInputStore } from '~/stores/useCommentInputStore';
 import { useCommentLikeById } from '~/stores/useCommentLikesStore';

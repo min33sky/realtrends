@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useUser } from '~/contexts/UserContext';
 import useBookmarkManager from '~/hooks/useBookmarkManager';
 import { useDateDistance } from '~/hooks/useDateDistance';
 import { useLikeManager } from '~/hooks/useLikeManager';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
 import type { Item } from '~/lib/api/types';
+import { useUser } from '~/states/user';
 import { useItemOverrideById } from '~/stores/useItemOverrideStore';
 import BookmarkButton from '../system/BookmarkButton';
 import LikeButton from '../system/LikeButton';

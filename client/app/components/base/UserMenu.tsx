@@ -1,5 +1,6 @@
 import { useNavigate } from '@remix-run/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import useLogout from '~/hooks/useLogout';
 import useOutsideClick from '~/hooks/useOutsideClick';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 
 export default function UserMenu({ visible, onClose }: Props) {
   const navigate = useNavigate();
+  const logout = useLogout();
   const targetRef = useOutsideClick(onClose);
 
   return (
@@ -48,7 +50,7 @@ export default function UserMenu({ visible, onClose }: Props) {
           </div>
           <div
             className="cursor-pointer p-4 transition hover:bg-gray-100"
-            onClick={() => navigate('/')}
+            onClick={logout}
           >
             로그아웃
           </div>

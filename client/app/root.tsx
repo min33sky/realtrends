@@ -9,7 +9,6 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import DialogProvider from './contexts/DialogContext';
-import { UserContext } from './contexts/UserContext';
 import type { User } from './lib/api/auth';
 import { getMyAccount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
@@ -17,6 +16,8 @@ import { extractError } from './lib/error';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import styles from './styles/app.css';
 import GlobalBottomSheetModal from './components/system/GlobalBottomSheetModal';
+import { SangteProvider } from 'sangte';
+import { userState } from './states/user';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');
@@ -82,17 +83,21 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <DialogProvider>
-            <UserContext.Provider value={data}>
+        <SangteProvider
+          initialize={({ set }) => {
+            set(userState, data);
+          }}
+        >
+          <QueryClientProvider client={queryClient}>
+            <DialogProvider>
               <Outlet />
-            </UserContext.Provider>
-          </DialogProvider>
-          <GlobalBottomSheetModal />
-        </QueryClientProvider>
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+            </DialogProvider>
+            <GlobalBottomSheetModal />
+          </QueryClientProvider>
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </SangteProvider>
       </body>
     </html>
   );

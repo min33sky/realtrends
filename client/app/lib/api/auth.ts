@@ -35,6 +35,10 @@ export async function login(params: AuthParams) {
   };
 }
 
+export async function logout() {
+  return client.post('/api/auth/logout');
+}
+
 /**
  * 내 정보 조회
  */

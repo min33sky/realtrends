@@ -7,10 +7,10 @@ import CommentList from '~/components/items/CommentList';
 import ItemViewer from '~/components/items/ItemViewer';
 import BasicLayout from '~/components/layout/BasicLayout';
 import { useDialog } from '~/contexts/DialogContext';
-import { useUser } from '~/contexts/UserContext';
 import { useCommentsQuery } from '~/hooks/query/useCommentsQuery';
 import { deleteItem, getComments, getItem } from '~/lib/api/items';
 import type { Comment, Item } from '~/lib/api/types';
+import { useUser } from '~/states/user';
 import { useBottomSheetModalStore } from '~/stores/useBottomSheetModalStore';
 
 export const loader: LoaderFunction = async ({ params }) => {

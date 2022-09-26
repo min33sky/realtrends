@@ -1,6 +1,6 @@
 import { useNavigate } from '@remix-run/react';
 import { useEffect } from 'react';
-import { useUser } from '~/contexts/UserContext';
+import { useUser } from '~/states/user';
 
 /**
  * Client에서 인증이 필요한 페이지를 접근할 때 사용하는 Hook

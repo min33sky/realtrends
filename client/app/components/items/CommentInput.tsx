@@ -1,5 +1,5 @@
-import { useUser } from '~/contexts/UserContext';
 import useOpenLoginDialog from '~/hooks/useOpenLoginDialog';
+import { useUser } from '~/states/user';
 import { useCommentInputStore } from '~/stores/useCommentInputStore';
 
 export default function CommentInput() {

@@ -10,6 +10,7 @@ import { useAuthRedirect } from '~/hooks/useAuthRedirect';
 import { login } from '~/lib/api/auth';
 import type { AppError } from '~/lib/error';
 import { extractError } from '~/lib/error';
+import { useSetUser } from '~/states/user';
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -34,11 +35,14 @@ interface Props {
 
 export default function Login({ error }: Props) {
   const actionData = useActionData();
+  const setUser = useSetUser();
+
   useAuthRedirect();
 
   useEffect(() => {
     if (!actionData) return;
-  }, [actionData]);
+    setUser(actionData.user);
+  }, [actionData, setUser]);
 
   return (
     <BasicLayout title="로그인" hasBackButton desktopHeaderVisible={false}>
