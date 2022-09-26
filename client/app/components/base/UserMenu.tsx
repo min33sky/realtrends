@@ -38,7 +38,7 @@ export default function UserMenu({ visible, onClose }: Props) {
           </div>
           <div
             className="cursor-pointer p-4 transition hover:bg-gray-100"
-            onClick={() => navigate('/account')}
+            onClick={() => navigate('/setting/account')}
           >
             내 계정
           </div>

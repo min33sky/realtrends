@@ -13,9 +13,5 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Setting() {
-  return (
-    <TabLayout>
-      <Outlet />
-    </TabLayout>
-  );
+  return <Outlet />;
 }
