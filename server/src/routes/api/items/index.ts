@@ -2,22 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { createAuthorizedRoute } from '../../../plugins/requireAuthPlugin';
 import ItemService from '../../../services/ItemService';
 import { commentsRoute } from './comments';
-import {
-  DeleteItemRoute,
-  DeleteItemSchema,
-  GetItemRoute,
-  GetItemSchema,
-  GetItemsRoute,
-  GetItemsSchema,
-  LikeItemRoute,
-  LikeItemSchema,
-  UnlikeItemRoute,
-  UnlikeItemSchema,
-  UpdateItemRoute,
-  UpdateItemSchema,
-  WriteItemRoute,
-  WriteItemSchema,
-} from './schema';
+import { ItemsRoute, ItemsRouteScehma } from './schema';
 
 export const itemRoute: FastifyPluginAsync = async (fastify) => {
   const itemService = ItemService.getInstance();
@@ -25,9 +10,9 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
   fastify.register(authorizedItemRoute); //? 인증된 사용자만 접근 가능한 라우트
   fastify.register(commentsRoute, { prefix: '/:id/comments' }); //? 해당 글에대한 댓글 라우트
 
-  fastify.get<GetItemRoute>(
+  fastify.get<ItemsRoute['GetItem']>(
     '/:id',
-    { schema: GetItemSchema },
+    { schema: ItemsRouteScehma.GetItem },
     async (request, reply) => {
       const { id } = request.params;
       const userId = request.user?.id;
@@ -36,14 +21,11 @@ export const itemRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
-  fastify.get<GetItemsRoute>(
+  fastify.get<ItemsRoute['GetItems']>(
     '/',
-    { schema: GetItemsSchema },
+    { schema: ItemsRouteScehma.GetItems },
     async (request) => {
       const { cursor, mode, endDate, startDate } = request.query;
-
-      console.log('#### startDate', startDate);
-      console.log('#### endDate', endDate);
 
       return itemService.getItems({
         mode: mode ?? 'recent',
@@ -66,10 +48,10 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 게시물 등록하기
    */
-  fastify.post<WriteItemRoute>(
+  fastify.post<ItemsRoute['WriteItem']>(
     '/',
     {
-      schema: WriteItemSchema,
+      schema: ItemsRouteScehma.WriteItem,
     },
     async (request) => {
       const item = await itemService.createItem(request.user!.id, request.body); //? 인증 통과했으므로 user는 무조건 존재한다.
@@ -80,9 +62,9 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 게시물 수정하기
    */
-  fastify.patch<UpdateItemRoute>(
+  fastify.patch<ItemsRoute['UpdateItem']>(
     '/:id',
-    { schema: UpdateItemSchema },
+    { schema: ItemsRouteScehma.UpdateItem },
     async (request) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
@@ -101,9 +83,9 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 게시물 삭제하기
    */
-  fastify.delete<DeleteItemRoute>(
+  fastify.delete<ItemsRoute['DeleteItem']>(
     '/:id',
-    { schema: DeleteItemSchema },
+    { schema: ItemsRouteScehma.DeleteItem },
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
@@ -116,9 +98,9 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 좋아요
    */
-  fastify.post<LikeItemRoute>(
+  fastify.post<ItemsRoute['LikeItem']>(
     '/:id/likes',
-    { schema: LikeItemSchema },
+    { schema: ItemsRouteScehma.LikeItem },
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
@@ -134,10 +116,10 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 좋아요 취소
    */
-  fastify.delete<UnlikeItemRoute>(
+  fastify.delete<ItemsRoute['UnlikeItem']>(
     '/:id/likes',
     {
-      schema: UnlikeItemSchema,
+      schema: ItemsRouteScehma.UnlikeItem,
     },
     async (request, reply) => {
       const { id: itemId } = request.params;

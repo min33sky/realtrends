@@ -1,17 +1,8 @@
-import { Static, Type } from '@sinclair/typebox';
-import { FastifySchema } from 'fastify';
+import { Type } from '@sinclair/typebox';
 import { PaginationSchema } from '../../../lib/pagination';
+import { createRouteSchema, RoutesType } from '../../../lib/routeSchema';
 import { Nullable } from '../../../lib/typebox';
 import { UserSchema } from '../../../schema/userSchema';
-
-const CreateItemSchema = Type.Object({
-  title: Type.String(),
-  body: Type.String(),
-  link: Type.String(),
-  tags: Type.Optional(Type.Array(Type.String())),
-});
-
-export type CreateItemBodyType = Static<typeof CreateItemSchema>;
 
 const ItemStatsSchema = Type.Object({
   id: Type.Integer(),
@@ -46,8 +37,6 @@ export const ItemSchema = Type.Object({
   isBookmarked: Type.Boolean(),
 });
 
-export type ItemType = Static<typeof ItemSchema>;
-
 ItemSchema.example = {
   id: 1,
   title: 'hello world',
@@ -68,23 +57,9 @@ ItemSchema.example = {
   isLiked: false,
 };
 
-export const WriteItemSchema: FastifySchema = {
-  tags: ['items'],
-  body: CreateItemSchema,
-  response: {
-    200: ItemSchema,
-  },
-};
-
-export interface WriteItemRoute {
-  Body: CreateItemBodyType;
-}
-
 export const ItemParamsSchema = Type.Object({
   id: Type.Integer(),
 });
-
-export type ItemParamsType = Static<typeof ItemParamsSchema>;
 
 const ItemLikeSchema = Type.Object({
   id: Type.Integer(),
@@ -101,88 +76,82 @@ ItemLikeSchema.example = {
   isLiked: true,
 };
 
-const UpdateItemBodySchema = Type.Object({
-  title: Type.String(),
-  body: Type.String(),
-  tags: Type.Array(Type.String()),
+export const ItemsRouteScehma = createRouteSchema({
+  GetItem: {
+    tags: ['item'],
+    params: ItemParamsSchema,
+    response: {
+      200: ItemSchema,
+    },
+  },
+  GetItems: {
+    tags: ['item'],
+    querystring: Type.Object({
+      cursor: Type.Optional(Type.String()),
+      mode: Type.Optional(
+        Type.Union([
+          Type.Literal('recent'),
+          Type.Literal('trending'),
+          Type.Literal('past'),
+        ]),
+      ),
+      startDate: Type.Optional(Type.String()),
+      endDate: Type.Optional(Type.String()),
+    }),
+    response: {
+      200: PaginationSchema(ItemSchema),
+    },
+  },
+
+  WriteItem: {
+    tags: ['item'],
+    body: Type.Object({
+      title: Type.String(),
+      body: Type.String(),
+      link: Type.String(),
+      tags: Type.Optional(Type.Array(Type.String())),
+    }),
+    response: {
+      200: ItemSchema,
+    },
+  },
+
+  UpdateItem: {
+    tags: ['item'],
+    params: ItemParamsSchema,
+    body: Type.Object({
+      title: Type.String(),
+      body: Type.String(),
+      tags: Type.Array(Type.String()),
+    }),
+    response: {
+      200: ItemSchema,
+    },
+  },
+
+  DeleteItem: {
+    tags: ['item'],
+    params: ItemParamsSchema,
+    response: {
+      204: Type.Null(),
+    },
+  },
+
+  LikeItem: {
+    tags: ['item'],
+    params: ItemParamsSchema,
+    response: {
+      200: ItemLikeSchema,
+    },
+  },
+
+  UnlikeItem: {
+    tags: ['item'],
+    params: ItemParamsSchema,
+    response: {
+      200: ItemLikeSchema,
+    },
+  },
 });
 
-type UpdateItemBodyType = Static<typeof UpdateItemBodySchema>;
-
-export const GetItemSchema: FastifySchema = {
-  tags: ['items'],
-  params: ItemParamsSchema,
-  response: {
-    200: ItemSchema,
-  },
-};
-
-export const GetItemsSchema: FastifySchema = {
-  tags: ['items'],
-  response: {
-    200: PaginationSchema(ItemSchema),
-  },
-};
-
-export const UpdateItemSchema: FastifySchema = {
-  tags: ['items'],
-  params: ItemParamsSchema,
-  body: UpdateItemBodySchema,
-  response: {
-    200: ItemSchema,
-  },
-};
-
-export const DeleteItemSchema: FastifySchema = {
-  tags: ['items'],
-  params: ItemParamsSchema,
-  response: {
-    204: Type.Null(),
-  },
-};
-
-export const LikeItemSchema: FastifySchema = {
-  tags: ['items'],
-  params: ItemParamsSchema,
-  response: {
-    200: ItemLikeSchema,
-  },
-};
-
-export const UnlikeItemSchema: FastifySchema = {
-  tags: ['items'],
-  params: ItemParamsSchema,
-  response: {
-    200: ItemLikeSchema,
-  },
-};
-
-export interface GetItemRoute {
-  Params: ItemParamsType;
-}
-
-export interface GetItemsRoute {
-  Querystring: {
-    cursor?: string;
-    mode?: 'recent' | 'trending' | 'past';
-    startDate?: string;
-    endDate?: string;
-  };
-}
-
-export interface UpdateItemRoute {
-  Params: ItemParamsType;
-  Body: UpdateItemBodyType;
-}
-
-export interface DeleteItemRoute {
-  Params: ItemParamsType;
-}
-
-export interface LikeItemRoute {
-  Params: ItemParamsType;
-}
-
-export interface UnlikeItemRoute {
-  Params: ItemParamsType;
-}
+export type ItemsRoute = RoutesType<typeof ItemsRouteScehma>;
