@@ -4,12 +4,14 @@ import AppError from '../lib/AppError';
 
 const requireAuthPluginAsync: FastifyPluginAsync = async (fastify) => {
   fastify.addHook('preHandler', async (request, reply) => {
+    //? 토큰이 만료되었을 경우
     if (request.isExpiredToken) {
       throw new AppError('UnauthorizedError', {
         isExpiredToken: true,
       });
     }
 
+    //? 로그인 정보가 없는 경우
     if (!request.user) {
       throw new AppError('UnauthorizedError', {
         isExpiredToken: false,
@@ -19,7 +21,7 @@ const requireAuthPluginAsync: FastifyPluginAsync = async (fastify) => {
 };
 
 /**
- * 인증 라우트를 위한 Plugin
+ ** 인증 라우트를 위한 Plugin
  */
 const requireAuthPlugin = fp(requireAuthPluginAsync, {
   name: 'requireAuthPlugin',

@@ -7,9 +7,12 @@ import { MeRoute, MeRouteSchema } from './schema';
 export const meRoute: FastifyPluginAsync = async (fastify) => {
   const userService = UserService.getInstance();
 
-  //? meRoute에서만 적용할 인증 Route Plugin을 설정
+  //? meRoute에서만 적용할 인증 필수 Route Plugin을 설정
   fastify.register(requireAuthPlugin);
 
+  /**
+   * 내 정보 조회
+   */
   fastify.get<MeRoute['GetAccount']>(
     '/',
     { schema: MeRouteSchema.GetAccount },
@@ -18,8 +21,11 @@ export const meRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
+  /**
+   * 비밀번호 변경
+   */
   fastify.post<MeRoute['UpdatePassword']>(
-    '/password',
+    '/change-password',
     { schema: MeRouteSchema.UpdatePassword },
     async (request, reply) => {
       const { oldPassword, newPassword } = request.body;
@@ -33,6 +39,9 @@ export const meRoute: FastifyPluginAsync = async (fastify) => {
     },
   );
 
+  /**
+   * 회원 탈퇴
+   */
   fastify.delete<MeRoute['Unregister']>(
     '/',
     { schema: MeRouteSchema.Unregister },
