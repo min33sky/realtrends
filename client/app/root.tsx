@@ -10,7 +10,6 @@ import {
 } from '@remix-run/react';
 import DialogProvider from './contexts/DialogContext';
 import type { User } from './lib/api/auth';
-import { getMyAccount } from './lib/api/auth';
 import { setClientCookie } from './lib/client';
 import { extractError } from './lib/error';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -18,6 +17,7 @@ import styles from './styles/app.css';
 import GlobalBottomSheetModal from './components/system/GlobalBottomSheetModal';
 import { SangteProvider } from 'sangte';
 import { userState } from './states/user';
+import { getMyAccount } from './lib/api/me';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookie = request.headers.get('cookie');

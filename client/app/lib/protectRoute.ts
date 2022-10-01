@@ -1,5 +1,5 @@
 import type { AuthResult } from './api/auth';
-import { getMyAccount } from './api/auth';
+import { getMyAccount } from './api/me';
 import { applyAuth } from './applyAuth';
 
 //? 인증 정보를 담은 Promise.

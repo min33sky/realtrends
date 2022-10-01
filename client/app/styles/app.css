@@ -695,6 +695,10 @@ em {
   margin-top: 2rem;
 }
 
+.mb-8{
+  margin-bottom: 2rem;
+}
+
 .block{
   display: block;
 }
@@ -1202,12 +1206,21 @@ em {
   line-height: 1rem;
 }
 
+.text-5xl{
+  font-size: 3rem;
+  line-height: 1;
+}
+
 .font-semibold{
   font-weight: 600;
 }
 
 .font-bold{
   font-weight: 700;
+}
+
+.font-extrabold{
+  font-weight: 800;
 }
 
 .leading-normal{
@@ -1254,6 +1267,11 @@ em {
   color: rgb(168 85 247 / var(--tw-text-opacity));
 }
 
+.text-red-600{
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
+}
+
 .text-yellow-400{
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity));
@@ -1262,11 +1280,6 @@ em {
 .text-red-400{
   --tw-text-opacity: 1;
   color: rgb(248 113 113 / var(--tw-text-opacity));
-}
-
-.text-red-600{
-  --tw-text-opacity: 1;
-  color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
 .underline{
@@ -1475,8 +1488,17 @@ em {
 }
 
 @media (min-width: 500px){
+  .xs\:mx-auto{
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .xs\:mt-6{
     margin-top: 1.5rem;
+  }
+
+  .xs\:mt-24{
+    margin-top: 6rem;
   }
 
   .xs\:flex{
@@ -1489,6 +1511,14 @@ em {
 
   .xs\:w-\[460px\]{
     width: 460px;
+  }
+
+  .xs\:max-w-3xl{
+    max-width: 48rem;
+  }
+
+  .xs\:flex-initial{
+    flex: 0 1 auto;
   }
 
   .xs\:justify-center{

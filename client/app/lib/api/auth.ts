@@ -40,14 +40,6 @@ export async function logout() {
 }
 
 /**
- * 내 정보 조회
- */
-export async function getMyAccount() {
-  const response = await client.get<AuthResult>('http://localhost:4000/api/me');
-  return response.data;
-}
-
-/**
  * Response Header에 Set-Cookie를 설정하는 함수
  * ? Backend에서 Set-Cookie로 전달한 Cookie를 Frontend로 그대로 전달하기 위해서 사용한다.
  * @param setCookieHeader cookie array
