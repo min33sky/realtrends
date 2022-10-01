@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function SearchResultCard({ item }: Props) {
-  const { publisher, author, highlight } = item;
+  const { publisher, author, highlight, likes } = item;
 
   return (
     <div>
@@ -23,6 +23,12 @@ export default function SearchResultCard({ item }: Props) {
 
       <h3 dangerouslySetInnerHTML={{ __html: highlight.title }}></h3>
       <p dangerouslySetInnerHTML={{ __html: highlight.body }}></p>
+
+      {likes > 0 && (
+        <div className="flex text-xs font-semibold leading-normal text-gray-400">
+          좋아요 {likes.toLocaleString()}개
+        </div>
+      )}
     </div>
   );
 }
