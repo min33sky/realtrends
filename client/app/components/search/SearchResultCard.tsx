@@ -1,4 +1,3 @@
-import React from 'react';
 import type { SearchResultItem } from '~/lib/api/types';
 import { Globe } from '../vectors';
 
@@ -25,7 +24,7 @@ export default function SearchResultCard({ item }: Props) {
       <p dangerouslySetInnerHTML={{ __html: highlight.body }}></p>
 
       {likes > 0 && (
-        <div className="flex text-xs font-semibold leading-normal text-gray-400">
+        <div className="flex text-xs font-extrabold leading-normal text-gray-400">
           좋아요 {likes.toLocaleString()}개
         </div>
       )}

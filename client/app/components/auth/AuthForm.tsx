@@ -39,7 +39,6 @@ const authDescription = {
 
 function AuthForm({ mode, error }: Props) {
   const action = useActionData<ActionData | undefined>();
-
   const [searchParams] = useSearchParams();
   const next = searchParams.get('next');
 

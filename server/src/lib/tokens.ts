@@ -24,7 +24,7 @@ export function generateToken(payload: TokenPayload) {
         } else {
           resolve(token);
         }
-      }
+      },
     );
   });
 }
