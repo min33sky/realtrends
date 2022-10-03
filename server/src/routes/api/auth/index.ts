@@ -1,31 +1,32 @@
-import { FastifyPluginAsync, FastifyReply } from 'fastify';
 import AppError from '../../../lib/AppError';
 import { clearCookie, setTokenCookie } from '../../../lib/cookies';
+import { FastifyPluginAsyncTypebox } from '../../../lib/types';
 import UserService from '../../../services/UserService';
-import { AuthRoute, AuthRouteSchema } from './schema';
+import {
+  loginSchema,
+  logoutSchema,
+  refreshTokenSchema,
+  registerSchema,
+} from './schema';
 
-const authRoute: FastifyPluginAsync = async (fastify) => {
+const authRoute: FastifyPluginAsyncTypebox = async (fastify) => {
   const userService = UserService.getInstance();
 
   /**
    * 로그인
    */
-  fastify.post<AuthRoute['Login']>(
-    '/login',
-    { schema: AuthRouteSchema.Login },
-    async (request, reply) => {
-      const authResult = await userService.login(request.body);
-      setTokenCookie(reply, authResult.tokens);
-      return authResult;
-    },
-  );
+  fastify.post('/login', { schema: loginSchema }, async (request, reply) => {
+    const authResult = await userService.login(request.body);
+    setTokenCookie(reply, authResult.tokens);
+    return authResult;
+  });
 
   /**
    * 회원가입
    */
-  fastify.post<AuthRoute['Register']>(
+  fastify.post(
     '/register',
-    { schema: AuthRouteSchema.Register },
+    { schema: registerSchema },
     async (request, reply) => {
       const authResult = await userService.register(request.body);
       setTokenCookie(reply, authResult.tokens);
@@ -36,10 +37,10 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   /**
    * 토큰 재발급
    */
-  fastify.post<AuthRoute['RefreshToken']>(
+  fastify.post(
     '/refresh',
     {
-      schema: AuthRouteSchema.RefreshToken,
+      schema: refreshTokenSchema,
     },
     async (request, reply) => {
       const refreshToken =
@@ -58,10 +59,10 @@ const authRoute: FastifyPluginAsync = async (fastify) => {
   /**
    * 로그아웃
    */
-  fastify.post<AuthRoute['Logout']>(
+  fastify.post(
     '/logout',
     {
-      schema: AuthRouteSchema.Logout,
+      schema: logoutSchema,
     },
     async (request, reply) => {
       clearCookie(reply);

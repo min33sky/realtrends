@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox';
 import { createAppErrorSchema } from '../../../lib/AppError';
-import { createRouteSchema, RoutesType } from '../../../lib/routeSchema';
+import { routesSchema } from '../../../lib/routeSchema';
 import { UserSchema } from '../../../schema/userSchema';
 
 const UnAuthorizedErrorSchema = createAppErrorSchema(
@@ -17,36 +17,34 @@ const UnAuthorizedErrorSchema = createAppErrorSchema(
   }),
 );
 
-export const MeRouteSchema = createRouteSchema({
-  GetAccount: {
-    tags: ['me'],
-    response: {
-      200: UserSchema,
-      401: UnAuthorizedErrorSchema,
-    },
-  },
-  UpdatePassword: {
-    tags: ['me'],
-    body: Type.Object({
-      oldPassword: Type.String(),
-      newPassword: Type.String(),
-    }),
-    response: {
-      204: Type.Null(),
-      401: UnAuthorizedErrorSchema,
-      403: createAppErrorSchema({
-        name: 'Forbidden',
-        message: 'Password does not match',
-        statusCode: 403,
-      }),
-    },
-  },
-  Unregister: {
-    tags: ['me'],
-    response: {
-      204: Type.Null(),
-    },
+export const getAccountSchema = routesSchema({
+  tags: ['me'],
+  response: {
+    200: UserSchema,
+    401: UnAuthorizedErrorSchema,
   },
 });
 
-export type MeRoute = RoutesType<typeof MeRouteSchema>;
+export const updatePasswordSchema = routesSchema({
+  tags: ['me'],
+  body: Type.Object({
+    oldPassword: Type.String(),
+    newPassword: Type.String(),
+  }),
+  response: {
+    200: UserSchema,
+    401: UnAuthorizedErrorSchema,
+    403: createAppErrorSchema({
+      name: 'Forbidden',
+      message: 'Password does not match',
+      statusCode: 403,
+    }),
+  },
+});
+
+export const unregisterSchema = routesSchema({
+  tags: ['me'],
+  response: {
+    204: Type.Null(),
+  },
+});

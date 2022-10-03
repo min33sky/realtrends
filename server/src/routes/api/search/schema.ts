@@ -1,6 +1,10 @@
 import { Type } from '@sinclair/typebox';
 import { PaginationSchema } from '../../../lib/pagination';
-import { createRouteSchema, RoutesType } from '../../../lib/routeSchema';
+import {
+  createRouteSchema,
+  routesSchema,
+  RoutesType,
+} from '../../../lib/routeSchema';
 import { Nullable } from '../../../lib/typebox';
 
 const SearchQuerySchema = Type.Object({
@@ -14,7 +18,7 @@ const SearchResultItemSchema = Type.Object({
   link: Type.String(),
   publisher: Type.Object({
     name: Type.String(),
-    favicon: Type.String(),
+    favicon: Nullable(Type.String()),
     domain: Type.String(),
   }),
   author: Nullable(Type.String()),
@@ -27,13 +31,10 @@ const SearchResultItemSchema = Type.Object({
   }),
 });
 
-export const SearchRoutesSchema = createRouteSchema({
-  Search: {
-    querystring: SearchQuerySchema,
-    response: {
-      200: PaginationSchema(SearchResultItemSchema),
-    },
+export const searchSchema = routesSchema({
+  tags: ['search'],
+  querystring: SearchQuerySchema,
+  response: {
+    200: PaginationSchema(SearchResultItemSchema),
   },
 });
-
-export type SearchRoute = RoutesType<typeof SearchRoutesSchema>;

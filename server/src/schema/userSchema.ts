@@ -7,7 +7,7 @@ export const UserSchema = Type.Object({
 
 UserSchema.example = {
   id: 1,
-  username: 'typemean',
+  username: 'chulsooooo',
 };
 
 export type UserSchemaType = Static<typeof UserSchema>;

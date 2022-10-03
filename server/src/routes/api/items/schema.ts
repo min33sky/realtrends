@@ -1,6 +1,6 @@
-import { Type } from '@sinclair/typebox';
+import { Static, Type } from '@sinclair/typebox';
 import { PaginationSchema } from '../../../lib/pagination';
-import { createRouteSchema, RoutesType } from '../../../lib/routeSchema';
+import { routesSchema } from '../../../lib/routeSchema';
 import { Nullable } from '../../../lib/typebox';
 import { UserSchema } from '../../../schema/userSchema';
 
@@ -20,7 +20,7 @@ export const ItemSchema = Type.Object({
   id: Type.Integer(),
   title: Type.String(),
   body: Type.String(),
-  link: Type.String(),
+  link: Nullable(Type.String()),
   thumbnail: Nullable(Type.String()),
   createdAt: Type.String(),
   updatedAt: Type.String(),
@@ -57,6 +57,8 @@ ItemSchema.example = {
   isLiked: false,
 };
 
+export type ItemType = Static<typeof ItemSchema>;
+
 export const ItemParamsSchema = Type.Object({
   id: Type.Integer(),
 });
@@ -76,82 +78,79 @@ ItemLikeSchema.example = {
   isLiked: true,
 };
 
-export const ItemsRouteScehma = createRouteSchema({
-  GetItem: {
-    tags: ['item'],
-    params: ItemParamsSchema,
-    response: {
-      200: ItemSchema,
-    },
-  },
-  GetItems: {
-    tags: ['item'],
-    querystring: Type.Object({
-      cursor: Type.Optional(Type.String()),
-      mode: Type.Optional(
-        Type.Union([
-          Type.Literal('recent'),
-          Type.Literal('trending'),
-          Type.Literal('past'),
-        ]),
-      ),
-      startDate: Type.Optional(Type.String()),
-      endDate: Type.Optional(Type.String()),
-    }),
-    response: {
-      200: PaginationSchema(ItemSchema),
-    },
-  },
-
-  WriteItem: {
-    tags: ['item'],
-    body: Type.Object({
-      title: Type.String(),
-      body: Type.String(),
-      link: Type.String(),
-      tags: Type.Optional(Type.Array(Type.String())),
-    }),
-    response: {
-      200: ItemSchema,
-    },
-  },
-
-  UpdateItem: {
-    tags: ['item'],
-    params: ItemParamsSchema,
-    body: Type.Object({
-      title: Type.String(),
-      body: Type.String(),
-      tags: Type.Array(Type.String()),
-    }),
-    response: {
-      200: ItemSchema,
-    },
-  },
-
-  DeleteItem: {
-    tags: ['item'],
-    params: ItemParamsSchema,
-    response: {
-      204: Type.Null(),
-    },
-  },
-
-  LikeItem: {
-    tags: ['item'],
-    params: ItemParamsSchema,
-    response: {
-      200: ItemLikeSchema,
-    },
-  },
-
-  UnlikeItem: {
-    tags: ['item'],
-    params: ItemParamsSchema,
-    response: {
-      200: ItemLikeSchema,
-    },
+export const getItemSchema = routesSchema({
+  tags: ['item'],
+  params: ItemParamsSchema,
+  response: {
+    200: ItemSchema,
   },
 });
 
-export type ItemsRoute = RoutesType<typeof ItemsRouteScehma>;
+export const getItemsSchema = routesSchema({
+  tags: ['item'],
+  querystring: Type.Object({
+    cursor: Type.Optional(Type.String()),
+    mode: Type.Optional(
+      Type.Union([
+        Type.Literal('recent'),
+        Type.Literal('trending'),
+        Type.Literal('past'),
+      ]),
+    ),
+    startDate: Type.Optional(Type.String()),
+    endDate: Type.Optional(Type.String()),
+  }),
+  response: {
+    200: PaginationSchema(ItemSchema),
+  },
+});
+
+export const writeItemSchema = routesSchema({
+  tags: ['item'],
+  body: Type.Object({
+    title: Type.String(),
+    body: Type.String(),
+    link: Type.String(),
+    tags: Type.Optional(Type.Array(Type.String())),
+  }),
+  response: {
+    200: ItemSchema,
+  },
+});
+
+export const updateItemSchema = routesSchema({
+  tags: ['item'],
+  params: ItemParamsSchema,
+  body: Type.Object({
+    title: Type.String(),
+    body: Type.String(),
+    tags: Type.Array(Type.String()),
+  }),
+  response: {
+    200: ItemSchema,
+  },
+});
+
+export const deleteItemSchema = routesSchema({
+  tags: ['item'],
+  params: ItemParamsSchema,
+  response: {
+    204: Type.Null(),
+  },
+});
+
+export const likeItemSchema = routesSchema({
+  tags: ['item'],
+  params: ItemParamsSchema,
+  response: {
+    200: ItemLikeSchema,
+  },
+});
+
+export const unlikeItemSchema = routesSchema({
+  tags: ['item'],
+  params: ItemParamsSchema,
+  response: {
+    200: ItemLikeSchema,
+  },
+});

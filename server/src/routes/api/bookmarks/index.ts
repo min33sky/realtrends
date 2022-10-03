@@ -1,28 +1,31 @@
 import { createAuthorizedRoute } from '../../../plugins/requireAuthPlugin';
 import BookmarkService from '../../../services/BookmarkService';
-import { BookmarksRoute, BookmarksRouteSchema } from './schema';
+import {
+  createBookmarkSchema,
+  deleteBookmarkSchema,
+  getBookmarksSchema,
+} from './schema';
 
 export const bookmarksRoute = createAuthorizedRoute(async (fastify) => {
   const bookmarkService = BookmarkService.getInstance();
 
-  fastify.post<BookmarksRoute['CreateBookmark']>(
+  fastify.post(
     '/',
     {
-      schema: BookmarksRouteSchema.CreateBookmark,
+      schema: createBookmarkSchema,
     },
     async (request) => {
       const { itemId } = request.body;
       const userId = request.user!.id;
       const bookmark = await bookmarkService.createBookmark({ itemId, userId });
-      console.log('시ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ발');
-      return bookmark;
+      return bookmark as any;
     },
   );
 
-  fastify.get<BookmarksRoute['GetBookmarks']>(
+  fastify.get(
     '/',
     {
-      schema: BookmarksRouteSchema.GetBookmarks,
+      schema: getBookmarksSchema,
     },
     async (request) => {
       const { cursor } = request.query;
@@ -32,14 +35,14 @@ export const bookmarksRoute = createAuthorizedRoute(async (fastify) => {
         cursor,
         limit: 5,
       });
-      return bookmarks;
+      return bookmarks as any;
     },
   );
 
-  fastify.delete<BookmarksRoute['DeleteBookmark']>(
+  fastify.delete(
     '/',
     {
-      schema: BookmarksRouteSchema.DeleteBookmark,
+      schema: deleteBookmarkSchema,
     },
     async (request, reply) => {
       const { itemId } = request.query;

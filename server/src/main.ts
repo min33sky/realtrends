@@ -8,8 +8,11 @@ import { authPlugin } from './plugins/authPlugin';
 import fastifyCookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import { isNextAppError } from './lib/NextAppError';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-const server = Fastify({ logger: true });
+const server = Fastify({
+  logger: true,
+}).withTypeProvider<TypeBoxTypeProvider>();
 
 if (process.env.NODE_ENV === 'development') {
   server.register(cors, {

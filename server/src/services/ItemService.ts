@@ -13,7 +13,6 @@ import NextAppError from '../lib/NextAppError';
 import { createPagination, PaginationOptionType } from '../lib/pagination';
 import { calcurateRankingScore } from '../lib/ranking';
 import { extractPageInfo } from '../lib/validateUrl';
-import { CreateItemBodyType } from '../routes/api/items/schema';
 
 class ItemService {
   private static instance: ItemService;
@@ -50,7 +49,12 @@ class ItemService {
 
   async createItem(
     userId: number,
-    { title, link, tags, body }: CreateItemBodyType,
+    {
+      title,
+      link,
+      tags,
+      body,
+    }: { title: string; link: string; tags?: string[]; body: string },
   ) {
     // 페이지 정보 추출
     const info = await extractPageInfo(link);
@@ -231,7 +235,7 @@ class ItemService {
     }
 
     /**
-     *? 1주일 이상의 기간은 조회할 수 없음
+     * 1주일 이상의 기간은 조회할 수 없음
      * @example 일요일을 기준으로 토요일까지 1주일 기간이므로 시작일부터 6일 이상 차이나면 에러
      * */
     if (dateDiff > 1000 * 60 * 60 * 24 * 6) {

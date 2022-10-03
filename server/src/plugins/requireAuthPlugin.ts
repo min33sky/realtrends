@@ -21,7 +21,7 @@ const requireAuthPluginAsync: FastifyPluginAsync = async (fastify) => {
 };
 
 /**
- ** 인증 라우트를 위한 Plugin
+ * 인증 라우트를 위한 Plugin
  */
 const requireAuthPlugin = fp(requireAuthPluginAsync, {
   name: 'requireAuthPlugin',

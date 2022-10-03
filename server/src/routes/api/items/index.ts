@@ -1,42 +1,43 @@
 import { FastifyPluginAsync } from 'fastify';
+import { FastifyPluginAsyncTypebox } from '../../../lib/types';
 import { createAuthorizedRoute } from '../../../plugins/requireAuthPlugin';
 import ItemService from '../../../services/ItemService';
 import { commentsRoute } from './comments';
-import { ItemsRoute, ItemsRouteScehma } from './schema';
+import {
+  deleteItemSchema,
+  getItemSchema,
+  getItemsSchema,
+  likeItemSchema,
+  unlikeItemSchema,
+  updateItemSchema,
+  writeItemSchema,
+} from './schema';
 
-export const itemRoute: FastifyPluginAsync = async (fastify) => {
+export const itemRoute: FastifyPluginAsyncTypebox = async (fastify) => {
   const itemService = ItemService.getInstance();
 
   fastify.register(authorizedItemRoute); //? 인증된 사용자만 접근 가능한 라우트
   fastify.register(commentsRoute, { prefix: '/:id/comments' }); //? 해당 글에대한 댓글 라우트
 
-  fastify.get<ItemsRoute['GetItem']>(
-    '/:id',
-    { schema: ItemsRouteScehma.GetItem },
-    async (request, reply) => {
-      const { id } = request.params;
-      const userId = request.user?.id;
-      const item = await itemService.getItem(id, userId);
-      return item;
-    },
-  );
+  fastify.get('/:id', { schema: getItemSchema }, async (request) => {
+    const { id } = request.params;
+    const userId = request.user?.id;
+    const item = await itemService.getItem(id, userId);
+    return item as any;
+  });
 
-  fastify.get<ItemsRoute['GetItems']>(
-    '/',
-    { schema: ItemsRouteScehma.GetItems },
-    async (request) => {
-      const { cursor, mode, endDate, startDate } = request.query;
+  fastify.get('/', { schema: getItemsSchema }, async (request) => {
+    const { cursor, mode, endDate, startDate } = request.query;
 
-      return itemService.getItems({
-        mode: mode ?? 'recent',
-        cursor: cursor ? parseInt(cursor, 10) : undefined,
-        userId: request.user?.id,
-        limit: 20,
-        startDate,
-        endDate,
-      });
-    },
-  );
+    return itemService.getItems({
+      mode: mode ?? 'recent',
+      cursor: cursor ? parseInt(cursor, 10) : undefined,
+      userId: request.user?.id,
+      limit: 20,
+      startDate,
+      endDate,
+    }) as any;
+  });
 };
 
 /**
@@ -48,44 +49,40 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 게시물 등록하기
    */
-  fastify.post<ItemsRoute['WriteItem']>(
+  fastify.post(
     '/',
     {
-      schema: ItemsRouteScehma.WriteItem,
+      schema: writeItemSchema,
     },
     async (request) => {
       const item = await itemService.createItem(request.user!.id, request.body); //? 인증 통과했으므로 user는 무조건 존재한다.
-      return item;
+      return item as any;
     },
   );
 
   /**
    * 게시물 수정하기
    */
-  fastify.patch<ItemsRoute['UpdateItem']>(
-    '/:id',
-    { schema: ItemsRouteScehma.UpdateItem },
-    async (request) => {
-      const { id: itemId } = request.params;
-      const userId = request.user!.id;
+  fastify.patch('/:id', { schema: updateItemSchema }, async (request) => {
+    const { id: itemId } = request.params;
+    const userId = request.user!.id;
 
-      const { title, body } = request.body;
+    const { title, body } = request.body;
 
-      return itemService.updateItem({
-        itemId,
-        userId,
-        title,
-        body,
-      });
-    },
-  );
+    return itemService.updateItem({
+      itemId,
+      userId,
+      title,
+      body,
+    }) as any;
+  });
 
   /**
    * 게시물 삭제하기
    */
-  fastify.delete<ItemsRoute['DeleteItem']>(
+  fastify.delete(
     '/:id',
-    { schema: ItemsRouteScehma.DeleteItem },
+    { schema: deleteItemSchema },
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
@@ -98,9 +95,9 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 좋아요
    */
-  fastify.post<ItemsRoute['LikeItem']>(
+  fastify.post(
     '/:id/likes',
-    { schema: ItemsRouteScehma.LikeItem },
+    { schema: likeItemSchema },
     async (request, reply) => {
       const { id: itemId } = request.params;
       const userId = request.user!.id;
@@ -116,10 +113,10 @@ const authorizedItemRoute = createAuthorizedRoute(async (fastify) => {
   /**
    * 좋아요 취소
    */
-  fastify.delete<ItemsRoute['UnlikeItem']>(
+  fastify.delete(
     '/:id/likes',
     {
-      schema: ItemsRouteScehma.UnlikeItem,
+      schema: unlikeItemSchema,
     },
     async (request, reply) => {
       const { id: itemId } = request.params;
