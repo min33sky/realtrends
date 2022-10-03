@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import AppError from '../lib/AppError';
+import { FastifyPluginAsyncTypebox } from '../lib/types';
 
 const requireAuthPluginAsync: FastifyPluginAsync = async (fastify) => {
   fastify.addHook('preHandler', async (request, reply) => {
@@ -32,8 +33,8 @@ const requireAuthPlugin = fp(requireAuthPluginAsync, {
  * @param plugin fastify plugin
  * @returns fastify plugin
  */
-export function createAuthorizedRoute(plugin: FastifyPluginAsync) {
-  const wrappedPlugin: FastifyPluginAsync = async (fastify, opts) => {
+export function createAuthorizedRoute(plugin: FastifyPluginAsyncTypebox) {
+  const wrappedPlugin: FastifyPluginAsyncTypebox = async (fastify, opts) => {
     fastify.register(requireAuthPlugin);
     return plugin(fastify, opts);
   };
