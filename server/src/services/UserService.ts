@@ -133,7 +133,7 @@ class UserService {
 
   /**
    * 토큰 갱신
-   * @param token 토큰
+   * @param token refresh token
    */
   async refreshToken(token: string) {
     try {

@@ -36,6 +36,7 @@ const authRoute: FastifyPluginAsyncTypebox = async (fastify) => {
 
   /**
    * 토큰 재발급
+   * ? 토큰이 만료되었을 때 갱신을 시도해보고 안되면 로그인이 풀려야된다
    */
   fastify.post(
     '/refresh',
@@ -44,7 +45,9 @@ const authRoute: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const refreshToken =
-        request.body.refreshToken ?? request.cookies.refresh_token;
+        request.body.refreshToken ?? request.cookies.refresh_token ?? '';
+
+      console.log('## 토큰 갱신 시도: ', refreshToken);
 
       if (!refreshToken) {
         throw new AppError('BadrequestError');

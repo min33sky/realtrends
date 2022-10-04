@@ -5,7 +5,7 @@ import type { AuthResult } from './auth';
  * 내 정보 조회
  */
 export async function getMyAccount() {
-  const response = await client.get<AuthResult>('http://localhost:4000/api/me');
+  const response = await client.get<AuthResult>('/api/me');
   return response.data;
 }
 
